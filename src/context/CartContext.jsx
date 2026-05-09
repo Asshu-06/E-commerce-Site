@@ -1,8 +1,10 @@
-import { createContext, useContext, useReducer, useEffect } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef } from 'react'
+import { supabase } from '../lib/supabase'
 
 const CartContext = createContext(null)
 
-const STORAGE_KEY = 'shubham_cart'
+const GUEST_CART_KEY = 'shubham_cart_guest'
+const userCartKey = (userId) => `shubham_cart_${userId}`
 
 function cartReducer(state, action) {
   switch (action.type) {
@@ -44,18 +46,68 @@ function cartReducer(state, action) {
   }
 }
 
-export function CartProvider({ children }) {
-  const [cart, dispatch] = useReducer(cartReducer, [], () => {
+function loadCartFromStorage(key) {
+  try {
+    const stored = localStorage.getItem(key)
+    return stored ? JSON.parse(stored) : []
+  } catch { return [] }
+}
+
+// Sync cart to Supabase (debounced)
+let syncTimer = null
+async function syncCartToSupabase(userId, items) {
+  if (!userId) return
+  clearTimeout(syncTimer)
+  syncTimer = setTimeout(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      return stored ? JSON.parse(stored) : []
-    } catch {
-      return []
-    }
-  })
+      await supabase.from('carts').upsert(
+        { user_id: userId, items, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      )
+    } catch { /* non-critical */ }
+  }, 1000) // debounce 1s
+}
+
+export function CartProvider({ children }) {
+  const [cart, dispatch] = useReducer(cartReducer, [], () => loadCartFromStorage(GUEST_CART_KEY))
+  const currentKeyRef = useRef(GUEST_CART_KEY)
+  const userIdRef     = useRef(null)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const key = userCartKey(session.user.id)
+        currentKeyRef.current = key
+        userIdRef.current = session.user.id
+        const userCart = loadCartFromStorage(key)
+        dispatch({ type: 'LOAD_CART', payload: userCart })
+      } else if (event === 'SIGNED_OUT') {
+        userIdRef.current = null
+        currentKeyRef.current = GUEST_CART_KEY
+        localStorage.removeItem(GUEST_CART_KEY)
+        dispatch({ type: 'CLEAR_CART' })
+      }
+    })
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const key = userCartKey(session.user.id)
+        currentKeyRef.current = key
+        userIdRef.current = session.user.id
+        const userCart = loadCartFromStorage(key)
+        dispatch({ type: 'LOAD_CART', payload: userCart })
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Persist to localStorage + sync to Supabase on every cart change
+  useEffect(() => {
+    localStorage.setItem(currentKeyRef.current, JSON.stringify(cart))
+    if (userIdRef.current) {
+      syncCartToSupabase(userIdRef.current, cart)
+    }
   }, [cart])
 
   const addItem = (product, selectedVariant, quantity = 1) => {
@@ -70,7 +122,17 @@ export function CartProvider({ children }) {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, selectedVariant, quantity } })
   }
 
-  const clearCart = () => dispatch({ type: 'CLEAR_CART' })
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' })
+    localStorage.removeItem(currentKeyRef.current)
+    // Clear in Supabase too
+    if (userIdRef.current) {
+      supabase.from('carts').upsert(
+        { user_id: userIdRef.current, items: [], updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      ).then(() => {}).catch(() => {})
+    }
+  }
 
   const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0)
   const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0)

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom'
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, Leaf } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, Leaf, Users } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/admin/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
   { to: '/admin/products',  icon: <Package className="w-5 h-5" />,         label: 'Products' },
   { to: '/admin/orders',    icon: <ShoppingBag className="w-5 h-5" />,     label: 'Orders' },
+  { to: '/admin/users',     icon: <Users className="w-5 h-5" />,           label: 'User Activity' },
 ]
 
 export default function AdminLayout() {
@@ -35,7 +36,8 @@ export default function AdminLayout() {
   const handleSignOut = async () => {
     await signOut()
     toast.success('Signed out')
-    navigate('/admin', { replace: true })
+    // Force reload to fully clear session and cart state
+    window.location.href = '/admin'
   }
 
   const SidebarContent = () => (

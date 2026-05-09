@@ -1,47 +1,199 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   Primary:   Deep Saffron  #C8511B  (warm burnt orange)
+   Secondary: Rich Gold     #D4A017  (antique gold)
+   Accent:    Deep Teal     #1A5C52  (forest green)
+   Surface:   Ivory         #FAF7F2  (warm off-white)
+   Dark:      Charcoal      #1C1917  (near-black)
+   ──────────────────────────────────────────────────────────────────────── */
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
+
   body {
-    @apply bg-amber-50 text-gray-800 font-sans;
+    background-color: #FAF7F2;
+    color: #1C1917;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
+
+  * { box-sizing: border-box; }
+
+  /* Prevent any element from causing horizontal overflow */
+  #root {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  /* Override Tailwind amber with our saffron */
+  .bg-amber-500  { background-color: #C8511B !important; }
+  .bg-amber-600  { background-color: #B04516 !important; }
+  .bg-amber-400  { background-color: #D4631F !important; }
+  .bg-amber-50   { background-color: #FDF3EC !important; }
+  .bg-amber-100  { background-color: #FAE3D3 !important; }
+  .text-amber-500 { color: #C8511B !important; }
+  .text-amber-600 { color: #B04516 !important; }
+  .text-amber-700 { color: #8B3410 !important; }
+  .text-amber-400 { color: #D4631F !important; }
+  .text-amber-300 { color: #E8895A !important; }
+  .text-amber-200 { color: #F0B090 !important; }
+  .border-amber-500 { border-color: #C8511B !important; }
+  .border-amber-400 { border-color: #D4631F !important; }
+  .border-amber-300 { border-color: #E8895A !important; }
+  .border-amber-200 { border-color: #F0B090 !important; }
+  .border-amber-100 { border-color: #FAE3D3 !important; }
+  .ring-amber-300   { --tw-ring-color: #E8895A !important; }
+  .shadow-amber-200 { --tw-shadow-color: rgba(200,81,27,0.2) !important; }
+  .from-amber-500   { --tw-gradient-from: #C8511B !important; }
+  .to-amber-600     { --tw-gradient-to: #B04516 !important; }
+  .from-amber-400   { --tw-gradient-from: #D4631F !important; }
+  .to-orange-500    { --tw-gradient-to: #C8511B !important; }
+  .hover\:bg-amber-50:hover  { background-color: #FDF3EC !important; }
+  .hover\:bg-amber-600:hover { background-color: #B04516 !important; }
+  .hover\:text-amber-600:hover { color: #B04516 !important; }
+  .hover\:text-amber-700:hover { color: #8B3410 !important; }
+  .hover\:border-amber-300:hover { border-color: #E8895A !important; }
+  .focus\:ring-amber-300:focus { --tw-ring-color: rgba(232,137,90,0.5) !important; }
+  .accent-amber-500 { accent-color: #C8511B !important; }
 }
 
-@layer utilities {
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
+/* ── Animations ─────────────────────────────────────────────────────────── */
 
-/* Cinematic hero gradient text animation */
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   50%       { background-position: 100% 50%; }
 }
-
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient-shift 4s ease infinite;
 }
 
-/* Gentle floating animation for barani image */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-10px); }
+  50%       { transform: translateY(-12px); }
+}
+.animate-float { animation: float 5s ease-in-out infinite; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,81,27,0.45); }
+  50%       { box-shadow: 0 0 0 10px rgba(200,81,27,0); }
+}
+.animate-pulse-glow { animation: pulse-glow 2s ease infinite; }
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
 }
 
-.animate-float {
-  animation: float 5s ease-in-out infinite;
+/* ── Stagger ── */
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 400ms; }
+
+/* ── Utilities ── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* Smooth parallax scroll feel */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-parallax {
-    will-change: transform;
-  }
+/* ── Card hover lift ── */
+.card-hover {
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease;
 }
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 48px -12px rgba(28,25,23,0.14);
+}
+
+/* ── Glass ── */
+.glass {
+  background: rgba(250,247,242,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(200,81,27,0.12);
+}
+
+/* ── Saffron button ── */
+.btn-primary {
+  background: linear-gradient(135deg, #C8511B 0%, #A83E14 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 12px 28px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(200,81,27,0.35);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #D4631F 0%, #C8511B 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(200,81,27,0.45);
+}
+
+/* ── Gold accent ── */
+.btn-gold {
+  background: linear-gradient(135deg, #D4A017 0%, #B8880F 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 12px 28px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(212,160,23,0.35);
+}
+
+/* ── Teal accent ── */
+.btn-teal {
+  background: linear-gradient(135deg, #1A5C52 0%, #134840 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 12px 28px;
+  transition: all 0.2s ease;
+}
+
+/* ── Section divider ── */
+.divider-ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #C8511B;
+  opacity: 0.4;
+}
+.divider-ornament::before,
+.divider-ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D4A017; border-radius: 99px; opacity: 0.5; }
+::-webkit-scrollbar-thumb:hover { background: #C8511B; }
+
+/* ── Selection ── */
+::selection { background: rgba(200,81,27,0.2); color: #1C1917; }

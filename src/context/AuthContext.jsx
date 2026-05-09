@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { ADMIN_EMAILS } from '../lib/adminEmails'
 
@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
     // Get initial session once
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setLoading(false)  // done loading — never goes back to true
+      setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -40,17 +40,25 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
-  const signOut = async () => {
-    // Clear local state immediately so UI responds right away
+  const signOut = useCallback(async () => {
+    // 1. Clear user state immediately
     setUser(null)
     setLoading(false)
+
+    // 2. Clear ALL Supabase auth keys from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-') || key.includes('supabase')) {
+        localStorage.removeItem(key)
+      }
+    })
+
+    // 3. Tell Supabase to sign out (CartContext listens via onAuthStateChange)
     try {
-      // Use 'local' scope — works for both email and Google OAuth
       await supabase.auth.signOut({ scope: 'local' })
     } catch (err) {
       console.error('Sign out error (non-critical):', err)
     }
-  }
+  }, [])
 
   const isAdmin = !!(user && ADMIN_EMAILS.includes(user.email?.toLowerCase()))
 
