@@ -1,4 +1,4 @@
-const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '918639006849'
+const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '917997060668'
 
 /**
  * Opens WhatsApp with a pre-filled message for customization enquiry.

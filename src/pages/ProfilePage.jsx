@@ -7,8 +7,8 @@ import { useWishlist } from '../context/WishlistContext'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
-const CONTACT_PHONE    = '+91 863 900 6849'
-const CONTACT_WHATSAPP = '918639006849'
+const CONTACT_PHONE    = '+91 799 706 0668'
+const CONTACT_WHATSAPP = '917997060668'
 
 const STATUS_CONFIG = {
   pending:   { label: 'Pending',   color: 'bg-yellow-100 text-yellow-700', icon: null },
