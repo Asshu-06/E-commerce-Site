@@ -22,7 +22,7 @@ import AdminProducts from './admin/AdminProducts'
 import AdminOrders from './admin/AdminOrders'
 import AdminUsers from './admin/AdminUsers'
 import AdminOrderDetail from './admin/AdminOrderDetail'
-import AdminOrderDetail from './admin/AdminOrderDetail'
+import WhatsAppButton from './components/WhatsAppButton'
 
 // Wrapper that adds Navbar + Footer
 function StoreLayout({ children }) {
@@ -84,6 +84,7 @@ export default function App() {
             </Routes>
 
             <Toaster position="top-right" />
+            <WhatsAppButton />
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
