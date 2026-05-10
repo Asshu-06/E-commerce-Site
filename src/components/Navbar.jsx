@@ -10,7 +10,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen]       = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [scrolled, setScrolled]       = useState(false)
-  const { totalItems }                = useCart()
+  const { totalItems, cart }          = useCart()
   const { items: wishlistItems }      = useWishlist()
   const { user, signOut, isAdmin }    = useAuth()
   const location                      = useLocation()
@@ -115,9 +115,9 @@ export default function Navbar() {
             <Link to="/cart"
               className={`relative p-2.5 rounded-xl transition-all duration-200 ${transparent ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
               <ShoppingCart className="w-5 h-5" />
-              {totalItems > 0 && (
+              {cart.length > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#C8511B] text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse-glow">
-                  {totalItems > 9 ? '9+' : totalItems}
+                  {cart.length > 9 ? '9+' : cart.length}
                 </span>
               )}
             </Link>
