@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Search, RefreshCw, ChevronDown, X, Eye, CheckCircle2, Clock, ImageIcon, XCircle, ZoomIn } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
@@ -28,6 +29,7 @@ export default function AdminOrders() {
   const [filterStatus, setFilterStatus]   = useState('all')
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [updatingId, setUpdatingId]       = useState(null)
+  const [productMap, setProductMap]       = useState({}) // id → image_url
 
   // Screenshot review modal — holds the order being reviewed
   const [reviewOrder, setReviewOrder]     = useState(null)
@@ -44,6 +46,18 @@ export default function AdminOrders() {
         .from('orders').select('*').order('created_at', { ascending: false })
       if (!error && data) setOrders(data)
     } catch { /* not configured */ }
+
+    // Build product image lookup from Supabase + mockData
+    try {
+      const map = {}
+      // From mock data
+      mockProducts.forEach(p => { map[String(p.id)] = p.image_url })
+      // From Supabase (overrides mock)
+      const { data: prods } = await supabase.from('products').select('id, image_url')
+      if (prods) prods.forEach(p => { map[String(p.id)] = p.image_url })
+      setProductMap(map)
+    } catch { }
+
     setLoading(false)
   }
 
@@ -617,12 +631,14 @@ export default function AdminOrders() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">Items Ordered</h3>
                 <div className="space-y-3">
-                  {(Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, i) => (
+                  {(Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, i) => {
+                    const imgUrl = item.image_url || productMap[String(item.id)] || null
+                    return (
                     <div key={i} className="bg-amber-50 rounded-2xl p-4 border border-amber-100">
                       <div className="flex items-start gap-3">
                         {/* Product image */}
-                        {item.image_url ? (
-                          <img src={item.image_url} alt={item.name}
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={item.name}
                             className="w-16 h-16 rounded-xl object-cover shrink-0 border border-amber-200" />
                         ) : (
                           <div className="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-2xl">🛍️</div>
@@ -650,7 +666,8 @@ export default function AdminOrders() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
 
