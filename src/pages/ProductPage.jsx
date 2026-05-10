@@ -235,7 +235,6 @@ export default function ProductPage() {
                 <div className="flex items-baseline gap-3 mb-5">
                   <span className="text-4xl font-bold text-[#C8511B]">₹{product.price}</span>
                   {product.unit && <span className="text-gray-400 text-sm">per {product.unit}</span>}
-                  <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">Free Delivery</span>
                 </div>
               )}
 
@@ -336,7 +335,7 @@ export default function ProductPage() {
               {/* Trust badges */}
               <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-5">
                 {[
-                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Free Delivery', sub: 'All orders' },
+                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Fast Delivery', sub: 'AP/TS ₹80 · Others ₹100' },
                   { icon: <Shield className="w-5 h-5 text-[#C8511B]" />, label: '100% Authentic', sub: 'Guaranteed' },
                   { icon: <RotateCcw className="w-5 h-5 text-[#C8511B]" />, label: 'Easy Returns', sub: '7 day policy' },
                 ].map((b) => (
