@@ -10,6 +10,7 @@ import { mockProducts, categories } from '../lib/mockData'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { sendToWhatsApp } from '../lib/whatsapp'
+import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
 import ProductCard from '../components/ProductCard'
 import ProductReviews from '../components/ProductReviews'
 import toast from 'react-hot-toast'
@@ -29,9 +30,10 @@ export default function ProductPage() {
   const [quantity, setQuantity]         = useState(1)
 
   // Magnet adds ₹3 per piece
-  const magnetExtra = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
+  const magnetExtra    = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
   const effectivePrice = (product?.price || 0) + magnetExtra
-  const lineTotal = effectivePrice * quantity
+  const qty            = parseInt(quantity) || 0
+  const lineTotal      = effectivePrice * qty
   const [selectedImage, setSelectedImage] = useState(0)
   const [addedToCart, setAddedToCart]   = useState(false)
   const [copied, setCopied]             = useState(false)
@@ -90,7 +92,7 @@ export default function ProductPage() {
   const handleAddToCart = () => {
     if (!product) return
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
-    addItem(productToAdd, selectedVariant, quantity)
+    addItem(productToAdd, selectedVariant, qty)
     setAddedToCart(true)
     toast.success(`${product.name} added to cart!`, {
       icon: '🛒',
@@ -102,7 +104,7 @@ export default function ProductPage() {
   const handleBuyNow = () => {
     if (!product) return
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
-    addItem(productToAdd, selectedVariant, quantity)
+    addItem(productToAdd, selectedVariant, qty)
     navigate('/checkout')
   }
 
@@ -288,24 +290,56 @@ export default function ProductPage() {
                 </div>
               )}
 
-              {/* Quantity */}
+              {/* Quantity — with direct input */}
               {!isCustomization && (
-                <div className="flex items-center gap-4 mb-6">
-                  <p className="text-sm font-semibold text-gray-700">Quantity:</p>
-                  <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
-                    <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold text-lg">
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-12 text-center font-bold text-gray-900 text-lg">{quantity}</span>
-                    <button onClick={() => setQuantity((q) => q + 1)}
-                      className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold text-lg">
-                      <Plus className="w-4 h-4" />
-                    </button>
+                <div className="mb-5">
+                  <div className="flex items-center gap-4 mb-3">
+                    <p className="text-sm font-semibold text-gray-700">Quantity <span className="text-gray-400 font-normal">(min {MIN_ORDER_QTY} pcs)</span>:</p>
+                    <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
+                      <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold">
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      {/* Editable input */}
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value)
+                          if (!isNaN(v) && v >= 1) setQuantity(v)
+                          else if (e.target.value === '') setQuantity('')
+                        }}
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value)
+                          setQuantity(!isNaN(v) && v >= 1 ? v : 1)
+                        }}
+                        className="w-16 text-center font-bold text-gray-900 text-lg border-none outline-none bg-white py-2"
+                      />
+                      <button onClick={() => setQuantity((q) => (parseInt(q) || 0) + 1)}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <span className="text-sm text-gray-400">
+                      Total: <span className="font-bold text-[#C8511B]">₹{lineTotal.toLocaleString()}</span>
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    Total: <span className="font-bold text-[#C8511B]">₹{lineTotal.toLocaleString()}</span>
-                  </span>
+
+                  {/* Min order warning */}
+                  {quantity < MIN_ORDER_QTY && quantity > 0 && (
+                    <p className="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                      ⚠️ Minimum order is <strong>{MIN_ORDER_QTY} pieces</strong>. Add {MIN_ORDER_QTY - quantity} more.
+                    </p>
+                  )}
+
+                  {/* Shipping estimate */}
+                  {quantity >= MIN_ORDER_QTY && (
+                    <div className="bg-[#FDF3EC] border border-[#FAE3D3] rounded-xl px-4 py-3 text-xs text-[#8B3410]">
+                      🚚 <strong>Estimated shipping for {quantity} pcs:</strong><br/>
+                      AP/TS: <strong>₹{calcShipping(quantity, true)}</strong> · Other states: <strong>₹{calcShipping(quantity, false)}</strong>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -322,7 +356,8 @@ export default function ProductPage() {
                 ) : (
                   <>
                     <button onClick={handleAddToCart}
-                      className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 ${
+                      disabled={quantity < MIN_ORDER_QTY}
+                      className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
                         addedToCart
                           ? 'bg-green-500 text-white shadow-green-200'
                           : 'bg-[#C8511B] hover:bg-[#B04516] text-white shadow-[#C8511B]/20'
@@ -331,7 +366,8 @@ export default function ProductPage() {
                       {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                     </button>
                     <button onClick={handleBuyNow}
-                      className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 hover:-translate-y-0.5 text-base">
+                      disabled={quantity < MIN_ORDER_QTY}
+                      className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 hover:-translate-y-0.5 text-base">
                       Buy Now
                     </button>
                   </>
