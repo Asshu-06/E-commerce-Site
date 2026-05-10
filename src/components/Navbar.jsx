@@ -61,10 +61,10 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
-              transparent ? 'bg-white/20 backdrop-blur-sm' : 'bg-gradient-to-br from-[#C8511B] to-[#A83E14] shadow-lg shadow-[#C8511B]/20'
+            <div className={`w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
+              transparent ? 'ring-2 ring-white/30' : 'shadow-lg shadow-[#C8511B]/20'
             }`}>
-              <Leaf className="w-5 h-5 text-white" />
+              <img src="/images/logo.jpeg" alt="Lakshmi Ram Collections" className="w-full h-full object-cover" />
             </div>
             <div className="leading-none">
               <span className={`block text-[15px] font-bold tracking-tight transition-colors duration-300 ${transparent ? 'text-white' : 'text-[#1C1917]'}`}>

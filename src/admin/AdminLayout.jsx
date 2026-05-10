@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom'
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, Leaf, Users } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, Users } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -43,12 +43,12 @@ export default function AdminLayout() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-amber-100">
-        <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center shrink-0">
-          <Leaf className="w-5 h-5 text-white" />
+        <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 shadow-md">
+          <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
         </div>
         <div>
           <p className="font-bold text-gray-900 text-sm">Lakshmi Ram Collections</p>
-          <p className="text-xs text-amber-500">Admin Panel</p>
+          <p className="text-xs text-[#C8511B]">Admin Panel</p>
         </div>
       </div>
 
@@ -116,8 +116,8 @@ export default function AdminLayout() {
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center">
-              <Leaf className="w-4 h-4 text-white" />
+            <div className="w-7 h-7 rounded-lg overflow-hidden">
+              <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-gray-900 text-sm">Admin Panel</span>
           </div>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Leaf, Phone, Mail, MapPin, MessageCircle, Lock, Share2, Users } from 'lucide-react'
+import { Phone, Mail, MapPin, MessageCircle, Lock, Share2, Users } from 'lucide-react'
 
 const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '918639006849'
 
@@ -28,8 +28,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 bg-gradient-to-br from-[#C8511B] to-[#A83E14] rounded-xl flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 shadow-md">
+                <img src="/images/logo.jpeg" alt="Lakshmi Ram Collections" className="w-full h-full object-cover" />
               </div>
               <div>
                 <span className="block text-sm font-bold text-white">Lakshmi Ram Collections</span>
@@ -81,7 +81,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <span>Hyderabad, Telangana, India</span>
+                <span>Kadapa, Andhra Pradesh, India</span>
               </li>
             </ul>
           </div>
