@@ -243,6 +243,12 @@ export default function AdminOrders() {
                     <td className="px-5 py-4">
                       <p className="font-medium text-gray-900">{order.user_name}</p>
                       <p className="text-xs text-gray-400">{order.phone}</p>
+                      {order.address && (
+                        <p className="text-xs text-gray-500 mt-1 flex items-start gap-1">
+                          <span className="shrink-0">📍</span>
+                          <span className="line-clamp-2">{order.address}</span>
+                        </p>
+                      )}
                     </td>
                     <td className="px-4 py-4 text-gray-500 text-xs">
                       {new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -587,7 +593,6 @@ export default function AdminOrders() {
                   ['Name', selectedOrder.user_name],
                   ['Phone', selectedOrder.phone],
                   selectedOrder.email ? ['Email', selectedOrder.email] : null,
-                  ['Address', selectedOrder.address],
                   ['Payment', selectedOrder.payment_method?.toUpperCase()],
                   ['Date', new Date(selectedOrder.created_at).toLocaleString('en-IN')],
                 ].filter(Boolean).map(([label, value]) => (
@@ -596,6 +601,18 @@ export default function AdminOrders() {
                     <span className="font-medium text-gray-900 text-right max-w-[60%]">{value}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* Delivery address — highlighted */}
+              {selectedOrder.address && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                  <span className="text-amber-500 text-lg shrink-0">📍</span>
+                  <div>
+                    <p className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1">Delivery Address</p>
+                    <p className="text-sm text-gray-900 font-medium leading-relaxed">{selectedOrder.address}</p>
+                  </div>
+                </div>
+              )}
               </div>
 
               {/* Items */}

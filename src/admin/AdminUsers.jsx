@@ -223,20 +223,6 @@ export default function AdminUsers() {
             </div>
           </div>
 
-          {/* Delivery address from latest order */}
-          {userDetail?.orders?.[0]?.address && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-5 flex items-start gap-3">
-              <span className="text-amber-500 text-lg shrink-0">📍</span>
-              <div>
-                <p className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1">Latest Delivery Address</p>
-                <p className="text-sm text-gray-800 font-medium">{userDetail.orders[0].address}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  From order · {new Date(userDetail.orders[0].created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Tabs */}
           <div className="flex gap-2 mb-5">
             {[
