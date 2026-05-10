@@ -122,7 +122,7 @@ export default function FeedbackSection() {
                   : <Send className="w-4 h-4" />}
                 {loading ? 'Submitting...' : 'Submit Feedback'}
               </button>
-              <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello, I have feedback about Shubham Traditions: ')}`}
+              <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello, I have feedback about Lakshmi Ram Collections: ')}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-6 rounded-2xl transition-all hover:-translate-y-0.5">
                 <MessageSquare className="w-4 h-4" />

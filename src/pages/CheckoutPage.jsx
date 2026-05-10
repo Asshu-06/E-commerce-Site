@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
 const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'q901588902@ybl'
-const UPI_NAME = import.meta.env.VITE_UPI_NAME || 'Shubham Traditions'
+const UPI_NAME = import.meta.env.VITE_UPI_NAME || 'Lakshmi Ram Collections'
 
 const INITIAL_FORM = {
   name: '', phone: '', email: '',
@@ -21,7 +21,7 @@ function buildUpiString(amount, orderId) {
   // Round to 2 decimal places, ensure no trailing zeros issue
   const amountStr = parseFloat(amount).toFixed(2)
   // Keep transaction note simple — no special characters
-  const note = encodeURIComponent(`ShubhamTraditions ${orderId}`)
+  const note = encodeURIComponent(`LakshmiRamCollections ${orderId}`)
   const name = encodeURIComponent(UPI_NAME)
   return `upi://pay?pa=${UPI_ID}&pn=${name}&am=${amountStr}&cu=INR&tn=${note}&mode=02&purpose=00`
 }
@@ -48,6 +48,19 @@ export default function CheckoutPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
+  // Calculate shipping based on state (city field used as proxy — user enters state in city)
+  const AP_TS_KEYWORDS = ['andhra', 'telangana', 'ap', 'ts', 'hyderabad', 'vijayawada',
+    'visakhapatnam', 'vizag', 'warangal', 'tirupati', 'guntur', 'nellore', 'kurnool',
+    'kadapa', 'anantapur', 'karimnagar', 'nizamabad', 'khammam', 'rajahmundry', 'eluru',
+    'ongole', 'srikakulam', 'vizianagaram', 'bhimavaram', 'tenali', 'machilipatnam',
+    'adilabad', 'mahabubnagar', 'medak', 'nalgonda', 'sangareddy', 'suryapet', 'skota',
+    'srikakulam', 'vizag', 'vsp']
+  const isAPTS = AP_TS_KEYWORDS.some(k =>
+    form.city.toLowerCase().includes(k) || form.address.toLowerCase().includes(k)
+  )
+  const shippingCharge = form.city.trim() ? (isAPTS ? 80 : 100) : 0
+  const grandTotal = totalPrice + shippingCharge
+
   const validate = () => {
     if (!form.name.trim())             return 'Please enter your name.'
     if (!/^\d{10}$/.test(form.phone))  return 'Please enter a valid 10-digit phone number.'
@@ -63,7 +76,7 @@ export default function CheckoutPage() {
     const err = validate()
     if (err) { toast.error(err); return }
     if (cart.length === 0) { toast.error('Your cart is empty.'); return }
-    setSnapshotTotal(totalPrice)  // lock the total before cart can change
+    setSnapshotTotal(grandTotal)  // lock the total before cart can change
     setStep('upi')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -516,11 +529,18 @@ export default function CheckoutPage() {
                   <span>Subtotal</span><span>₹{totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span><span className="text-green-600 font-medium">Free</span>
+                  <span>Shipping</span>
+                  {form.city.trim() ? (
+                    <span className="font-medium text-gray-900">
+                      ₹{shippingCharge} <span className="text-xs text-gray-400">({isAPTS ? 'AP/TS' : 'Other state'})</span>
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-400">Enter city to calculate</span>
+                  )}
                 </div>
-                <div className="flex justify-between font-bold text-gray-900 text-base pt-1">
+                <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-100">
                   <span>Total</span>
-                  <span className="text-[#C8511B]">₹{totalPrice.toLocaleString()}</span>
+                  <span className="text-[#C8511B]">₹{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
 

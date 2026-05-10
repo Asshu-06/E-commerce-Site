@@ -32,7 +32,7 @@ export default function Footer() {
                 <Leaf className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="block text-sm font-bold text-white">Shubham Traditions</span>
+                <span className="block text-sm font-bold text-white">Lakshmi Ram Collections</span>
                 <span className="block text-[10px] text-[#D4A017] uppercase tracking-widest">Authentic Products</span>
               </div>
             </div>
@@ -77,7 +77,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <span>hello@shubhamtraditions.com</span>
+                <span>hello@LakshmiRamCollections.com</span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
@@ -104,7 +104,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600">
-          <p>© {new Date().getFullYear()} Shubham Traditions. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Lakshmi Ram Collections. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>Made with ❤️ in India</span>
             <Link to="/admin" className="flex items-center gap-1 hover:text-[#D4A017] transition-colors">

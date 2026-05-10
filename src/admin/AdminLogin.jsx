@@ -56,7 +56,7 @@ export default function AdminLogin() {
             <Leaf className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-500 text-sm mt-1">Shubham Traditions</p>
+          <p className="text-gray-500 text-sm mt-1">Lakshmi Ram Collections</p>
         </div>
 
         {/* Google */}

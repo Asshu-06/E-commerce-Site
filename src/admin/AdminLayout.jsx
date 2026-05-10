@@ -47,7 +47,7 @@ export default function AdminLayout() {
           <Leaf className="w-5 h-5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-gray-900 text-sm">Shubham Traditions</p>
+          <p className="font-bold text-gray-900 text-sm">Lakshmi Ram Collections</p>
           <p className="text-xs text-amber-500">Admin Panel</p>
         </div>
       </div>

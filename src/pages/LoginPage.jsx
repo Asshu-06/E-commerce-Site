@@ -64,7 +64,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Shubham Traditions</p>
+          <p className="text-gray-500 text-sm mt-1">Lakshmi Ram Collections</p>
         </div>
 
         {/* Mode toggle */}

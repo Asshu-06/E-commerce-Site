@@ -2,22 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import CategorySection from '../components/CategorySection'
-import { Sparkles, Shield, Truck, Star, ArrowRight, MessageCircle } from 'lucide-react'
+import { Sparkles, Shield, Truck, Star, ArrowRight, MessageCircle, MapPin, Package } from 'lucide-react'
 import { mockProducts } from '../lib/mockData'
 import ProductCard from '../components/ProductCard'
 
 const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '918639006849'
-
-function useInView(ref) {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) entry.target.classList.add('in-view') },
-      { threshold: 0.1 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [ref])
-}
 
 function AnimatedSection({ children, className = '' }) {
   const ref = useRef(null)
@@ -53,7 +42,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {[
-              { icon: <Truck className="w-5 h-5 text-[#C8511B]" />,    title: 'Free Delivery',     sub: 'On all orders' },
+              { icon: <Truck className="w-5 h-5 text-[#C8511B]" />,    title: 'Fast Delivery',     sub: 'AP & TS: ₹80 | Others: ₹100' },
               { icon: <Shield className="w-5 h-5 text-[#C8511B]" />,   title: '100% Authentic',    sub: 'Verified products' },
               { icon: <Sparkles className="w-5 h-5 text-[#C8511B]" />, title: 'Custom Designs',    sub: 'WhatsApp us' },
               { icon: <Star className="w-5 h-5 text-[#C8511B]" />,     title: '500+ Happy Buyers', sub: 'Trusted store' },
@@ -98,11 +87,57 @@ export default function HomePage() {
         </section>
       </AnimatedSection>
 
+      {/* Shipping charges info */}
+      <AnimatedSection>
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-10">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#FDF3EC] rounded-xl flex items-center justify-center">
+                <Truck className="w-5 h-5 text-[#C8511B]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">Delivery Charges</h3>
+                <p className="text-xs text-gray-400">Shipping rates across India</p>
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+              {/* AP & Telangana */}
+              <div className="p-6 flex items-start gap-4">
+                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
+                  <MapPin className="w-6 h-6 text-emerald-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-bold text-gray-900">Andhra Pradesh & Telangana</p>
+                    <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">Local</span>
+                  </div>
+                  <p className="text-3xl font-bold text-[#C8511B] mb-1">₹80</p>
+                  <p className="text-xs text-gray-400">Per order · Delivered in 2–4 days</p>
+                </div>
+              </div>
+              {/* Other states */}
+              <div className="p-6 flex items-start gap-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
+                  <Package className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-bold text-gray-900">Rest of India</p>
+                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">Pan India</span>
+                  </div>
+                  <p className="text-3xl font-bold text-[#C8511B] mb-1">₹100</p>
+                  <p className="text-xs text-gray-400">Per order · Delivered in 4–7 days</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
+
       {/* Banner — customization CTA */}
       <AnimatedSection>
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-20">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 p-10 sm:p-14">
-            {/* Decorative circles */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#C8511B] via-orange-500 to-red-500 p-10 sm:p-14">
             <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/10 rounded-full" />
             <div className="absolute -bottom-16 -left-10 w-80 h-80 bg-white/5 rounded-full" />
             <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
@@ -119,44 +154,10 @@ export default function HomePage() {
               </div>
               <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello, I want a custom Pasupu-Kumkuma set.')}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2.5 bg-white text-orange-600 font-bold px-8 py-4 rounded-2xl hover:bg-orange-50 transition-all hover:-translate-y-1 shadow-xl shadow-black/20 shrink-0 text-base">
+                className="flex items-center gap-2.5 bg-white text-[#C8511B] font-bold px-8 py-4 rounded-2xl hover:bg-orange-50 transition-all hover:-translate-y-1 shadow-xl shadow-black/20 shrink-0 text-base">
                 <MessageCircle className="w-5 h-5" />
                 Chat on WhatsApp
               </a>
-            </div>
-          </div>
-        </section>
-      </AnimatedSection>
-
-      {/* Testimonials */}
-      <AnimatedSection>
-        <section className="py-20 bg-white border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-xs font-bold tracking-widest uppercase text-[#C8511B] block mb-2">Reviews</span>
-              <h2 className="text-3xl font-bold text-gray-900 tracking-tight">What customers say</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 stagger-children">
-              {[
-                { name: 'Priya S.',   text: 'Beautiful pasupu kumkuma sets! Perfect for our wedding return gifts. Everyone loved them.', stars: 5 },
-                { name: 'Lakshmi R.', text: 'The customization via WhatsApp was so convenient. Loved the baby shower theme design!', stars: 5 },
-                { name: 'Anitha M.', text: 'Ordered 100 jute bags for our function. Great quality and fast delivery. Highly recommend!', stars: 5 },
-              ].map((t, i) => (
-                <div key={t.name} className="bg-stone-50 rounded-2xl p-6 border border-gray-100 animate-fade-up">
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: t.stars }).map((_, j) => (
-                      <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-5">"{t.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold">
-                      {t.name[0]}
-                    </div>
-                    <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>

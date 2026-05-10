@@ -68,10 +68,10 @@ export default function Navbar() {
             </div>
             <div className="leading-none">
               <span className={`block text-[15px] font-bold tracking-tight transition-colors duration-300 ${transparent ? 'text-white' : 'text-[#1C1917]'}`}>
-                Shubham
+                Lakshmi Ram
               </span>
               <span className={`block text-[10px] font-medium tracking-widest uppercase transition-colors duration-300 ${transparent ? 'text-amber-200' : 'text-[#C8511B]'}`}>
-                Traditions
+                Collections
               </span>
             </div>
           </Link>
