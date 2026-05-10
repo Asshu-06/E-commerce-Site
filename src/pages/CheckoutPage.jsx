@@ -460,13 +460,22 @@ export default function CheckoutPage() {
 
             {/* Address */}
             <div className="bg-white rounded-2xl border border-[#FAE3D3] p-6 shadow-sm">
-              <h2 className="font-bold text-gray-900 mb-4">Delivery Address</h2>
+              <h2 className="font-bold text-gray-900 mb-2">Delivery Address</h2>
+              {/* Accuracy warning */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
+                <span className="text-amber-500 text-base shrink-0 mt-0.5">⚠️</span>
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  <strong>Please enter your complete and accurate delivery address.</strong> Incorrect or incomplete addresses may result in delivery failure. Include house/flat number, street name, landmark, and area.
+                </p>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Street Address *</label>
                   <textarea name="address" value={form.address} onChange={handleChange}
-                    placeholder="House no., street, area..." rows={2} required
+                    placeholder="e.g. Flat 4B, Sunrise Apartments, MG Road, Near City Mall..."
+                    rows={3} required
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A] resize-none" />
+                  <p className="text-xs text-gray-400 mt-1.5">Include flat/house no., building name, street, landmark</p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
