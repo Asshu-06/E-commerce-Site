@@ -81,7 +81,16 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <span>Kadapa, Andhra Pradesh, India</span>
+                <a
+                  href="https://maps.google.com/?q=Gothic+Pentagon+Clouds,+Bachupally,+Hyderabad"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#D4A017] transition-colors leading-relaxed"
+                >
+                  Gothic Pentagon Clouds,<br />
+                  beside Pista House, Bachupally,<br />
+                  Hyderabad, Telangana
+                </a>
               </li>
             </ul>
           </div>
