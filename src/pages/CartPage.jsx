@@ -97,12 +97,18 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span className="text-emerald-600 font-semibold">Free</span>
+                  <span className="text-xs text-gray-400 text-right">AP/TS: ₹80<br/>Others: ₹100</span>
                 </div>
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
-                  <span>Total</span>
+                  <span>Subtotal (excl. shipping)</span>
                   <span className="text-[#C8511B] text-xl">₹{totalPrice.toLocaleString()}</span>
                 </div>
+              </div>
+
+              {/* Shipping note */}
+              <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
+                🚚 Shipping: <strong>₹80</strong> for AP & Telangana · <strong>₹100</strong> for other states<br/>
+                <span className="text-gray-400">Final total calculated at checkout</span>
               </div>
 
               <Link to="/checkout"
