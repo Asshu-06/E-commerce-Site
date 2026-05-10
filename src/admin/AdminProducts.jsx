@@ -163,9 +163,7 @@ export default function AdminProducts() {
         unit:        form.unit.trim()        || null,
         description: form.description.trim() || null,
         image_url:   finalImageUrl           || null,
-        variants:    form.variants
-          ? form.variants.split(',').map((v) => v.trim()).filter(Boolean)
-          : [],
+        variants:    ['Without Magnet', 'With Magnet (+₹3)'],
       }
 
       setUploadProgress(editProduct ? 'Updating...' : 'Saving...')
@@ -452,16 +450,6 @@ export default function AdminProducts() {
                     placeholder="set, piece, pack"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
                 </div>
-              </div>
-
-              {/* Variants */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Variants <span className="text-gray-400 font-normal text-xs">(comma separated)</span>
-                </label>
-                <input value={form.variants} onChange={(e) => setForm((f) => ({ ...f, variants: e.target.value }))}
-                  placeholder="Small, Medium, Large"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
               </div>
 
               {/* Description */}
