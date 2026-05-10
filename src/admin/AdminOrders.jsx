@@ -249,8 +249,7 @@ export default function AdminOrders() {
                           <span className="line-clamp-2">{order.address}</span>
                         </p>
                       )}
-                    </td>
-                    <td className="px-4 py-4 text-gray-500 text-xs">
+                    </td>                    <td className="px-4 py-4 text-gray-500 text-xs">
                       {new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-4 font-semibold text-gray-900">₹{order.total_price?.toLocaleString()}</td>
@@ -617,14 +616,39 @@ export default function AdminOrders() {
               {/* Items */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">Items Ordered</h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {(Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, i) => (
-                    <div key={i} className="flex items-center justify-between bg-amber-50 rounded-xl px-4 py-3 text-sm">
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        {item.variant && <p className="text-xs text-gray-500">{item.variant} · Qty: {item.quantity}</p>}
+                    <div key={i} className="bg-amber-50 rounded-2xl p-4 border border-amber-100">
+                      <div className="flex items-start gap-3">
+                        {/* Product image */}
+                        {item.image_url ? (
+                          <img src={item.image_url} alt={item.name}
+                            className="w-16 h-16 rounded-xl object-cover shrink-0 border border-amber-200" />
+                        ) : (
+                          <div className="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-2xl">🛍️</div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-gray-900 text-sm">{item.name}</p>
+                          {/* Magnet option */}
+                          {item.variant && (
+                            <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full mt-1 ${
+                              item.variant.includes('With Magnet')
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              🧲 {item.variant}
+                            </span>
+                          )}
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                            <span>Qty: <strong className="text-gray-900">{item.quantity} pcs</strong></span>
+                            <span>Price/pc: <strong className="text-gray-900">₹{item.price}</strong></span>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-bold text-[#C8511B] text-base">₹{(item.price * item.quantity).toLocaleString()}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{item.price}</p>
+                        </div>
                       </div>
-                      <span className="font-semibold text-amber-700">₹{(item.price * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
