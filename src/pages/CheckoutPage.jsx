@@ -331,7 +331,7 @@ export default function CheckoutPage() {
                 <ol className="text-xs text-blue-700 space-y-1 list-decimal list-inside">
                   <li>Open any UPI app (GPay, PhonePe, Paytm, BHIM)</li>
                   <li>Scan the QR code or enter the UPI ID</li>
-                  <li>Amount of <strong>₹{totalPrice.toLocaleString()}</strong> will be auto-filled — just confirm</li>
+                  <li>Amount of <strong>₹{snapshotTotal.toLocaleString()}</strong> will be auto-filled — just confirm</li>
                   <li>Complete the payment</li>
                   <li>Take a screenshot of the success screen</li>
                   <li>Upload it below to confirm your order</li>
@@ -351,7 +351,7 @@ export default function CheckoutPage() {
                   <p className="text-xs font-semibold text-amber-800 mb-1">📋 Screenshot must clearly show:</p>
                   <ul className="text-xs text-[#8B3410] space-y-0.5 list-disc list-inside">
                     <li>✅ Payment <strong>Success</strong> message</li>
-                    <li>✅ Amount: <strong>₹{totalPrice.toLocaleString()}</strong></li>
+                    <li>✅ Amount: <strong>₹{snapshotTotal.toLocaleString()}</strong></li>
                     <li>✅ Paid to: <strong>{UPI_ID}</strong></li>
                     <li>✅ Transaction ID / UTR number</li>
                   </ul>
