@@ -11,7 +11,7 @@ export const mockProducts = [
     unit: 'set',
     description: 'Traditional pasupu kumkuma set beautifully presented for couples — perfect for weddings and celebrations.',
     image_url: '/images/pasupukumkuma-couple.jpeg',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'pk-2',
@@ -22,7 +22,7 @@ export const mockProducts = [
     unit: 'set',
     description: 'Elegant pasupu kumkuma set packed in a decorative bag, ideal as a return gift.',
     image_url: '/images/pasupukumkuma-bag.jpeg',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'pk-3',
@@ -33,7 +33,7 @@ export const mockProducts = [
     unit: 'set',
     description: 'Devotional Krishna-themed pasupu kumkuma set, perfect for pooja and religious occasions.',
     image_url: '/images/pasupukumkuma-krishna.jpeg',
-    variants: ['Small', 'Medium'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'pk-4',
@@ -44,7 +44,7 @@ export const mockProducts = [
     unit: 'set',
     description: 'Auspicious pasupu kumkuma set specially curated for housewarming (griha pravesham) ceremonies.',
     image_url: '/images/pasupukumkuma-houseopening.jpeg',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
 
   // ── Pasupu-Kumkuma Customization ─────────────────────────────────────────
@@ -113,7 +113,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Handcrafted brass diya set, ideal as return gift for pooja and festivals.',
     image_url: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=400&q=80',
-    variants: ['Single', 'Set of 2', 'Set of 4'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rg-2',
@@ -124,7 +124,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Eco-friendly coconut shell bowl, a unique and sustainable return gift.',
     image_url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80',
-    variants: ['Small', 'Medium'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rg-3',
@@ -135,7 +135,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Traditional terracotta planter with seeds, a thoughtful return gift.',
     image_url: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rg-4',
@@ -146,7 +146,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Handcrafted wooden keychain with traditional motifs.',
     image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
-    variants: ['Pack of 5', 'Pack of 10', 'Pack of 20'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rg-5',
@@ -157,7 +157,7 @@ export const mockProducts = [
     unit: 'set',
     description: 'Premium agarbatti set with holder, perfect for gifting.',
     image_url: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rg-6',
@@ -168,7 +168,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Pure copper tumbler, a healthy and traditional return gift.',
     image_url: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
-    variants: ['Small', 'Medium'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
 
   // ── Return Bags ──────────────────────────────────────────────────────────
@@ -181,7 +181,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Eco-friendly jute bag with traditional print, perfect for return gifts.',
     image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rb-2',
@@ -192,7 +192,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Beautiful silk potli bag with golden embroidery for weddings and festivals.',
     image_url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80',
-    variants: ['Small', 'Medium'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rb-3',
@@ -203,7 +203,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Reusable cotton tote bag with traditional block print design.',
     image_url: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rb-4',
@@ -214,7 +214,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Luxurious velvet pouch with drawstring, ideal for premium return gifts.',
     image_url: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rb-5',
@@ -225,7 +225,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Elegant paper gift bag with traditional motif print.',
     image_url: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=400&q=80',
-    variants: ['Small', 'Medium', 'Large'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
   {
     id: 'rb-6',
@@ -236,7 +236,7 @@ export const mockProducts = [
     unit: 'piece',
     description: 'Hand-embroidered cloth bag with intricate traditional patterns.',
     image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80',
-    variants: ['Small', 'Medium'],
+    variants: ['Without Magnet', 'With Magnet (+₹3)'],
   },
 ]
 
