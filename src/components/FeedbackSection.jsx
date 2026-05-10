@@ -3,7 +3,7 @@ import { MessageSquare, Send, Star, CheckCircle2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
-const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '918639006849'
+const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '917997060668'
 
 export default function FeedbackSection() {
   const [form, setForm]       = useState({ name: '', email: '', message: '', rating: 0 })

@@ -6,7 +6,7 @@ import { Sparkles, Shield, Truck, Star, ArrowRight, MessageCircle, MapPin, Packa
 import { mockProducts } from '../lib/mockData'
 import ProductCard from '../components/ProductCard'
 
-const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '918639006849'
+const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '917997060668'
 
 function AnimatedSection({ children, className = '' }) {
   const ref = useRef(null)
