@@ -21,6 +21,8 @@ import Dashboard from './admin/Dashboard'
 import AdminProducts from './admin/AdminProducts'
 import AdminOrders from './admin/AdminOrders'
 import AdminUsers from './admin/AdminUsers'
+import AdminOrderDetail from './admin/AdminOrderDetail'
+import AdminOrderDetail from './admin/AdminOrderDetail'
 
 // Wrapper that adds Navbar + Footer
 function StoreLayout({ children }) {
@@ -64,6 +66,7 @@ export default function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders/:orderId" element={<AdminOrderDetail />} />
                 <Route path="users" element={<AdminUsers />} />
               </Route>
 

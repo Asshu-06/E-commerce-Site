@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Search, RefreshCw, ChevronDown, X, Eye, CheckCircle2, Clock, ImageIcon, XCircle, ZoomIn } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Search, RefreshCw, ChevronDown, X, CheckCircle2, Clock, ImageIcon, XCircle, ZoomIn } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
@@ -30,6 +31,7 @@ export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [updatingId, setUpdatingId]       = useState(null)
   const [productMap, setProductMap]       = useState({}) // id → image_url
+  const navigate = useNavigate()
 
   // Screenshot review modal — holds the order being reviewed
   const [reviewOrder, setReviewOrder]     = useState(null)
@@ -254,8 +256,8 @@ export default function AdminOrders() {
                     order.payment_status === 'pending_verification' ? 'bg-orange-50/40' :
                     order.refund_status === 'initiated' ? 'bg-blue-50/40' : ''
                   }`}>
-                    <td className="px-5 py-4">
-                      <p className="font-medium text-gray-900">{order.user_name}</p>
+                    <td className="px-5 py-4 cursor-pointer" onClick={() => navigate(`/admin/orders/${order.id}`)}>
+                      <p className="font-medium text-gray-900 hover:text-amber-600 transition-colors">{order.user_name}</p>
                       <p className="text-xs text-gray-400">{order.phone}</p>
                       {order.address && (
                         <p className="text-xs text-gray-500 mt-1 flex items-start gap-1">
@@ -340,11 +342,10 @@ export default function AdminOrders() {
                             💸 Refund Done
                           </button>
                         )}
-                        <button onClick={() => setSelectedOrder(order)}
+                        <button onClick={() => navigate(`/admin/orders/${order.id}`)}
                           className="p-2 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors" title="View order details">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </div>
+                          <ChevronDown className="w-4 h-4 -rotate-90" />
+                        </button>                      </div>
                     </td>
                   </tr>
                 ))}
