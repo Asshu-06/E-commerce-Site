@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { calcShipping, isAPTS, MIN_ORDER_QTY } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'q901588902@ybl'
@@ -48,18 +49,16 @@ export default function CheckoutPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
-  // Calculate shipping based on state (city field used as proxy — user enters state in city)
-  const AP_TS_KEYWORDS = ['andhra', 'telangana', 'ap', 'ts', 'hyderabad', 'vijayawada',
-    'visakhapatnam', 'vizag', 'warangal', 'tirupati', 'guntur', 'nellore', 'kurnool',
-    'kadapa', 'anantapur', 'karimnagar', 'nizamabad', 'khammam', 'rajahmundry', 'eluru',
-    'ongole', 'srikakulam', 'vizianagaram', 'bhimavaram', 'tenali', 'machilipatnam',
-    'adilabad', 'mahabubnagar', 'medak', 'nalgonda', 'sangareddy', 'suryapet', 'skota',
-    'srikakulam', 'vizag', 'vsp']
-  const isAPTS = AP_TS_KEYWORDS.some(k =>
-    form.city.toLowerCase().includes(k) || form.address.toLowerCase().includes(k)
-  )
-  const shippingCharge = form.city.trim() ? (isAPTS ? 80 : 100) : 0
+  // Total pieces in cart
+  const totalQty = cart.reduce((s, i) => s + i.quantity, 0)
+
+  // Shipping based on quantity + location
+  const apTs = isAPTS(form.city, form.address)
+  const shippingCharge = form.city.trim() ? calcShipping(totalQty, apTs) : 0
   const grandTotal = totalPrice + shippingCharge
+
+  // Minimum order validation
+  const belowMinOrder = totalQty < MIN_ORDER_QTY
 
   const validate = () => {
     if (!form.name.trim())             return 'Please enter your name.'
@@ -76,7 +75,11 @@ export default function CheckoutPage() {
     const err = validate()
     if (err) { toast.error(err); return }
     if (cart.length === 0) { toast.error('Your cart is empty.'); return }
-    setSnapshotTotal(grandTotal)  // lock the total before cart can change
+    if (belowMinOrder) {
+      toast.error(`Minimum order is ${MIN_ORDER_QTY} pieces. You have ${totalQty}.`)
+      return
+    }
+    setSnapshotTotal(grandTotal)
     setStep('upi')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -532,7 +535,8 @@ export default function CheckoutPage() {
                   <span>Shipping</span>
                   {form.city.trim() ? (
                     <span className="font-medium text-gray-900">
-                      ₹{shippingCharge} <span className="text-xs text-gray-400">({isAPTS ? 'AP/TS' : 'Other state'})</span>
+                      ₹{shippingCharge}
+                      <span className="text-xs text-gray-400 ml-1">({apTs ? 'AP/TS' : 'Other state'})</span>
                     </span>
                   ) : (
                     <span className="text-xs text-gray-400">Enter city to calculate</span>
@@ -544,10 +548,20 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <button type="submit" disabled={submitting}
-                className="w-full flex items-center justify-center gap-2 bg-[#C8511B] hover:bg-[#B04516] disabled:bg-amber-300 text-white font-semibold py-3 px-6 rounded-full transition-colors shadow-lg shadow-[#C8511B]/20">
+              {/* Min order warning */}
+              {belowMinOrder && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-xs text-red-700 font-medium">
+                  ⚠️ Minimum order is <strong>{MIN_ORDER_QTY} pieces</strong>. You have {totalQty} piece{totalQty !== 1 ? 's' : ''}.
+                  Add {MIN_ORDER_QTY - totalQty} more to proceed.
+                </div>
+              )}
+
+              <button type="submit" disabled={submitting || belowMinOrder}
+                className="w-full flex items-center justify-center gap-2 bg-[#C8511B] hover:bg-[#B04516] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-full transition-colors shadow-lg shadow-[#C8511B]/20">
                 {submitting ? (
                   <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Processing...</>
+                ) : belowMinOrder ? (
+                  `Add ${MIN_ORDER_QTY - totalQty} more pieces`
                 ) : (
                   'Continue to Pay via UPI'
                 )}

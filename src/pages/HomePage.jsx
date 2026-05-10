@@ -97,36 +97,52 @@ export default function HomePage() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900">Delivery Charges</h3>
-                <p className="text-xs text-gray-400">Shipping rates across India</p>
+                <p className="text-xs text-gray-400">Minimum order: 20 pieces · Charges based on quantity</p>
               </div>
             </div>
             <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
               {/* AP & Telangana */}
-              <div className="p-6 flex items-start gap-4">
-                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
-                  <MapPin className="w-6 h-6 text-emerald-600" />
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-5 h-5 text-emerald-600" />
+                  <p className="font-bold text-gray-900">Andhra Pradesh & Telangana</p>
+                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">Local</span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-bold text-gray-900">Andhra Pradesh & Telangana</p>
-                    <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">Local</span>
-                  </div>
-                  <p className="text-3xl font-bold text-[#C8511B] mb-1">₹80</p>
-                  <p className="text-xs text-gray-400">Per order · Delivered in 2–4 days</p>
+                <div className="space-y-1.5 text-sm">
+                  {[
+                    { qty: '≤ 100 pcs', price: '₹80' },
+                    { qty: '≤ 200 pcs', price: '₹150' },
+                    { qty: '≤ 300 pcs', price: '₹200' },
+                    { qty: '≤ 400 pcs', price: '₹250' },
+                    { qty: '400+ pcs',  price: '+₹50 per 100' },
+                  ].map((r) => (
+                    <div key={r.qty} className="flex justify-between text-gray-600">
+                      <span>{r.qty}</span>
+                      <span className="font-semibold text-[#C8511B]">{r.price}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
               {/* Other states */}
-              <div className="p-6 flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
-                  <Package className="w-6 h-6 text-blue-600" />
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Package className="w-5 h-5 text-blue-600" />
+                  <p className="font-bold text-gray-900">Rest of India</p>
+                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">Pan India</span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-bold text-gray-900">Rest of India</p>
-                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">Pan India</span>
-                  </div>
-                  <p className="text-3xl font-bold text-[#C8511B] mb-1">₹100</p>
-                  <p className="text-xs text-gray-400">Per order · Delivered in 4–7 days</p>
+                <div className="space-y-1.5 text-sm">
+                  {[
+                    { qty: '≤ 100 pcs', price: '₹100' },
+                    { qty: '≤ 200 pcs', price: '₹170' },
+                    { qty: '≤ 300 pcs', price: '₹220' },
+                    { qty: '≤ 400 pcs', price: '₹270' },
+                    { qty: '400+ pcs',  price: '+₹50 per 100' },
+                  ].map((r) => (
+                    <div key={r.qty} className="flex justify-between text-gray-600">
+                      <span>{r.qty}</span>
+                      <span className="font-semibold text-[#C8511B]">{r.price}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

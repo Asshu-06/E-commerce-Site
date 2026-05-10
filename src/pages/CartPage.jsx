@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom'
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+
+  const totalQty     = cart.reduce((s, i) => s + i.quantity, 0)
+  const belowMin     = totalQty < MIN_ORDER_QTY && cart.length > 0
+  const remaining    = MIN_ORDER_QTY - totalQty
+
+  // Show shipping range (AP/TS vs others) based on qty
+  const shippingAPTS = totalQty > 0 ? calcShipping(totalQty, true)  : 0
+  const shippingOther = totalQty > 0 ? calcShipping(totalQty, false) : 0
 
   const handleRemove = (id, variant, name) => {
     removeItem(id, variant)
@@ -97,7 +106,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span className="text-xs text-gray-400 text-right">AP/TS: ₹80<br/>Others: ₹100</span>
+                  <span className="text-xs text-gray-400 text-right">AP/TS: ₹{shippingAPTS}<br/>Others: ₹{shippingOther}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
                   <span>Subtotal (excl. shipping)</span>
@@ -105,15 +114,32 @@ export default function CartPage() {
                 </div>
               </div>
 
+              {/* Min order warning */}
+              {belowMin && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-xs text-red-700">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Minimum {MIN_ORDER_QTY} pieces</strong> required. Add <strong>{remaining} more</strong> to checkout.
+                  </span>
+                </div>
+              )}
+
               {/* Shipping note */}
               <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
-                🚚 Shipping: <strong>₹80</strong> for AP & Telangana · <strong>₹100</strong> for other states<br/>
-                <span className="text-gray-400">Final total calculated at checkout</span>
+                🚚 <strong>Shipping charges</strong> based on quantity & location:<br/>
+                <span className="text-gray-500">≤100 pcs: AP/TS ₹80 · Others ₹100</span><br/>
+                <span className="text-gray-500">≤200 pcs: AP/TS ₹150 · Others ₹170</span><br/>
+                <span className="text-gray-500">≤300 pcs: AP/TS ₹200 · Others ₹220</span><br/>
+                <span className="text-gray-400 text-[10px]">Final total calculated at checkout</span>
               </div>
 
               <Link to="/checkout"
-                className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-[#C8511B] text-white font-bold py-4 px-6 rounded-2xl transition-all hover:-translate-y-0.5 shadow-lg shadow-black/10 text-base">
-                Proceed to Checkout <ArrowRight className="w-4 h-4" />
+                className={`w-full flex items-center justify-center gap-2 font-bold py-4 px-6 rounded-2xl transition-all text-base ${
+                  belowMin
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+                    : 'bg-gray-900 hover:bg-[#C8511B] text-white shadow-lg shadow-black/10 hover:-translate-y-0.5'
+                }`}>
+                {belowMin ? `Add ${remaining} more pieces` : <>Proceed to Checkout <ArrowRight className="w-4 h-4" /></>}
               </Link>
 
               <Link to="/"
