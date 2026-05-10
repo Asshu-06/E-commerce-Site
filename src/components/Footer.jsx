@@ -90,7 +90,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Why Us</h4>
             <ul className="space-y-3 text-sm">
-              {['100% Authentic Products', 'Free Delivery on All Orders', 'Custom Designs Available', 'Secure Payments', '7-Day Return Policy'].map((t) => (
+              {['100% Authentic Products', 'AP/TS: ₹80 · Others: ₹100 Shipping', 'Custom Designs Available', 'Secure Payments', '7-Day Return Policy'].map((t) => (
                 <li key={t} className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#C8511B] shrink-0" />
                   {t}
