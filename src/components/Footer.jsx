@@ -93,6 +93,28 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
+
+            {/* Embedded Google Map */}
+            <div className="mt-5 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+              <iframe
+                title="Lakshmi Ram Collections Location"
+                src="https://maps.google.com/maps?q=Gothic+Pentagon+Clouds+Bachupally+Hyderabad&output=embed&z=15"
+                width="100%"
+                height="180"
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <a
+              href="https://maps.google.com/?q=Gothic+Pentagon+Clouds,+Bachupally,+Hyderabad"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex items-center gap-1.5 text-xs text-[#D4A017] hover:text-amber-300 transition-colors font-medium"
+            >
+              <MapPin className="w-3 h-3" /> Open in Google Maps →
+            </a>
           </div>
 
           {/* Trust */}
