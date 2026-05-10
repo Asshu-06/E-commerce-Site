@@ -12,12 +12,8 @@ export default function AuthCallback() {
     // We just need to wait for the session and redirect.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        const email = session.user?.email?.toLowerCase()
-        if (ADMIN_EMAILS.includes(email)) {
-          navigate('/admin/dashboard', { replace: true })
-        } else {
-          navigate('/', { replace: true })
-        }
+        // Always go to homepage — admin can navigate to panel via navbar
+        navigate('/', { replace: true })
       }
     })
 
@@ -25,12 +21,7 @@ export default function AuthCallback() {
     const t = setTimeout(async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
-        const email = session.user?.email?.toLowerCase()
-        if (ADMIN_EMAILS.includes(email)) {
-          navigate('/admin/dashboard', { replace: true })
-        } else {
-          navigate('/', { replace: true })
-        }
+        navigate('/', { replace: true })
       } else {
         navigate('/', { replace: true })
       }

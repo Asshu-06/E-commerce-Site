@@ -13,10 +13,10 @@ export default function AdminLogin() {
   const [submitting, setSubmitting] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
-  // Already logged in as admin → go to dashboard
+  // Already logged in as admin → go to homepage (not dashboard)
   useEffect(() => {
     if (user && isAdmin) {
-      navigate('/admin/dashboard', { replace: true })
+      navigate('/', { replace: true })
     }
   }, [user, isAdmin, navigate])
 
@@ -33,7 +33,7 @@ export default function AdminLogin() {
       toast.error(error.message || 'Login failed. Check your credentials.')
     } else {
       toast.success('Welcome back!')
-      navigate('/admin/dashboard', { replace: true })
+      navigate('/', { replace: true })
     }
   }
 
