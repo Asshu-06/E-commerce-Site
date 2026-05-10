@@ -27,6 +27,11 @@ export default function ProductPage() {
   const [loading, setLoading]           = useState(true)
   const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity]         = useState(1)
+
+  // Magnet adds ₹3 per piece
+  const magnetExtra = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
+  const effectivePrice = (product?.price || 0) + magnetExtra
+  const lineTotal = effectivePrice * quantity
   const [selectedImage, setSelectedImage] = useState(0)
   const [addedToCart, setAddedToCart]   = useState(false)
   const [copied, setCopied]             = useState(false)
@@ -84,7 +89,8 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (!product) return
-    addItem(product, selectedVariant, quantity)
+    const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
+    addItem(productToAdd, selectedVariant, quantity)
     setAddedToCart(true)
     toast.success(`${product.name} added to cart!`, {
       icon: '🛒',
@@ -95,7 +101,8 @@ export default function ProductPage() {
 
   const handleBuyNow = () => {
     if (!product) return
-    addItem(product, selectedVariant, quantity)
+    const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
+    addItem(productToAdd, selectedVariant, quantity)
     navigate('/checkout')
   }
 
@@ -233,8 +240,11 @@ export default function ProductPage() {
               {/* Price */}
               {!isCustomization && product.price && (
                 <div className="flex items-baseline gap-3 mb-5">
-                  <span className="text-4xl font-bold text-[#C8511B]">₹{product.price}</span>
+                  <span className="text-4xl font-bold text-[#C8511B]">₹{effectivePrice}</span>
                   {product.unit && <span className="text-gray-400 text-sm">per {product.unit}</span>}
+                  {magnetExtra > 0 && (
+                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">+₹3 magnet</span>
+                  )}
                 </div>
               )}
 
@@ -256,20 +266,25 @@ export default function ProductPage() {
               {!isCustomization && product.variants && product.variants.length > 0 && (
                 <div className="mb-5">
                   <p className="text-sm font-semibold text-gray-700 mb-2">
-                    Size / Variant: <span className="text-[#C8511B]">{selectedVariant}</span>
+                    Magnet Option: <span className="text-[#C8511B]">{selectedVariant || 'Select one'}</span>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {product.variants.map((v) => (
                       <button key={v} onClick={() => setSelectedVariant(v)}
                         className={`px-4 py-2 rounded-xl border-2 text-sm font-medium transition-all ${
                           selectedVariant === v
-                            ? 'border-amber-500 bg-[#FDF3EC] text-[#8B3410] shadow-sm'
-                            : 'border-gray-200 text-gray-600 hover:border-amber-300 hover:bg-[#FDF3EC]'
+                            ? 'border-[#C8511B] bg-[#FDF3EC] text-[#C8511B] shadow-sm'
+                            : 'border-gray-200 text-gray-600 hover:border-[#E8895A] hover:bg-[#FDF3EC]'
                         }`}>
                         {v}
                       </button>
                     ))}
                   </div>
+                  {selectedVariant === 'With Magnet (+₹3)' && (
+                    <p className="text-xs text-blue-600 mt-2 font-medium">
+                      🧲 Magnet adds ₹3 per piece to the base price
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -289,7 +304,7 @@ export default function ProductPage() {
                     </button>
                   </div>
                   <span className="text-sm text-gray-400">
-                    Total: <span className="font-bold text-[#C8511B]">₹{((product.price || 0) * quantity).toLocaleString()}</span>
+                    Total: <span className="font-bold text-[#C8511B]">₹{lineTotal.toLocaleString()}</span>
                   </span>
                 </div>
               )}

@@ -89,14 +89,14 @@ export default function ProductCard({ product }) {
           <span className="text-[11px] text-gray-400 ml-1">4.0</span>
         </div>
 
-        {/* Variants */}
+        {/* Magnet option */}
         {!isCustomization && product.variants?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {product.variants.map((v) => (
               <button key={v} onClick={() => setSelectedVariant(v)}
                 className={`text-[11px] px-2.5 py-1 rounded-lg border font-medium transition-all ${
                   selectedVariant === v
-                    ? 'bg-[#C8511B] text-white border-amber-500'
+                    ? 'bg-[#C8511B] text-white border-[#C8511B]'
                     : 'bg-white text-gray-500 border-gray-200 hover:border-[#E8895A]'
                 }`}>
                 {v}
