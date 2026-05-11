@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { LogIn, X, ShoppingBag } from 'lucide-react'
 
 /**
  * Modal shown when a guest user tries to buy/add-to-cart.
+ * Renders via a portal so it's never clipped by parent overflow/transform.
  * Props:
  *   open        – boolean, controls visibility
  *   onClose     – called when user clicks Cancel or the backdrop
@@ -18,16 +20,16 @@ export default function LoginPromptModal({ open, onClose, redirectTo = '/' }) {
     navigate(`/login?redirect=${encodeURIComponent(redirectTo)}`)
   }
 
-  return (
+  return createPortal(
     /* Backdrop */
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
       onClick={onClose}
     >
-      {/* Modal card — stop click propagation so backdrop click doesn't close when clicking inside */}
+      {/* Modal card */}
       <div
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 relative animate-fade-in"
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -71,6 +73,7 @@ export default function LoginPromptModal({ open, onClose, redirectTo = '/' }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
