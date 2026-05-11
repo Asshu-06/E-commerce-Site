@@ -1,11 +1,14 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   const totalQty     = cart.reduce((s, i) => s + i.quantity, 0)
   const belowMin     = totalQty < MIN_ORDER_QTY && cart.length > 0
@@ -133,14 +136,23 @@ export default function CartPage() {
                 <span className="text-gray-400 text-[10px]">Final total calculated at checkout</span>
               </div>
 
-              <Link to="/checkout"
+              <button
+                onClick={() => {
+                  if (!user) {
+                    toast.error('Please login to proceed to checkout', { icon: '🔒' })
+                    navigate('/login?redirect=/checkout')
+                    return
+                  }
+                  navigate('/checkout')
+                }}
+                disabled={belowMin}
                 className={`w-full flex items-center justify-center gap-2 font-bold py-4 px-6 rounded-2xl transition-all text-base ${
                   belowMin
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-900 hover:bg-[#C8511B] text-white shadow-lg shadow-black/10 hover:-translate-y-0.5'
                 }`}>
                 {belowMin ? `Add ${remaining} more pieces` : <>Proceed to Checkout <ArrowRight className="w-4 h-4" /></>}
-              </Link>
+              </button>
 
               <Link to="/"
                 className="w-full flex items-center justify-center mt-3 text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors">

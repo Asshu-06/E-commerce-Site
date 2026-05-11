@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChevronRight, CheckCircle2, Smartphone, ImagePlus, X, Clock, Copy, Check } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCart } from '../context/CartContext'
@@ -29,7 +29,16 @@ function buildUpiString(amount, orderId) {
 
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart()
-  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  // Redirect to login if not authenticated (wait for auth to resolve first)
+  const { user, loading: authLoading } = useAuth()
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login?redirect=/checkout', { replace: true })
+    }
+  }, [user, authLoading, navigate])
 
   const [form, setForm]               = useState(() => ({
     ...INITIAL_FORM,
@@ -111,19 +120,14 @@ export default function CheckoutPage() {
 
       if (upErr) {
         console.error('Storage upload error:', upErr)
-        // Fallback: base64 (works but large)
-        screenshotUrl = await new Promise((res, rej) => {
-          const r = new FileReader()
-          r.onload  = () => res(r.result)
-          r.onerror = rej
-          r.readAsDataURL(screenshot)
-        })
-        toast('Screenshot saved locally — storage bucket may need setup.', { icon: 'ℹ️' })
-      } else {
-        screenshotUrl = supabase.storage
-          .from('product-images')
-          .getPublicUrl(path).data.publicUrl
+        toast.error('Failed to upload screenshot. Please check your connection and try again.')
+        setUploading(false)
+        return
       }
+
+      screenshotUrl = supabase.storage
+        .from('product-images')
+        .getPublicUrl(path).data.publicUrl
 
       if (!screenshotUrl) {
         toast.error('Failed to upload screenshot. Please try again.')
@@ -133,7 +137,7 @@ export default function CheckoutPage() {
 
       const id = await saveOrder({
         paymentMethod:  'upi',
-        paymentStatus:  'pending_verification',
+        paymentStatus:  'pending',
         screenshotUrl,
       })
       setOrderId(id)
@@ -190,6 +194,20 @@ export default function CheckoutPage() {
   }
 
   const copyUpiId = () => {
+    navigator.clipboard.writeText(UPI_ID)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+    toast.success('UPI ID copied!')
+  }
+
+  // Show nothing while auth is loading (prevents flash before redirect)
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
+        <span className="w-8 h-8 border-4 border-[#C8511B]/30 border-t-[#C8511B] rounded-full animate-spin" />
+      </div>
+    )
+  }
     navigator.clipboard.writeText(UPI_ID)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Leaf, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
@@ -8,6 +8,8 @@ import toast from 'react-hot-toast'
 export default function LoginPage() {
   const { user, signIn, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [form, setForm] = useState({ email: '', password: '', confirmPassword: '' })
   const [showPass, setShowPass] = useState(false)
@@ -16,8 +18,8 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) navigate('/')
-  }, [user, navigate])
+    if (user) navigate(redirectTo, { replace: true })
+  }, [user, navigate, redirectTo])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,7 +31,7 @@ export default function LoginPage() {
     if (mode === 'login') {
       const { error } = await signIn(form.email.trim(), form.password)
       if (error) toast.error(error.message || 'Login failed')
-      else { toast.success('Welcome back!'); navigate('/') }
+      else { toast.success('Welcome back!'); navigate(redirectTo, { replace: true }) }
     } else {
       const { error } = await supabase.auth.signUp({
         email: form.email.trim(),

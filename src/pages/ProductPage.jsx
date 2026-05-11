@@ -9,10 +9,12 @@ import { supabase } from '../lib/supabase'
 import { mockProducts, categories } from '../lib/mockData'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import { useAuth } from '../context/AuthContext'
 import { sendToWhatsApp } from '../lib/whatsapp'
 import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
 import ProductCard from '../components/ProductCard'
 import ProductReviews from '../components/ProductReviews'
+import LoginPromptModal from '../components/LoginPromptModal'
 import toast from 'react-hot-toast'
 
 const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Return Bags' }
@@ -22,12 +24,14 @@ export default function ProductPage() {
   const navigate = useNavigate()
   const { addItem } = useCart()
   const { isWishlisted, toggleWishlist } = useWishlist()
+  const { user } = useAuth()
 
   const [product, setProduct]           = useState(null)
   const [related, setRelated]           = useState([])
   const [loading, setLoading]           = useState(true)
   const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity]         = useState(1)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   // Magnet adds ₹3 per piece
   const magnetExtra    = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
@@ -91,6 +95,10 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (!product) return
+    if (!user) {
+      setShowLoginModal(true)
+      return
+    }
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
     addItem(productToAdd, selectedVariant, qty)
     setAddedToCart(true)
@@ -103,6 +111,10 @@ export default function ProductPage() {
 
   const handleBuyNow = () => {
     if (!product) return
+    if (!user) {
+      setShowLoginModal(true)
+      return
+    }
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
     addItem(productToAdd, selectedVariant, qty)
     navigate('/checkout')
@@ -446,6 +458,13 @@ export default function ProductPage() {
           </div>
         )}
       </div>
+
+      {/* Login prompt modal */}
+      <LoginPromptModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        redirectTo={`/product/${productId}`}
+      />
     </div>
   )
 }

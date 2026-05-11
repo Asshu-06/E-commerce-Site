@@ -1,22 +1,31 @@
 import { useState } from 'react'
 import { ShoppingCart, MessageCircle, Plus, Minus, Heart, Star } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import { useAuth } from '../context/AuthContext'
 import { sendToWhatsApp } from '../lib/whatsapp'
+import LoginPromptModal from './LoginPromptModal'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product }) {
   const { addItem }                       = useCart()
   const { isWishlisted, toggleWishlist }  = useWishlist()
+  const { user }                          = useAuth()
+  const navigate                          = useNavigate()
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || '')
   const [quantity, setQuantity]           = useState(1)
   const [added, setAdded]                 = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   const isCustomization = product.type === 'customization'
   const wishlisted      = isWishlisted(product.id)
 
   const handleAddToCart = () => {
+    if (!user) {
+      setShowLoginModal(true)
+      return
+    }
     addItem(product, selectedVariant, quantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 1800)
@@ -140,6 +149,13 @@ export default function ProductCard({ product }) {
           </button>
         )}
       </div>
+
+      {/* Login prompt modal */}
+      <LoginPromptModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        redirectTo={`/product/${product.id}`}
+      />
     </div>
   )
 }
