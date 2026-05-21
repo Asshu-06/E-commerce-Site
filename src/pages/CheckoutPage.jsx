@@ -208,11 +208,6 @@ export default function CheckoutPage() {
       </div>
     )
   }
-    navigator.clipboard.writeText(UPI_ID)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-    toast.success('UPI ID copied!')
-  }
 
   // ── Success screen ──────────────────────────────────────────────────────
   if (step === 'success') {
