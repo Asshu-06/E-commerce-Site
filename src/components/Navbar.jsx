@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X, Leaf, User, LogOut, ChevronDown, Heart, Search }
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
+import WhatsAppAnnouncement from './WhatsAppAnnouncement'
 import toast from 'react-hot-toast'
 
 export default function Navbar() {
@@ -242,6 +243,9 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Marquee announcement — only on non-home pages */}
+      <WhatsAppAnnouncement />
     </nav>
   )
 }

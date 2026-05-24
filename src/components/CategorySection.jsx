@@ -6,7 +6,7 @@ export default function CategorySection() {
   const navigate = useNavigate()
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="categories" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Section header */}
       <div className="text-center mb-14">
         <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#C8511B] mb-3">Collections</span>

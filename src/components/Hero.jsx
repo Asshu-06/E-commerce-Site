@@ -125,7 +125,9 @@ export default function Hero() {
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Handcrafted with Love</span>
+            <span>Handcrafted with love</span>
+            <span className="opacity-60">→</span>
+            <span>Tradition packed with love</span>
           </div>
 
           {/* Main heading */}
@@ -166,19 +168,14 @@ export default function Hero() {
               visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
-            <Link
-              to="/category/pasupu"
+            <button
+              onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
               className="group inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-10 py-4 rounded-full shadow-2xl shadow-amber-500/40 transition-all hover:shadow-amber-500/60 hover:-translate-y-1 active:translate-y-0"
             >
               Shop Now
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/category/gifts"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md hover:bg-white/20 border-2 border-white/30 text-white font-semibold px-10 py-4 rounded-full transition-all hover:-translate-y-1 active:translate-y-0"
-            >
-              View Gifts
-            </Link>
+            </button>
+          
           </div>
 
           {/* Stats */}
