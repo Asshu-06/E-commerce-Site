@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         {/* Wishlist */}
-        <button onClick={(e) => { e.preventDefault(); toggleWishlist(product) }}
+        <button onClick={(e) => { e.preventDefault(); if (!user) { setShowLoginModal(true); return; } toggleWishlist(product) }}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
             wishlisted
               ? 'bg-red-500 text-white scale-110'
