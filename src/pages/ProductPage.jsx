@@ -333,9 +333,8 @@ export default function ProductPage() {
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <span className="text-sm text-gray-400">
-                      Total: <span className="font-bold text-[#C8511B]">₹{lineTotal.toLocaleString()}</span>
-                    </span>
+                    <div>
+                    </div>
                   </div>
 
                   {/* Min order warning */}
@@ -343,14 +342,6 @@ export default function ProductPage() {
                     <p className="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                       ⚠️ Minimum order is <strong>{MIN_ORDER_QTY} pieces</strong>. Add {MIN_ORDER_QTY - quantity} more.
                     </p>
-                  )}
-
-                  {/* Shipping estimate */}
-                  {quantity >= MIN_ORDER_QTY && (
-                    <div className="bg-[#FDF3EC] border border-[#FAE3D3] rounded-xl px-4 py-3 text-xs text-[#8B3410]">
-                      🚚 <strong>Estimated shipping for {quantity} pcs:</strong><br/>
-                      AP/TS: <strong>₹{calcShipping(quantity, true)}</strong> · Other states: <strong>₹{calcShipping(quantity, false)}</strong>
-                    </div>
                   )}
                 </div>
               )}
@@ -398,7 +389,7 @@ export default function ProductPage() {
               {/* Trust badges */}
               <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-5">
                 {[
-                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Fast Delivery', sub: 'AP/TS ₹80 · Others ₹100' },
+                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Fast Delivery', sub: 'PAN India shipping' },
                   { icon: <Shield className="w-5 h-5 text-[#C8511B]" />, label: '100% Authentic', sub: 'Guaranteed' },
                   { icon: <RotateCcw className="w-5 h-5 text-[#C8511B]" />, label: 'Easy Returns', sub: '7 day policy' },
                 ].map((b) => (

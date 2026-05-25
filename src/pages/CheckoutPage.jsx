@@ -61,9 +61,8 @@ export default function CheckoutPage() {
   // Total pieces in cart
   const totalQty = cart.reduce((s, i) => s + i.quantity, 0)
 
-  // Shipping based on quantity + location
-  const apTs = isAPTS(form.city, form.address)
-  const shippingCharge = form.city.trim() ? calcShipping(totalQty, apTs) : 0
+  // Shipping based on quantity
+  const shippingCharge = form.city.trim() ? calcShipping(totalQty) : 0
   const grandTotal = totalPrice + shippingCharge
 
   // Minimum order validation

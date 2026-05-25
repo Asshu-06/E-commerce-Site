@@ -14,9 +14,9 @@ export default function CartPage() {
   const belowMin     = totalQty < MIN_ORDER_QTY && cart.length > 0
   const remaining    = MIN_ORDER_QTY - totalQty
 
-  // Show shipping range (AP/TS vs others) based on qty
-  const shippingAPTS = totalQty > 0 ? calcShipping(totalQty, true)  : 0
-  const shippingOther = totalQty > 0 ? calcShipping(totalQty, false) : 0
+  // Shipping based on quantity
+  const shippingAPTS  = totalQty > 0 ? calcShipping(totalQty) : 0
+  const shippingOther = totalQty > 0 ? calcShipping(totalQty) : 0
 
   const handleRemove = (id, variant, name) => {
     removeItem(id, variant)
@@ -109,7 +109,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span className="text-xs text-gray-400 text-right">AP/TS: ₹{shippingAPTS}<br/>Others: ₹{shippingOther}</span>
+                  <span className="text-xs text-gray-400 text-right">PAN India: ₹{shippingAPTS}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
                   <span>Subtotal (excl. shipping)</span>
@@ -129,10 +129,11 @@ export default function CartPage() {
 
               {/* Shipping note */}
               <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
-                🚚 <strong>Shipping charges</strong> based on quantity & location:<br/>
-                <span className="text-gray-500">≤100 pcs: AP/TS ₹80 · Others ₹100</span><br/>
-                <span className="text-gray-500">≤200 pcs: AP/TS ₹150 · Others ₹170</span><br/>
-                <span className="text-gray-500">≤300 pcs: AP/TS ₹200 · Others ₹220</span><br/>
+                🚚 <strong>Shipping charges</strong> (PAN India):<br/>
+                <span className="text-gray-500">≤100 pcs: ₹80</span><br/>
+                <span className="text-gray-500">≤200 pcs: ₹150</span><br/>
+                <span className="text-gray-500">≤300 pcs: ₹200</span><br/>
+                <span className="text-gray-500">≤400 pcs: ₹250</span><br/>
                 <span className="text-gray-400 text-[10px]">Final total calculated at checkout</span>
               </div>
 

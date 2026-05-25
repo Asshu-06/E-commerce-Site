@@ -42,7 +42,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-gray-100">
             {[
-              { icon: <Truck className="w-5 h-5 text-[#C8511B]" />,    title: 'Fast Delivery',     sub: 'AP & TS: ₹80 | Others: ₹100' },
+              { icon: <Truck className="w-5 h-5 text-[#C8511B]" />,    title: 'Fast Delivery',     sub: 'PAN India shipping' },
               { icon: <Shield className="w-5 h-5 text-[#C8511B]" />,   title: '100% Authentic',    sub: 'Verified products' },
               { icon: <Sparkles className="w-5 h-5 text-[#C8511B]" />, title: 'Custom Designs',    sub: 'WhatsApp us' },
               { icon: <Star className="w-5 h-5 text-[#C8511B]" />,     title: '500+ Happy Buyers', sub: 'Trusted store' },
@@ -101,41 +101,19 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
-              {/* AP & Telangana */}
-              <div className="p-6">
+              {/* PAN India — single unified table */}
+              <div className="p-6 sm:col-span-2">
                 <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="w-5 h-5 text-emerald-600" />
-                  <p className="font-bold text-gray-900">Andhra Pradesh & Telangana</p>
-                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">Local</span>
+                  <Package className="w-5 h-5 text-emerald-600" />
+                  <p className="font-bold text-gray-900">PAN India Shipping</p>
+                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">All States</span>
                 </div>
-                <div className="space-y-1.5 text-sm">
+                <div className="grid sm:grid-cols-2 gap-x-12 space-y-1.5 text-sm">
                   {[
                     { qty: '≤ 100 pcs', price: '₹80' },
                     { qty: '≤ 200 pcs', price: '₹150' },
                     { qty: '≤ 300 pcs', price: '₹200' },
                     { qty: '≤ 400 pcs', price: '₹250' },
-                    { qty: '400+ pcs',  price: '+₹50 per 100' },
-                  ].map((r) => (
-                    <div key={r.qty} className="flex justify-between text-gray-600">
-                      <span>{r.qty}</span>
-                      <span className="font-semibold text-[#C8511B]">{r.price}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Other states */}
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <Package className="w-5 h-5 text-blue-600" />
-                  <p className="font-bold text-gray-900">Rest of India</p>
-                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">Pan India</span>
-                </div>
-                <div className="space-y-1.5 text-sm">
-                  {[
-                    { qty: '≤ 100 pcs', price: '₹100' },
-                    { qty: '≤ 200 pcs', price: '₹170' },
-                    { qty: '≤ 300 pcs', price: '₹220' },
-                    { qty: '≤ 400 pcs', price: '₹270' },
                     { qty: '400+ pcs',  price: '+₹50 per 100' },
                   ].map((r) => (
                     <div key={r.qty} className="flex justify-between text-gray-600">
