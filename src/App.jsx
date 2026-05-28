@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage'
 import AuthCallback from './pages/AuthCallback'
 import ProfilePage from './pages/ProfilePage'
 import ProductPage from './pages/ProductPage'
+import { ContactPage, ShippingPolicyPage, RefundPolicyPage, PrivacyPolicyPage } from './pages/PolicyPages'
 import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
 import Dashboard from './admin/Dashboard'
@@ -81,6 +82,10 @@ export default function App() {
               <Route path="/checkout" element={<StoreLayout><CheckoutPage /></StoreLayout>} />
               <Route path="/login" element={<StoreLayout><LoginPage /></StoreLayout>} />
               <Route path="/profile" element={<StoreLayout><ProfilePage /></StoreLayout>} />
+              <Route path="/contact" element={<StoreLayout><ContactPage /></StoreLayout>} />
+              <Route path="/shipping-policy" element={<StoreLayout><ShippingPolicyPage /></StoreLayout>} />
+              <Route path="/refund-policy" element={<StoreLayout><RefundPolicyPage /></StoreLayout>} />
+              <Route path="/privacy-policy" element={<StoreLayout><PrivacyPolicyPage /></StoreLayout>} />
 
               {/* ── 404 ── */}
               <Route path="*" element={<StoreLayout><NotFound /></StoreLayout>} />

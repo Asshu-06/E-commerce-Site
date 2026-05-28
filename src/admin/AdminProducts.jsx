@@ -375,24 +375,6 @@ export default function AdminProducts() {
                   </p>
                 )}
 
-                {/* URL input — only show when no image selected/previewed */}
-                {!imagePreview && (
-                  <div className="mt-2">
-                    <p className="text-xs text-gray-400 mb-1">Or paste image URL</p>
-                    {/* type="text" so local paths like /images/... are accepted */}
-                    <input
-                      type="text"
-                      value={form.image_url}
-                      onChange={(e) => {
-                        setForm((f) => ({ ...f, image_url: e.target.value }))
-                        if (e.target.value) setImagePreview(e.target.value)
-                      }}
-                      placeholder="/images/photo.jpg or https://..."
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-300"
-                    />
-                  </div>
-                )}
-
                 {/* Show clear button if image is set */}
                 {imagePreview && (
                   <button type="button"

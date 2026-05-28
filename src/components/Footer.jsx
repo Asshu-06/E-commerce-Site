@@ -24,7 +24,7 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
@@ -80,6 +80,25 @@ export default function Footer() {
                   <Link to={l.to} className="hover:text-[#D4A017] transition-colors">{l.label}</Link>
                 </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Help */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Help</h4>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <Link to="/contact" className="hover:text-[#D4A017] transition-colors">Contact Us</Link>
+              </li>
+              <li>
+                <Link to="/shipping-policy" className="hover:text-[#D4A017] transition-colors">Shipping Policy</Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="hover:text-[#D4A017] transition-colors">Refund Policy</Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="hover:text-[#D4A017] transition-colors">Privacy Policy</Link>
+              </li>
             </ul>
           </div>
 
