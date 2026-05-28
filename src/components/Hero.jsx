@@ -125,7 +125,7 @@ export default function Hero() {
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Handcrafted with love</span>
+            <span>Handcrafted with care</span>
             <span className="opacity-60">→</span>
             <span>Tradition packed with love</span>
           </div>
