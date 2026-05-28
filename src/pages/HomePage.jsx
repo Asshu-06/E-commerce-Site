@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import CategorySection from '../components/CategorySection'
 import BannerCarousel from '../components/BannerCarousel'
-import { Sparkles, Shield, Truck, Star, ArrowRight, MessageCircle, MapPin, Package } from 'lucide-react'
+import { Sparkles, Shield, Truck, ArrowRight } from 'lucide-react'
 import { mockProducts } from '../lib/mockData'
+import { supabase } from '../lib/supabase'
 import ProductCard from '../components/ProductCard'
 
 const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '917997060668'
@@ -32,6 +33,28 @@ function AnimatedSection({ children, className = '' }) {
 }
 
 export default function HomePage() {
+  const [newArrivals, setNewArrivals] = useState([])
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(4)
+        if (data && data.length > 0) {
+          setNewArrivals(data)
+        } else {
+          setNewArrivals(mockProducts.filter(p => p.type === 'standard').slice(0, 4))
+        }
+      } catch {
+        setNewArrivals(mockProducts.filter(p => p.type === 'standard').slice(0, 4))
+      }
+    }
+    fetch()
+  }, [])
+
   const featuredProducts = mockProducts.filter(p => p.type === 'standard').slice(0, 4)
 
   return (
@@ -65,6 +88,29 @@ export default function HomePage() {
         <CategorySection />
       </AnimatedSection>
 
+      {/* New Arrivals */}
+      <AnimatedSection>
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <span className="text-xs font-bold tracking-widest uppercase text-[#C8511B] block mb-2">Just In</span>
+              <h2 className="text-3xl font-bold text-gray-900 tracking-tight">New Arrivals</h2>
+            </div>
+            <Link to="/category/pasupu"
+              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-[#C8511B] transition-colors">
+              View all <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-children">
+            {newArrivals.map((p) => (
+              <div key={p.id} className="animate-fade-up">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </AnimatedSection>
+
       {/* Featured products */}
       <AnimatedSection>
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -84,47 +130,6 @@ export default function HomePage() {
                 <ProductCard product={p} />
               </div>
             ))}
-          </div>
-        </section>
-      </AnimatedSection>
-
-      {/* Shipping charges info */}
-      <AnimatedSection>
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-10">
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#FDF3EC] rounded-xl flex items-center justify-center">
-                <Truck className="w-5 h-5 text-[#C8511B]" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900">Delivery Charges</h3>
-                <p className="text-xs text-gray-400">Minimum order: 20 pieces · Charges based on quantity</p>
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
-              {/* PAN India — single unified table */}
-              <div className="p-6 sm:col-span-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <Package className="w-5 h-5 text-emerald-600" />
-                  <p className="font-bold text-gray-900">PAN India Shipping</p>
-                  <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">All States</span>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-x-12 space-y-1.5 text-sm">
-                  {[
-                    { qty: '≤ 100 pcs', price: '₹80' },
-                    { qty: '≤ 200 pcs', price: '₹150' },
-                    { qty: '≤ 300 pcs', price: '₹200' },
-                    { qty: '≤ 400 pcs', price: '₹250' },
-                    { qty: '400+ pcs',  price: '+₹50 per 100' },
-                  ].map((r) => (
-                    <div key={r.qty} className="flex justify-between text-gray-600">
-                      <span>{r.qty}</span>
-                      <span className="font-semibold text-[#C8511B]">{r.price}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </section>
       </AnimatedSection>

@@ -211,8 +211,10 @@ export default function AdminCategories() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => (
             <div key={cat.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {cat.image_url && (
+              {cat.image_url ? (
                 <img src={cat.image_url} alt={cat.name} className="w-full h-36 object-cover" />
+              ) : (
+                <div className="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-300 text-4xl">🖼️</div>
               )}
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
