@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import CategorySection from '../components/CategorySection'
+import BannerCarousel from '../components/BannerCarousel'
 import { Sparkles, Shield, Truck, Star, ArrowRight, MessageCircle, MapPin, Package } from 'lucide-react'
 import { mockProducts } from '../lib/mockData'
 import ProductCard from '../components/ProductCard'
@@ -36,6 +37,7 @@ export default function HomePage() {
   return (
     <main className="bg-stone-50">
       <Hero />
+      <BannerCarousel />
 
       {/* Trust bar */}
       <div className="bg-white border-y border-gray-100">
