@@ -94,8 +94,8 @@ export default function ProductCard({ product }) {
           <span className="text-[11px] text-gray-400 ml-1">4.0</span>
         </div>
 
-        {/* Magnet option */}
-        {!isCustomization && product.variants?.length > 0 && (
+        {/* Magnet option — only for Pasupu-Kumkuma */}
+        {!isCustomization && product.category === 'pasupu' && product.variants?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {product.variants.map((v) => (
               <button key={v} onClick={() => setSelectedVariant(v)}

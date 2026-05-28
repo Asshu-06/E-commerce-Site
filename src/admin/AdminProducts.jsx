@@ -17,7 +17,7 @@ async function mockIdToUUID(mockId) {
 const EMPTY_FORM = {
   name: '', category: 'pasupu', type: 'standard',
   price: '', unit: 'set', description: '', image_url: '', variants: '',
-  stock_quantity: '',
+  stock_quantity: '', min_quantity: '',
 }
 const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Return Bags' }
 const CATEGORIES  = ['pasupu', 'gifts', 'bags']
@@ -117,6 +117,7 @@ export default function AdminProducts() {
       image_url:   p.image_url   || '',   // kept for save logic
       variants:    Array.isArray(p.variants) ? p.variants.join(', ') : (p.variants || ''),
       stock_quantity: p.stock_quantity ?? '',
+      min_quantity:   p.min_quantity   ?? '',
     })
     setImageFile(null)
     setImagePreview(p.image_url || '')   // show existing image immediately
@@ -174,6 +175,7 @@ export default function AdminProducts() {
         image_url:   finalImageUrl           || null,
         variants:    ['Without Magnet', 'With Magnet (+₹3)'],
         stock_quantity: form.stock_quantity !== '' ? parseInt(form.stock_quantity) : null,
+        min_quantity:   form.min_quantity   !== '' ? parseInt(form.min_quantity)   : null,
       }
 
       setUploadProgress(editProduct ? 'Updating...' : 'Saving...')
@@ -450,8 +452,8 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              {/* Price + Unit + Stock */}
-              <div className="grid grid-cols-3 gap-4">
+              {/* Price + Unit + Stock + Min Qty */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Price (₹) {form.type === 'customization' && <span className="text-gray-400 font-normal text-xs">(optional)</span>}
@@ -470,6 +472,12 @@ export default function AdminProducts() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock Qty</label>
                   <input type="number" value={form.stock_quantity} onChange={(e) => setForm((f) => ({ ...f, stock_quantity: e.target.value }))}
                     placeholder="e.g. 100" min="0" step="1"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Min Order Qty</label>
+                  <input type="number" value={form.min_quantity} onChange={(e) => setForm((f) => ({ ...f, min_quantity: e.target.value }))}
+                    placeholder="e.g. 20" min="1" step="1"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
                 </div>
               </div>
