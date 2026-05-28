@@ -17,6 +17,7 @@ async function mockIdToUUID(mockId) {
 const EMPTY_FORM = {
   name: '', category: 'pasupu', type: 'standard',
   price: '', unit: 'set', description: '', image_url: '', variants: '',
+  stock_quantity: '',
 }
 const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Return Bags' }
 const CATEGORIES  = ['pasupu', 'gifts', 'bags']
@@ -115,6 +116,7 @@ export default function AdminProducts() {
       description: p.description || '',
       image_url:   p.image_url   || '',   // kept for save logic
       variants:    Array.isArray(p.variants) ? p.variants.join(', ') : (p.variants || ''),
+      stock_quantity: p.stock_quantity ?? '',
     })
     setImageFile(null)
     setImagePreview(p.image_url || '')   // show existing image immediately
@@ -171,6 +173,7 @@ export default function AdminProducts() {
         description: form.description.trim() || null,
         image_url:   finalImageUrl           || null,
         variants:    ['Without Magnet', 'With Magnet (+₹3)'],
+        stock_quantity: form.stock_quantity !== '' ? parseInt(form.stock_quantity) : null,
       }
 
       setUploadProgress(editProduct ? 'Updating...' : 'Saving...')
@@ -303,6 +306,7 @@ export default function AdminProducts() {
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Category</th>
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Type</th>
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Price</th>
+                  <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Stock</th>
                   <th className="text-right px-5 py-3.5 font-semibold text-gray-600">Actions</th>
                 </tr>
               </thead>
@@ -331,6 +335,9 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-4 py-3.5 font-medium text-gray-900">
                       {p.price ? `₹${p.price}` : <span className="text-gray-400 text-xs">WhatsApp only</span>}
+                    </td>
+                    <td className="px-4 py-3.5 text-gray-600">
+                      {p.stock_quantity != null ? p.stock_quantity : <span className="text-gray-300 text-xs">—</span>}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
@@ -443,8 +450,8 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              {/* Price + Unit */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Price + Unit + Stock */}
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Price (₹) {form.type === 'customization' && <span className="text-gray-400 font-normal text-xs">(optional)</span>}
@@ -457,6 +464,12 @@ export default function AdminProducts() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Unit</label>
                   <input value={form.unit} onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
                     placeholder="set, piece, pack"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock Qty</label>
+                  <input type="number" value={form.stock_quantity} onChange={(e) => setForm((f) => ({ ...f, stock_quantity: e.target.value }))}
+                    placeholder="e.g. 100" min="0" step="1"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
                 </div>
               </div>
