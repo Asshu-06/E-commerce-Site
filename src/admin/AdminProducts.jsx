@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Plus, Pencil, Trash2, X, Save, ImagePlus, Package, Search, AlertCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
 
 // Convert a mock string id (e.g. "pk-1") to a stable UUID using SHA-1 via SubtleCrypto
@@ -67,7 +66,7 @@ export default function AdminProducts() {
     setLoading(false)
   }
 
-  // ── Fetch: Supabase rows + mock rows that haven't been saved to Supabase ──
+  // ── Fetch: Supabase rows only ─────────────────────────────────────────────
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
@@ -76,25 +75,14 @@ export default function AdminProducts() {
         .order('created_at', { ascending: false })
 
       if (!error && data) {
-        // Build set of stable UUIDs for all mock products that exist in Supabase
-        const dbIds = new Set(data.map((p) => String(p.id)))
-
-        // For each mock product, compute its stable UUID and check if it's in Supabase
-        const mocksToShow = await Promise.all(
-          mockProducts.map(async (p) => {
-            const stableId = await mockIdToUUID(p.id)
-            return dbIds.has(stableId) ? null : p  // null = already in Supabase
-          })
-        )
-        const unsavedMocks = mocksToShow.filter(Boolean)
-        setProducts([...data, ...unsavedMocks])
+        setProducts(data)
         setDbConnected(true)
         return
       }
     } catch { /* fall through */ }
 
-    // Supabase unavailable — show mock only
-    setProducts(mockProducts)
+    // Supabase unavailable
+    setProducts([])
     setDbConnected(false)
   }
 
