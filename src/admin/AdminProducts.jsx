@@ -4,6 +4,17 @@ import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
 
+// Convert a mock string id (e.g. "pk-1") to a stable UUID using SHA-1 via SubtleCrypto
+async function mockIdToUUID(mockId) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode('lakshmiram-mock-' + mockId)
+  const hashBuffer = await crypto.subtle.digest('SHA-1', data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  // Format as UUID v4-like: 8-4-4-4-12
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-4${hex.slice(13,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`
+}
+
 const EMPTY_FORM = {
   name: '', category: 'pasupu', type: 'standard',
   price: '', unit: 'set', description: '', image_url: '', variants: '',
@@ -171,10 +182,13 @@ export default function AdminProducts() {
       if (editProduct) {
         const isMock = !editProduct.id || !/^[0-9a-f-]{36}$/.test(editProduct.id)
         if (isMock) {
-          // Mock product — insert as new real record in Supabase
-          const { error } = await supabase.from('products').insert([payload])
+          // Generate a stable UUID from the mock id so upsert always hits the same row
+          const stableId = await mockIdToUUID(editProduct.id)
+          const { error } = await supabase
+            .from('products')
+            .upsert([{ ...payload, id: stableId }], { onConflict: 'id' })
           if (error) throw error
-          toast.success('Product saved to database!')
+          toast.success('Product updated!')
         } else {
           const { error } = await supabase.from('products').update(payload).eq('id', editProduct.id)
           if (error) throw error
