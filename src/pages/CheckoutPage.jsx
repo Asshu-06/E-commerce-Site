@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ChevronRight, CheckCircle2, Smartphone, ImagePlus, X, Clock, Copy, Check } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCart } from '../context/CartContext'
@@ -30,7 +30,17 @@ function buildUpiString(amount, orderId) {
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart()
   const navigate = useNavigate()
+  const { state: locationState } = useLocation()
   const { user, loading: authLoading } = useAuth()
+
+  // Buy Now mode — single product bypassing cart
+  const buyNowItem = locationState?.buyNowItem || null
+  const activeCart = buyNowItem
+    ? [{ ...buyNowItem, id: buyNowItem.id, price: buyNowItem.price }]
+    : cart
+  const activeTotalPrice = buyNowItem
+    ? (buyNowItem.price || 0) * buyNowItem.quantity
+    : totalPrice
 
   // All state declarations first
   const [form, setForm]               = useState({ ...INITIAL_FORM })
@@ -67,12 +77,12 @@ export default function CheckoutPage() {
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   // Total pieces in cart
-  const totalQty = cart.reduce((s, i) => s + i.quantity, 0)
+  const totalQty = activeCart.reduce((s, i) => s + i.quantity, 0)
 
   // Shipping only applies to Pasupu Kumkuma products
-  const pasupuQty = cart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
+  const pasupuQty = activeCart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
   const shippingCharge = form.city.trim() ? calcShipping(pasupuQty) : 0
-  const grandTotal = totalPrice + shippingCharge
+  const grandTotal = activeTotalPrice + shippingCharge
 
   // Minimum order validation
   const belowMinOrder = totalQty < MIN_ORDER_QTY
@@ -91,7 +101,7 @@ export default function CheckoutPage() {
     e.preventDefault()
     const err = validate()
     if (err) { toast.error(err); return }
-    if (cart.length === 0) { toast.error('Your cart is empty.'); return }
+    if (activeCart.length === 0) { toast.error('Your cart is empty.'); return }
     if (belowMinOrder) {
       toast.error(`Minimum order is ${MIN_ORDER_QTY} pieces. You have ${totalQty}.`)
       return
@@ -141,10 +151,10 @@ export default function CheckoutPage() {
       const id = await saveOrder({
         paymentMethod:  'upi',
         paymentStatus:  'pending',
-        screenshotUrl,  // may be null if upload failed
+        screenshotUrl,
       })
       setOrderId(id)
-      clearCart()
+      if (!buyNowItem) clearCart()  // only clear cart if not Buy Now
       setStep('success')
       window.scrollTo({ top: 0, behavior: 'instant' })
       toast.success('Order submitted! Admin will verify your payment.')
@@ -163,7 +173,7 @@ export default function CheckoutPage() {
       phone:              form.phone,
       email:              form.email || null,
       address:            `${form.address}, ${form.city} - ${form.pincode}`,
-      items:              cart.map((i) => ({
+      items:              activeCart.map((i) => ({
         id: i.id, name: i.name,
         variant: i.selectedVariant,
         quantity: i.quantity, price: i.price,
@@ -427,7 +437,7 @@ export default function CheckoutPage() {
   }
 
   // ── Checkout form ───────────────────────────────────────────────────────
-  if (cart.length === 0) {
+  if (activeCart.length === 0) {
     return (
       <div className="min-h-screen pt-24 flex flex-col items-center justify-center px-4 text-center">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Your cart is empty</h2>
@@ -539,7 +549,7 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-2xl border border-[#FAE3D3] p-6 shadow-sm sticky top-24">
               <h2 className="font-bold text-gray-900 mb-4">Order Summary</h2>
               <div className="space-y-3 mb-5 max-h-60 overflow-y-auto pr-1">
-                {cart.map((item) => (
+                {activeCart.map((item) => (
                   <div key={`${item.id}-${item.selectedVariant}`} className="flex gap-3">
                     <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -556,7 +566,7 @@ export default function CheckoutPage() {
 
               <div className="border-t border-gray-100 pt-4 space-y-2 text-sm mb-5">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span><span>₹{totalPrice.toLocaleString()}</span>
+                  <span>Subtotal</span><span>₹{activeTotalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>

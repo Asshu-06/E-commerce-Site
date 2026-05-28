@@ -116,8 +116,16 @@ export default function ProductPage() {
       return
     }
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
-    addItem(productToAdd, selectedVariant, qty)
-    navigate('/checkout')
+    // Navigate to checkout with only this product — don't touch the cart
+    navigate('/checkout', {
+      state: {
+        buyNowItem: {
+          ...productToAdd,
+          selectedVariant,
+          quantity: qty,
+        }
+      }
+    })
   }
 
   const handleShare = () => {
