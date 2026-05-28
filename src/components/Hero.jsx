@@ -185,7 +185,6 @@ export default function Hero() {
             }`}
           >
             {[
-              { value: '500+', label: 'Happy Customers' },
               { value: '50+', label: 'Products' },
               { value: '100%', label: 'Authentic' },
             ].map((stat) => (
@@ -198,10 +197,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Barani image — bottom right ── */}
+      {/* ── Barani image — right side, vertically centered ── */}
       <div
-        className={`absolute bottom-0 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
-          visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+        className={`absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
+          visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
         }`}
       >
         {/* Glow behind image */}
