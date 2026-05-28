@@ -1,10 +1,18 @@
 export default function InstagramButton() {
   const handleClick = () => {
-    window.open(
-      'https://www.instagram.com/lakshmiram_collection?igsh=MWNnZHE1dHE5NXJ5bA==',
-      '_blank',
-      'noopener,noreferrer'
-    )
+    const webUrl = 'https://www.instagram.com/lakshmiram_collection'
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
+    if (isMobile) {
+      // Try to open the app; fall back to web after 1.5s if app not installed
+      window.location.href = 'instagram://user?username=lakshmiram_collection'
+      setTimeout(() => {
+        window.open(webUrl, '_blank', 'noopener,noreferrer')
+      }, 1500)
+    } else {
+      // Desktop — go straight to web
+      window.open(webUrl, '_blank', 'noopener,noreferrer')
+    }
   }
 
   return (

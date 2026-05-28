@@ -35,16 +35,24 @@ export default function CheckoutPage() {
   const { user, loading: authLoading } = useAuth()
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (authLoading) return  // wait for auth to resolve
+    if (!user) {
       navigate('/login?redirect=/checkout', { replace: true })
     }
   }, [user, authLoading, navigate])
 
-  const [form, setForm]               = useState(() => ({
-    ...INITIAL_FORM,
-    name:  user?.user_metadata?.full_name || '',
-    email: user?.email || '',
-  }))
+  // Sync form with user data once auth resolves
+  useEffect(() => {
+    if (user) {
+      setForm((f) => ({
+        ...f,
+        name:  f.name  || user.user_metadata?.full_name || '',
+        email: f.email || user.email || '',
+      }))
+    }
+  }, [user])
+
+  const [form, setForm] = useState({ ...INITIAL_FORM })
   const [step, setStep]               = useState('form')   // 'form' | 'upi' | 'success'
   const [submitting, setSubmitting]   = useState(false)
   const [orderId, setOrderId]         = useState(null)
@@ -454,12 +462,12 @@ export default function CheckoutPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
-                  <input name="name" value={form.name} onChange={handleChange} placeholder="Your full name" required
+                  <input name="name" value={form.name} onChange={handleChange} placeholder="Your full name"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
-                  <input name="phone" value={form.phone} onChange={handleChange} placeholder="10-digit mobile" maxLength={10} required
+                  <input name="phone" value={form.phone} onChange={handleChange} placeholder="10-digit mobile" maxLength={10}
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                 </div>
                 <div className="sm:col-span-2">
@@ -485,19 +493,19 @@ export default function CheckoutPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Street Address *</label>
                   <textarea name="address" value={form.address} onChange={handleChange}
                     placeholder="e.g. Flat 4B, Sunrise Apartments, MG Road, Near City Mall..."
-                    rows={3} required
+                    rows={3}
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A] resize-none" />
                   <p className="text-xs text-gray-400 mt-1.5">Include flat/house no., building name, street, landmark</p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
-                    <input name="city" value={form.city} onChange={handleChange} placeholder="City" required
+                    <input name="city" value={form.city} onChange={handleChange} placeholder="City"
                       className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Pincode *</label>
-                    <input name="pincode" value={form.pincode} onChange={handleChange} placeholder="6-digit pincode" maxLength={6} required
+                    <input name="pincode" value={form.pincode} onChange={handleChange} placeholder="6-digit pincode" maxLength={6}
                       className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                   </div>
                 </div>
