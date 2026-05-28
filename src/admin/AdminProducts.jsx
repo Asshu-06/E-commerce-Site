@@ -169,19 +169,21 @@ export default function AdminProducts() {
       setUploadProgress(editProduct ? 'Updating...' : 'Saving...')
 
       if (editProduct) {
-        // Check if this is a mock product (non-UUID id like "pk-1")
         const isMock = !editProduct.id || !/^[0-9a-f-]{36}$/.test(editProduct.id)
         if (isMock) {
-          toast.error('This is a demo product. Add it as a new product from Supabase to edit it.')
-          setSaving(false)
-          setUploadProgress('')
-          return
+          // Mock product — insert as new real record in Supabase
+          const { error } = await supabase.from('products').insert([payload])
+          if (error) throw error
+          toast.success('Product saved to database!')
+        } else {
+          const { error } = await supabase.from('products').update(payload).eq('id', editProduct.id)
+          if (error) throw error
+          toast.success('Product updated!')
         }
-        const { error } = await supabase.from('products').update(payload).eq('id', editProduct.id)
-        if (error) throw error
       } else {
         const { error } = await supabase.from('products').insert([payload])
         if (error) throw error
+        toast.success('Product added!')
       }
 
       toast.success(editProduct ? 'Product updated!' : 'Product added!')
@@ -203,7 +205,7 @@ export default function AdminProducts() {
     try {
       const isMock = !deleteTarget.id || !/^[0-9a-f-]{36}$/.test(deleteTarget.id)
       if (isMock) {
-        toast.error('This is a demo product and cannot be deleted. Add real products via the admin panel.')
+        toast.error('Demo products cannot be deleted. They are built into the app.')
         setDeleteTarget(null)
         setDeleting(false)
         return
