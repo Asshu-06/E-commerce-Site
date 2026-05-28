@@ -11,19 +11,31 @@ export default function AdminBanners() {
   const [saving, setSaving]   = useState(false)
   const [previews, setPreviews] = useState({})
   const [files, setFiles]     = useState({})
+  const [tableReady, setTableReady] = useState(true)
 
   useEffect(() => { fetchBanners() }, [])
 
   const fetchBanners = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('banners')
       .select('*')
       .order('position', { ascending: true })
 
+    if (error) {
+      setTableReady(false)
+      setSlides(Array.from({ length: MAX_SLIDES }, (_, i) => ({ ...EMPTY_SLIDE, position: i + 1 })))
+      return
+    }
+
+    setTableReady(true)
     if (data && data.length > 0) {
-      setSlides(data)
+      // Fill up to MAX_SLIDES, merging existing data
+      const filled = Array.from({ length: MAX_SLIDES }, (_, i) => {
+        const existing = data.find(d => d.position === i + 1)
+        return existing || { ...EMPTY_SLIDE, position: i + 1 }
+      })
+      setSlides(filled)
     } else {
-      // Initialize 5 empty slots
       setSlides(Array.from({ length: MAX_SLIDES }, (_, i) => ({ ...EMPTY_SLIDE, position: i + 1 })))
     }
   }
@@ -190,6 +202,7 @@ export default function AdminBanners() {
         ))}
       </div>
 
+      {!tableReady && (
       <div className="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800">
         <p className="font-semibold mb-1">📋 Setup required</p>
         <p>Run this SQL in Supabase to create the banners table:</p>
@@ -207,6 +220,7 @@ ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Banners public read" ON public.banners FOR SELECT USING (true);
 CREATE POLICY "Banners auth write" ON public.banners FOR ALL TO authenticated USING (true) WITH CHECK (true);`}</pre>
       </div>
+      )}
     </div>
   )
 }

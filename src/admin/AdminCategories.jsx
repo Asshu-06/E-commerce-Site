@@ -67,13 +67,21 @@ export default function AdminCategories() {
 
   const uploadImage = async () => {
     if (!imageFile) return form.image_url
-    const ext  = imageFile.name.split('.').pop().toLowerCase()
-    const path = `categories/${Date.now()}.${ext}`
-    const { error } = await supabase.storage
-      .from('product-images')
-      .upload(path, imageFile, { cacheControl: '3600', upsert: true })
-    if (error) throw new Error('Image upload failed: ' + error.message)
-    return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl
+    try {
+      const ext  = imageFile.name.split('.').pop().toLowerCase()
+      const path = `categories/${Date.now()}.${ext}`
+      const { error } = await supabase.storage
+        .from('product-images')
+        .upload(path, imageFile, { cacheControl: '3600', upsert: true })
+      if (error) {
+        console.warn('Image upload failed (non-blocking):', error.message)
+        return form.image_url  // fall back to URL field
+      }
+      return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl
+    } catch (err) {
+      console.warn('Image upload exception (non-blocking):', err)
+      return form.image_url
+    }
   }
 
   const handleSave = async () => {
