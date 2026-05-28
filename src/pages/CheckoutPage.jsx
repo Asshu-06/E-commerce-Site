@@ -5,7 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { calcShipping, isAPTS, MIN_ORDER_QTY } from '../lib/shipping'
+import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'q901588902@ybl'
@@ -463,11 +463,13 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
                   <input name="name" value={form.name} onChange={handleChange} placeholder="Your full name"
+                    autoComplete="off"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
                   <input name="phone" value={form.phone} onChange={handleChange} placeholder="10-digit mobile" maxLength={10}
+                    autoComplete="off"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
                 </div>
                 <div className="sm:col-span-2">
@@ -565,7 +567,6 @@ export default function CheckoutPage() {
                   {form.city.trim() ? (
                     <span className="font-medium text-gray-900">
                       ₹{shippingCharge}
-                      <span className="text-xs text-gray-400 ml-1">({apTs ? 'AP/TS' : 'Other state'})</span>
                     </span>
                   ) : (
                     <span className="text-xs text-gray-400">Enter city to calculate</span>
