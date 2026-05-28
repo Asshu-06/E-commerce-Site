@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ChevronRight, ShoppingBag } from 'lucide-react'
-import { categories, mockProducts } from '../lib/mockData'
+import { categories as mockCategories, mockProducts } from '../lib/mockData'
 import { supabase } from '../lib/supabase'
 import ProductList from '../components/ProductList'
 import Tabs from '../components/Tabs'
@@ -23,6 +23,31 @@ export default function CategoryPage() {
   const [activeTab, setActiveTab] = useState('standard')
   const [products, setProducts]   = useState([])
   const [loading, setLoading]     = useState(true)
+  const [categories, setCategories] = useState(mockCategories)
+
+  // Load categories from Supabase, fall back to mock
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('created_at', { ascending: true })
+        if (!error && data && data.length > 0) {
+          // Map Supabase categories to the shape the UI expects
+          setCategories(data.map(c => ({
+            id:          c.slug,
+            name:        c.name,
+            description: c.description,
+            image_url:   c.image_url,
+            hasTabs:     c.has_tabs,
+            path:        `/category/${c.slug}`,
+          })))
+        }
+      } catch { /* use mock fallback */ }
+    }
+    fetchCategories()
+  }, [])
 
   const category = categories.find((c) => c.id === categoryId)
 

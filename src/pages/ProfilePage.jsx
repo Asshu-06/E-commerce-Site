@@ -606,19 +606,6 @@ export default function ProfilePage() {
             </a>
           </div>
 
-          {/* Sister store */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-xs text-gray-400 mb-2">Also visit our sister store</p>
-            <a
-              href="https://www.nashejewels.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm"
-            >
-              <img src="https://www.nashejewels.in/favicon.ico" alt="" className="w-4 h-4 rounded" onError={(e) => e.target.style.display='none'} />
-              NaShe Jewels
-            </a>
-          </div>
         </div>
       </div>
 
