@@ -30,12 +30,24 @@ function buildUpiString(amount, orderId) {
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart()
   const navigate = useNavigate()
-
-  // Redirect to login if not authenticated (wait for auth to resolve first)
   const { user, loading: authLoading } = useAuth()
 
+  // All state declarations first
+  const [form, setForm]               = useState({ ...INITIAL_FORM })
+  const [step, setStep]               = useState('form')
+  const [submitting, setSubmitting]   = useState(false)
+  const [orderId, setOrderId]         = useState(null)
+  const [snapshotTotal, setSnapshotTotal] = useState(0)
+  const [tempOrderId]                 = useState(`ST${Date.now().toString().slice(-6)}`)
+  const [screenshot, setScreenshot]   = useState(null)
+  const [screenshotPreview, setScreenshotPreview] = useState('')
+  const [uploading, setUploading]     = useState(false)
+  const [copied, setCopied]           = useState(false)
+  const fileRef                       = useRef(null)
+
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (authLoading) return  // wait for auth to resolve
+    if (authLoading) return
     if (!user) {
       navigate('/login?redirect=/checkout', { replace: true })
     }
@@ -51,18 +63,6 @@ export default function CheckoutPage() {
       }))
     }
   }, [user])
-
-  const [form, setForm] = useState({ ...INITIAL_FORM })
-  const [step, setStep]               = useState('form')   // 'form' | 'upi' | 'success'
-  const [submitting, setSubmitting]   = useState(false)
-  const [orderId, setOrderId]         = useState(null)
-  const [snapshotTotal, setSnapshotTotal] = useState(0)  // locked total before cart clears
-  const [tempOrderId]                 = useState(`ST${Date.now().toString().slice(-6)}`)
-  const [screenshot, setScreenshot]   = useState(null)
-  const [screenshotPreview, setScreenshotPreview] = useState('')
-  const [uploading, setUploading]     = useState(false)
-  const [copied, setCopied]           = useState(false)
-  const fileRef                       = useRef(null)
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
