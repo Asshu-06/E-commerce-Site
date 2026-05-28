@@ -67,7 +67,7 @@ export default function AdminProducts() {
     setLoading(false)
   }
 
-  // ── Fetch: Supabase rows + mock rows that aren't in Supabase yet ──────────
+  // ── Fetch: Supabase rows + mock rows that haven't been saved to Supabase ──
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
@@ -76,10 +76,18 @@ export default function AdminProducts() {
         .order('created_at', { ascending: false })
 
       if (!error && data) {
-        // Keep mock products that haven't been migrated to Supabase
-        const dbIds   = new Set(data.map((p) => String(p.id)))
-        const mocks   = mockProducts.filter((p) => !dbIds.has(String(p.id)))
-        setProducts([...data, ...mocks])
+        // Build set of stable UUIDs for all mock products that exist in Supabase
+        const dbIds = new Set(data.map((p) => String(p.id)))
+
+        // For each mock product, compute its stable UUID and check if it's in Supabase
+        const mocksToShow = await Promise.all(
+          mockProducts.map(async (p) => {
+            const stableId = await mockIdToUUID(p.id)
+            return dbIds.has(stableId) ? null : p  // null = already in Supabase
+          })
+        )
+        const unsavedMocks = mocksToShow.filter(Boolean)
+        setProducts([...data, ...unsavedMocks])
         setDbConnected(true)
         return
       }
