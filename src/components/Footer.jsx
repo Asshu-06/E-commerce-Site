@@ -24,7 +24,7 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
@@ -98,36 +98,6 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/privacy-policy" className="hover:text-[#D4A017] transition-colors">Privacy Policy</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-5 uppercase tracking-wider">Contact</h4>
-            <ul className="space-y-4 text-sm">
-              <li className="flex items-start gap-3">
-                <Phone className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <span>+91 799 706 0668</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <a href="mailto:Lakshmiramcollections@gmail.com" className="hover:text-[#D4A017] transition-colors break-all">
-                  Lakshmiramcollections@gmail.com
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[#D4A017] mt-0.5 shrink-0" />
-                <a
-                  href="https://maps.google.com/?q=Gothic+Pentagon+Clouds,+Bachupally,+Hyderabad"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#D4A017] transition-colors leading-relaxed"
-                >
-                  Gothic Pentagon Clouds,<br />
-                  beside Pista House, Bachupally,<br />
-                  Hyderabad, Telangana
-                </a>
               </li>
             </ul>
           </div>
