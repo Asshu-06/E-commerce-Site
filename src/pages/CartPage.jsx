@@ -109,7 +109,9 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span className="text-xs text-gray-400 text-right">PAN India: ₹{shippingAPTS}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {totalQty > 0 ? `₹${shippingAPTS}` : <span className="text-xs text-gray-400">Calculated at checkout</span>}
+                  </span>
                 </div>
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
                   <span>Subtotal (excl. shipping)</span>
@@ -129,12 +131,8 @@ export default function CartPage() {
 
               {/* Shipping note */}
               <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
-                🚚 <strong>Shipping charges</strong> (PAN India):<br/>
-                <span className="text-gray-500">≤100 pcs: ₹80</span><br/>
-                <span className="text-gray-500">≤200 pcs: ₹150</span><br/>
-                <span className="text-gray-500">≤300 pcs: ₹200</span><br/>
-                <span className="text-gray-500">≤400 pcs: ₹250</span><br/>
-                <span className="text-gray-400 text-[10px]">Final total calculated at checkout</span>
+                🚚 <strong>Shipping charge: ₹{shippingAPTS > 0 ? shippingAPTS : '—'}</strong>
+                <span className="text-gray-400 block mt-1">Final total confirmed at checkout</span>
               </div>
 
               <button
