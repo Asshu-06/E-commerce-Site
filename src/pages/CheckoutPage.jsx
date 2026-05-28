@@ -69,8 +69,9 @@ export default function CheckoutPage() {
   // Total pieces in cart
   const totalQty = cart.reduce((s, i) => s + i.quantity, 0)
 
-  // Shipping based on quantity
-  const shippingCharge = form.city.trim() ? calcShipping(totalQty) : 0
+  // Shipping only applies to Pasupu Kumkuma products
+  const pasupuQty = cart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
+  const shippingCharge = form.city.trim() ? calcShipping(pasupuQty) : 0
   const grandTotal = totalPrice + shippingCharge
 
   // Minimum order validation

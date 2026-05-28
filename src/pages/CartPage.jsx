@@ -14,9 +14,10 @@ export default function CartPage() {
   const belowMin     = totalQty < MIN_ORDER_QTY && cart.length > 0
   const remaining    = MIN_ORDER_QTY - totalQty
 
-  // Shipping based on quantity
-  const shippingAPTS  = totalQty > 0 ? calcShipping(totalQty) : 0
-  const shippingOther = totalQty > 0 ? calcShipping(totalQty) : 0
+  // Shipping only applies to Pasupu Kumkuma products
+  const pasupuQty    = cart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
+  const shippingAPTS  = pasupuQty > 0 ? calcShipping(pasupuQty) : 0
+  const shippingOther = shippingAPTS
 
   const handleRemove = (id, variant, name) => {
     removeItem(id, variant)
@@ -131,8 +132,9 @@ export default function CartPage() {
 
               {/* Shipping note */}
               <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
-                🚚 <strong>Shipping charge: ₹{shippingAPTS > 0 ? shippingAPTS : '—'}</strong>
-                <span className="text-gray-400 block mt-1">Final total confirmed at checkout</span>
+                🚚 <strong>Shipping charge: {shippingAPTS > 0 ? `₹${shippingAPTS}` : 'Free'}</strong>
+                {pasupuQty === 0 && <span className="text-gray-500"> (No Pasupu-Kumkuma items)</span>}
+                <span className="text-gray-400 block mt-1">Shipping applies to Pasupu-Kumkuma products only</span>
               </div>
 
               <button
