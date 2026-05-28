@@ -261,5 +261,4 @@ export default function Navbar() {
     <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
   </>
   )
-}    )
 }
