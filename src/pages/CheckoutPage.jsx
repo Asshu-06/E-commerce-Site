@@ -117,35 +117,30 @@ export default function CheckoutPage() {
     try {
       let screenshotUrl = null
 
-      // Upload to Supabase Storage
-      const ext  = screenshot.name.split('.').pop().toLowerCase()
-      const path = `payment-screenshots/${tempOrderId}-${Date.now()}.${ext}`
+      // Try to upload to Supabase Storage — if it fails, still place the order
+      try {
+        const ext  = screenshot.name.split('.').pop().toLowerCase()
+        const path = `payment-screenshots/${tempOrderId}-${Date.now()}.${ext}`
 
-      const { error: upErr } = await supabase.storage
-        .from('product-images')
-        .upload(path, screenshot, { cacheControl: '3600', upsert: true })
+        const { error: upErr } = await supabase.storage
+          .from('product-images')
+          .upload(path, screenshot, { cacheControl: '3600', upsert: true })
 
-      if (upErr) {
-        console.error('Storage upload error:', upErr)
-        toast.error('Failed to upload screenshot. Please check your connection and try again.')
-        setUploading(false)
-        return
-      }
-
-      screenshotUrl = supabase.storage
-        .from('product-images')
-        .getPublicUrl(path).data.publicUrl
-
-      if (!screenshotUrl) {
-        toast.error('Failed to upload screenshot. Please try again.')
-        setUploading(false)
-        return
+        if (!upErr) {
+          screenshotUrl = supabase.storage
+            .from('product-images')
+            .getPublicUrl(path).data.publicUrl
+        } else {
+          console.warn('Screenshot upload failed (non-blocking):', upErr.message)
+        }
+      } catch (uploadErr) {
+        console.warn('Screenshot upload exception (non-blocking):', uploadErr)
       }
 
       const id = await saveOrder({
         paymentMethod:  'upi',
         paymentStatus:  'pending',
-        screenshotUrl,
+        screenshotUrl,  // may be null if upload failed
       })
       setOrderId(id)
       clearCart()
