@@ -5,12 +5,14 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import WhatsAppAnnouncement from './WhatsAppAnnouncement'
+import SearchModal from './SearchModal'
 import toast from 'react-hot-toast'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen]       = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [scrolled, setScrolled]       = useState(false)
+  const [searchOpen, setSearchOpen]   = useState(false)
   const { totalItems, cart }          = useCart()
   const { items: wishlistItems }      = useWishlist()
   const { user, signOut, isAdmin }    = useAuth()
@@ -52,6 +54,7 @@ export default function Navbar() {
   ]
 
   return (
+  <>
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       transparent
         ? 'bg-transparent'
@@ -99,6 +102,14 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-1">
+            {/* Search */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className={`p-2.5 rounded-xl transition-all duration-200 ${transparent ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+              aria-label="Search products"
+            >
+              <Search className="w-5 h-5" />
+            </button>
             {/* Wishlist */}
             {user && (
               <Link to="/profile?tab=wishlist"
@@ -247,5 +258,8 @@ export default function Navbar() {
       {/* Marquee announcement — only on non-home pages */}
       <WhatsAppAnnouncement />
     </nav>
+    <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+  </>
   )
+}    )
 }
