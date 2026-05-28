@@ -309,6 +309,7 @@ export default function AdminProducts() {
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Type</th>
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Price</th>
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Stock</th>
+                  <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Min Qty</th>
                   <th className="text-right px-5 py-3.5 font-semibold text-gray-600">Actions</th>
                 </tr>
               </thead>
@@ -340,6 +341,9 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-4 py-3.5 text-gray-600">
                       {p.stock_quantity != null ? p.stock_quantity : <span className="text-gray-300 text-xs">—</span>}
+                    </td>
+                    <td className="px-4 py-3.5 text-gray-600">
+                      {p.min_quantity != null ? p.min_quantity : <span className="text-gray-300 text-xs">—</span>}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">

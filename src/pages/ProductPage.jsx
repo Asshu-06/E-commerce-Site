@@ -11,7 +11,7 @@ import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
 import { sendToWhatsApp } from '../lib/whatsapp'
-import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
+import { calcShipping } from '../lib/shipping'
 import ProductCard from '../components/ProductCard'
 import ProductReviews from '../components/ProductReviews'
 import LoginPromptModal from '../components/LoginPromptModal'
@@ -155,6 +155,7 @@ export default function ProductPage() {
   const isCustomization = product.type === 'customization'
   const wishlisted = isWishlisted(product.id)
   const catLabel = CAT_LABELS[product.category] || product.category
+  const minQty = product.min_quantity || 1  // use product's min_quantity, default 1 if not set
 
   // Build image array (main + placeholder extras for gallery feel)
   const images = [product.image_url].filter(Boolean)
@@ -314,7 +315,7 @@ export default function ProductPage() {
               {!isCustomization && (
                 <div className="mb-5">
                   <div className="flex items-center gap-4 mb-3">
-                    <p className="text-sm font-semibold text-gray-700">Quantity <span className="text-gray-400 font-normal">(min {MIN_ORDER_QTY} pcs)</span>:</p>
+                    <p className="text-sm font-semibold text-gray-700">Quantity <span className="text-gray-400 font-normal">(min {minQty} pcs)</span>:</p>
                     <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
                       <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold">
@@ -346,9 +347,9 @@ export default function ProductPage() {
                   </div>
 
                   {/* Min order warning */}
-                  {quantity < MIN_ORDER_QTY && quantity > 0 && (
+                  {quantity < minQty && quantity > 0 && (
                     <p className="text-xs text-red-600 font-medium bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                      ⚠️ Minimum order is <strong>{MIN_ORDER_QTY} pieces</strong>. Add {MIN_ORDER_QTY - quantity} more.
+                      ⚠️ Minimum order is <strong>{minQty} pieces</strong>. Add {minQty - quantity} more.
                     </p>
                   )}
                 </div>
@@ -367,7 +368,7 @@ export default function ProductPage() {
                 ) : (
                   <>
                     <button onClick={handleAddToCart}
-                      disabled={quantity < MIN_ORDER_QTY}
+                      disabled={quantity < minQty}
                       className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
                         addedToCart
                           ? 'bg-green-500 text-white shadow-green-200'
@@ -377,7 +378,7 @@ export default function ProductPage() {
                       {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                     </button>
                     <button onClick={handleBuyNow}
-                      disabled={quantity < MIN_ORDER_QTY}
+                      disabled={quantity < minQty}
                       className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 hover:-translate-y-0.5 text-base">
                       Buy Now
                     </button>
