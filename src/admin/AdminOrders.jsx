@@ -303,8 +303,12 @@ export default function AdminOrders() {
                       <div className="relative inline-block">
                         <select value={order.status}
                           onChange={(e) => updateStatus(order.id, e.target.value)}
-                          disabled={updatingId === order.id}
-                          className={`appearance-none pl-3 pr-7 py-1.5 rounded-full text-xs font-medium border cursor-pointer focus:outline-none capitalize ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                          disabled={updatingId === order.id || order.status === 'cancelled'}
+                          className={`appearance-none pl-3 pr-7 py-1.5 rounded-full text-xs font-medium border capitalize ${
+                            order.status === 'cancelled'
+                              ? 'cursor-not-allowed opacity-70'
+                              : 'cursor-pointer focus:outline-none'
+                          } ${STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                           {STATUS_OPTIONS.map((s) => (
                             <option key={s} value={s} className="capitalize bg-white text-gray-800">{s}</option>
                           ))}
@@ -433,8 +437,8 @@ export default function AdminOrders() {
               </div>
             </div>
 
-            {/* Action buttons */}
-            {(reviewOrder.payment_status === 'pending_verification' || reviewOrder.payment_status === 'pending') ? (
+            {/* Action buttons — only for non-cancelled orders */}
+            {(reviewOrder.payment_status === 'pending_verification' || reviewOrder.payment_status === 'pending') && reviewOrder.status !== 'cancelled' ? (
               <div className="px-6 py-5 space-y-3">
                 {/* Reject reason input — shown when reject is clicked */}
                 {showRejectInput ? (
@@ -680,14 +684,20 @@ export default function AdminOrders() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-1.5">Update Status</p>
-                  <select value={selectedOrder.status}
-                    onChange={(e) => updateStatus(selectedOrder.id, e.target.value)}
-                    disabled={updatingId === selectedOrder.id}
-                    className={`pl-3 pr-7 py-1.5 rounded-full text-xs font-medium border cursor-pointer focus:outline-none capitalize ${STATUS_COLORS[selectedOrder.status]}`}>
-                    {STATUS_OPTIONS.map((s) => (
-                      <option key={s} value={s} className="capitalize bg-white text-gray-800">{s}</option>
-                    ))}
-                  </select>
+                  {selectedOrder.status === 'cancelled' ? (
+                    <span className={`px-3 py-1.5 rounded-full text-xs font-medium border capitalize ${STATUS_COLORS['cancelled']}`}>
+                      Cancelled
+                    </span>
+                  ) : (
+                    <select value={selectedOrder.status}
+                      onChange={(e) => updateStatus(selectedOrder.id, e.target.value)}
+                      disabled={updatingId === selectedOrder.id}
+                      className={`pl-3 pr-7 py-1.5 rounded-full text-xs font-medium border cursor-pointer focus:outline-none capitalize ${STATUS_COLORS[selectedOrder.status]}`}>
+                      {STATUS_OPTIONS.filter(s => s !== 'cancelled').map((s) => (
+                        <option key={s} value={s} className="capitalize bg-white text-gray-800">{s}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
               </div>
             </div>
