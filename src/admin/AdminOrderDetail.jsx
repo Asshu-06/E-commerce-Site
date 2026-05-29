@@ -138,7 +138,8 @@ export default function AdminOrderDetail() {
       if (error) throw error
       setOrder(o => ({ ...o, payment_status: 'rejected', status: 'cancelled', rejection_reason: rejectReason.trim() }))
       setShowRejectInput(false)
-      toast.error('❌ Payment rejected.')
+      setLastStatusChanged('cancelled')
+      toast.error('Payment rejected.')
       if (order?.user_id) notifyUser.paymentRejected(order.user_id, { ...order, rejection_reason: rejectReason.trim() })
     } catch (err) { toast.error(err.message) }
     setUpdating(false)
@@ -445,7 +446,7 @@ export default function AdminOrderDetail() {
           {lastStatusChanged && order.phone && (
             <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
               <p className="text-sm font-semibold text-emerald-800">
-                Notify customer via WhatsApp — Status: <span className="capitalize">{lastStatusChanged}</span>
+                Notify customer via WhatsApp — {lastStatusChanged === 'cancelled' ? 'Payment Rejected' : `Status: ${lastStatusChanged}`}
               </p>
 
               {/* Tracking ID + Package image — only for shipped */}
@@ -482,11 +483,13 @@ export default function AdminOrderDetail() {
               <div className="flex items-center gap-3">
                 <a
                   href={`https://wa.me/91${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to ${lastStatusChanged.toUpperCase()}.\n${
-                      lastStatusChanged === 'shipped' && trackingId ? `\nTracking ID: ${trackingId}` : ''
-                    }${
-                      lastStatusChanged === 'shipped' && packageImageUrl ? `\nPackage image: ${packageImageUrl}` : ''
-                    }\n\nThank you for shopping with Lakshmi Ram Collections!`
+                    lastStatusChanged === 'cancelled'
+                      ? `Hello ${order.user_name},\n\nWe regret to inform you that your payment for order (ID: ${order.id.slice(0,8).toUpperCase()}) has been rejected.\n${order.rejection_reason ? `\nReason: ${order.rejection_reason}` : ''}\n\nPlease contact us for assistance.\n\nLakshmi Ram Collections`
+                      : `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to ${lastStatusChanged.toUpperCase()}.\n${
+                          lastStatusChanged === 'shipped' && trackingId ? `\nTracking ID: ${trackingId}` : ''
+                        }${
+                          lastStatusChanged === 'shipped' && packageImageUrl ? `\nPackage image: ${packageImageUrl}` : ''
+                        }\n\nThank you for shopping with Lakshmi Ram Collections!`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
