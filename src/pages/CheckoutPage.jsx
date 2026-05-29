@@ -5,7 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
+import { calcShipping } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'q901588902@ybl'
@@ -84,8 +84,9 @@ export default function CheckoutPage() {
   const shippingCharge = form.city.trim() ? calcShipping(pasupuQty) : 0
   const grandTotal = activeTotalPrice + shippingCharge
 
-  // Minimum order validation
-  const belowMinOrder = totalQty < MIN_ORDER_QTY
+  // Check if any item is below its own min_quantity
+  const itemsBelowMin = activeCart.filter(i => i.quantity < (i.min_quantity || 1))
+  const belowMinOrder = itemsBelowMin.length > 0
 
   const validate = () => {
     if (!form.name.trim())             return 'Please enter your name.'
@@ -103,7 +104,7 @@ export default function CheckoutPage() {
     if (err) { toast.error(err); return }
     if (activeCart.length === 0) { toast.error('Your cart is empty.'); return }
     if (belowMinOrder) {
-      toast.error(`Minimum order is ${MIN_ORDER_QTY} pieces. You have ${totalQty}.`)
+      toast.error(`Some items are below their minimum order quantity.`)
       return
     }
     setSnapshotTotal(grandTotal)
@@ -587,8 +588,9 @@ export default function CheckoutPage() {
               {/* Min order warning */}
               {belowMinOrder && (
                 <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-xs text-red-700 font-medium">
-                  ⚠️ Minimum order is <strong>{MIN_ORDER_QTY} pieces</strong>. You have {totalQty} piece{totalQty !== 1 ? 's' : ''}.
-                  Add {MIN_ORDER_QTY - totalQty} more to proceed.
+                  {itemsBelowMin.map(i => (
+                    <div key={i.id}>⚠️ <strong>{i.name}</strong>: min {i.min_quantity || 1} pcs required. Add {(i.min_quantity || 1) - i.quantity} more.</div>
+                  ))}
                 </div>
               )}
 
@@ -597,7 +599,7 @@ export default function CheckoutPage() {
                 {submitting ? (
                   <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Processing...</>
                 ) : belowMinOrder ? (
-                  `Add ${MIN_ORDER_QTY - totalQty} more pieces`
+                  'Fix minimum quantities'
                 ) : (
                   'Continue to Pay via UPI'
                 )}

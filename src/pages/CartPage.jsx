@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
-import { calcShipping, MIN_ORDER_QTY } from '../lib/shipping'
+import { calcShipping } from '../lib/shipping'
 import toast from 'react-hot-toast'
 
 export default function CartPage() {
@@ -11,8 +11,13 @@ export default function CartPage() {
   const navigate = useNavigate()
 
   const totalQty     = cart.reduce((s, i) => s + i.quantity, 0)
-  const belowMin     = totalQty < MIN_ORDER_QTY && cart.length > 0
-  const remaining    = MIN_ORDER_QTY - totalQty
+
+  // Check if any item is below its own min_quantity
+  const itemsBelowMin = cart.filter(i => {
+    const minQty = i.min_quantity || 1
+    return i.quantity < minQty
+  })
+  const belowMin = itemsBelowMin.length > 0
 
   // Shipping only applies to Pasupu Kumkuma products
   const pasupuQty    = cart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
@@ -125,7 +130,11 @@ export default function CartPage() {
                 <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 text-xs text-red-700">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Minimum {MIN_ORDER_QTY} pieces</strong> required. Add <strong>{remaining} more</strong> to checkout.
+                    {itemsBelowMin.map(i => (
+                      <div key={i.id}>
+                        <strong>{i.name}</strong>: minimum {i.min_quantity || 1} pieces required. Add {(i.min_quantity || 1) - i.quantity} more.
+                      </div>
+                    ))}
                   </span>
                 </div>
               )}
@@ -152,7 +161,7 @@ export default function CartPage() {
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-gray-900 hover:bg-[#C8511B] text-white shadow-lg shadow-black/10 hover:-translate-y-0.5'
                 }`}>
-                {belowMin ? `Add ${remaining} more pieces` : <>Proceed to Checkout <ArrowRight className="w-4 h-4" /></>}
+                {belowMin ? `Fix minimum quantities to proceed` : <>Proceed to Checkout <ArrowRight className="w-4 h-4" /></>}
               </button>
 
               <Link to="/"

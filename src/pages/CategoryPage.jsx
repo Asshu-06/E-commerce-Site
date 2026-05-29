@@ -24,6 +24,7 @@ export default function CategoryPage() {
   const [products, setProducts]   = useState([])
   const [loading, setLoading]     = useState(true)
   const [categories, setCategories] = useState(mockCategories)
+  const [catsLoading, setCatsLoading] = useState(true)
 
   // Load categories from Supabase, fall back to mock
   useEffect(() => {
@@ -34,7 +35,6 @@ export default function CategoryPage() {
           .select('*')
           .order('created_at', { ascending: true })
         if (!error && data && data.length > 0) {
-          // Map Supabase categories to the shape the UI expects
           setCategories(data.map(c => ({
             id:          c.slug,
             name:        c.name,
@@ -45,6 +45,7 @@ export default function CategoryPage() {
           })))
         }
       } catch { /* use mock fallback */ }
+      setCatsLoading(false)
     }
     fetchCategories()
   }, [])
@@ -75,6 +76,7 @@ export default function CategoryPage() {
   }
 
   if (!category) {
+    if (catsLoading) return null  // still loading, don't show "not found" yet
     return (
       <div className="min-h-screen flex flex-col items-center justify-center pt-16 bg-stone-50">
         <div className="text-6xl mb-4">😕</div>
