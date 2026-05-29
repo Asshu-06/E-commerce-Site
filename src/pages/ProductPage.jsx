@@ -315,13 +315,14 @@ export default function ProductPage() {
               {!isCustomization && (
                 <div className="mb-5">
                   <div className="flex items-center gap-4 mb-3">
-                    <p className="text-sm font-semibold text-gray-700">Quantity <span className="text-gray-400 font-normal">(min {minQty} pcs)</span>:</p>
+                    <p className="text-sm font-semibold text-gray-700">
+                      Quantity <span className="text-gray-400 font-normal">(min {minQty} pcs)</span>:
+                    </p>
                     <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
                       <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold">
                         <Minus className="w-4 h-4" />
                       </button>
-                      {/* Editable input */}
                       <input
                         type="number"
                         min="1"
@@ -337,14 +338,31 @@ export default function ProductPage() {
                         }}
                         className="w-16 text-center font-bold text-gray-900 text-lg border-none outline-none bg-white py-2"
                       />
-                      <button onClick={() => setQuantity((q) => (parseInt(q) || 0) + 1)}
+                      <button
+                        onClick={() => {
+                          const stock = product?.stock_quantity
+                          const next = (parseInt(quantity) || 0) + 1
+                          if (stock != null && next > stock) {
+                            toast.error(`Only ${stock} pieces available in stock.`, {
+                              icon: '📦',
+                              style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7' },
+                            })
+                            return
+                          }
+                          setQuantity(next)
+                        }}
                         className="w-10 h-10 flex items-center justify-center hover:bg-[#FDF3EC] transition-colors text-gray-600 font-bold">
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <div>
-                    </div>
                   </div>
+
+                  {/* Stock warning */}
+                  {product?.stock_quantity != null && qty > product.stock_quantity && (
+                    <p className="text-xs text-orange-600 font-medium bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 mb-2">
+                      📦 Only <strong>{product.stock_quantity} pieces</strong> available in stock.
+                    </p>
+                  )}
 
                   {/* Min order warning */}
                   {quantity < minQty && quantity > 0 && (
@@ -368,7 +386,7 @@ export default function ProductPage() {
                 ) : (
                   <>
                     <button onClick={handleAddToCart}
-                      disabled={quantity < minQty}
+                      disabled={quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity)}
                       className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
                         addedToCart
                           ? 'bg-green-500 text-white shadow-green-200'
@@ -378,7 +396,7 @@ export default function ProductPage() {
                       {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                     </button>
                     <button onClick={handleBuyNow}
-                      disabled={quantity < minQty}
+                      disabled={quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity)}
                       className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-200 hover:-translate-y-0.5 text-base">
                       Buy Now
                     </button>
