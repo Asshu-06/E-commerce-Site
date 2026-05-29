@@ -160,7 +160,6 @@ export default function CheckoutPage() {
       if (!buyNowItem) clearCart()
       // Notify admin of new order
       notifyAdmin.newOrder({ id, user_name: form.name, total_price: snapshotTotal })
-      if (screenshotUrl) notifyAdmin.paymentUploaded({ id, user_name: form.name, total_price: snapshotTotal })
       setStep('success')
       window.scrollTo({ top: 0, behavior: 'instant' })
       toast.success('Order submitted! Admin will verify your payment.')
