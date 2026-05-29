@@ -37,6 +37,7 @@ export default function AdminOrderDetail() {
   const [showTrackingInput, setShowTrackingInput] = useState(false)
   const [packageImageUrl, setPackageImageUrl] = useState('')
   const [uploadingPkg, setUploadingPkg] = useState(false)
+  const [pendingStatus, setPendingStatus] = useState(null) // status waiting for tracking ID
   const pkgFileRef = useRef(null)
 
   const handlePackageImage = async (e) => {
@@ -80,15 +81,27 @@ export default function AdminOrderDetail() {
   }
 
   const updateStatus = async (newStatus) => {
-    setUpdating(true)
-    try {
-      const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId)
-      if (error) throw error
-      setOrder(o => ({ ...o, status: newStatus }))
-      setLastStatusChanged(newStatus)
+    // For shipped: show tracking modal first, don't update yet
+    if (newStatus === 'shipped') {
+      setPendingStatus('shipped')
       setTrackingId('')
       setPackageImageUrl('')
+      return
+    }
+    await doUpdateStatus(newStatus)
+  }
+
+  const doUpdateStatus = async (newStatus, tId = '', pkgImg = '') => {
+    setUpdating(true)
+    try {
+      const updatePayload = { status: newStatus }
+      if (newStatus === 'shipped' && tId) updatePayload.tracking_id = tId
+      const { error } = await supabase.from('orders').update(updatePayload).eq('id', orderId)
+      if (error) throw error
+      setOrder(o => ({ ...o, status: newStatus, tracking_id: tId || o.tracking_id }))
+      setLastStatusChanged(newStatus)
       setShowTrackingInput(newStatus === 'shipped')
+      setPendingStatus(null)
       toast.success(`Status updated to ${newStatus}`)
       if (order?.user_id) {
         if (newStatus === 'confirmed') notifyUser.orderConfirmed(order.user_id, order)
@@ -355,7 +368,7 @@ export default function AdminOrderDetail() {
           <h2 className="font-bold text-gray-900 mb-4">Update Order Status</h2>
           {order.status === 'cancelled' ? (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700 font-medium">
-              🚫 This order has been cancelled and cannot be updated.
+              This order has been cancelled and cannot be updated.
             </div>
           ) : (
             <div className="flex flex-wrap gap-2">
@@ -369,6 +382,57 @@ export default function AdminOrderDetail() {
                   {s}
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Tracking ID modal — shown before confirming shipped status */}
+          {pendingStatus === 'shipped' && (
+            <div className="mt-4 bg-purple-50 border border-purple-200 rounded-xl p-4 space-y-3">
+              <p className="text-sm font-bold text-purple-800">Enter Tracking Details to mark as Shipped</p>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Tracking ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={trackingId}
+                  onChange={e => setTrackingId(e.target.value)}
+                  placeholder="e.g. DTDC1234567890"
+                  autoFocus
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Package Image (optional)</label>
+                {packageImageUrl ? (
+                  <div className="relative">
+                    <img src={packageImageUrl} alt="Package" className="w-full max-h-40 object-cover rounded-xl border border-gray-200" />
+                    <button onClick={() => setPackageImageUrl('')} className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">x</button>
+                  </div>
+                ) : (
+                  <label className="flex items-center gap-2 cursor-pointer border-2 border-dashed border-gray-200 rounded-xl px-4 py-3 hover:border-purple-400 transition-colors">
+                    <ImageIcon className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{uploadingPkg ? 'Uploading...' : 'Click to upload package photo'}</span>
+                    <input type="file" accept="image/*" onChange={handlePackageImage} className="hidden" disabled={uploadingPkg} />
+                  </label>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setPendingStatus(null); setTrackingId(''); setPackageImageUrl('') }}
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => doUpdateStatus('shipped', trackingId, packageImageUrl)}
+                  disabled={!trackingId.trim() || updating}
+                  className="flex-1 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl text-sm transition-colors"
+                >
+                  {updating ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : null}
+                  Confirm Shipped
+                </button>
+              </div>
             </div>
           )}
 
