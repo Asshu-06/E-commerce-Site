@@ -298,7 +298,6 @@ export default function ProfilePage() {
       const isPaid = cancelModal.payment_status === 'paid'
       const { error } = await supabase.from('orders').update({
         status:        'cancelled',
-        cancelled_by:  'customer',
         cancel_reason: cancelReason.trim(),
         refund_status: isPaid ? 'initiated' : null,
       }).eq('id', cancelModal.id)
