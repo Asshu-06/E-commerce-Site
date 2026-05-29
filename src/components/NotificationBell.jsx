@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Bell, X, CheckCheck } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Bell, X, CheckCheck, ShoppingBag } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { markRead, markAllRead } from '../lib/notifications'
 import { useNavigate } from 'react-router-dom'
@@ -22,10 +22,8 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
 
   const unread = notifications.filter(n => !n.is_read).length
 
-  // Use a ref so the interval always calls the latest version
-  const fetchRef = useRef(null)
-
-  const fetchNotifications = useCallback(async () => {
+  // Fetch notifications
+  const fetchNotifications = async () => {
     try {
       let query = supabase
         .from('notifications')
@@ -36,31 +34,24 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
       if (forAdmin) {
         query = query.eq('for_admin', true)
       } else {
-        if (!userId) return
         query = query.eq('user_id', userId)
       }
 
       const { data, error } = await query
       if (!error && data) setNotifications(data)
+      // If table doesn't exist, silently ignore
     } catch { }
-  }, [userId, forAdmin])
-
-  // Keep ref in sync
-  useEffect(() => {
-    fetchRef.current = fetchNotifications
-  }, [fetchNotifications])
+  }
 
   useEffect(() => {
     if (!userId && !forAdmin) return
-
-    // Initial fetch
     fetchNotifications()
 
-    // Realtime subscription
+    // Real-time subscription — listen to all inserts, filter client-side
     let channel
     try {
       channel = supabase
-        .channel(`notif-${forAdmin ? 'admin' : userId}-${Date.now()}`)
+        .channel(`notifications-${forAdmin ? 'admin' : userId}-${Date.now()}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -79,15 +70,19 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
           schema: 'public',
           table: 'notifications',
         }, () => {
-          if (fetchRef.current) fetchRef.current()
+          fetchNotifications()
         })
-        .subscribe()
-    } catch { }
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Realtime notifications subscribed')
+          }
+        })
+    } catch (err) {
+      console.warn('Realtime subscription failed:', err)
+    }
 
-    // Polling every 5s using ref to avoid stale closure
-    const poll = setInterval(() => {
-      if (fetchRef.current) fetchRef.current()
-    }, 5000)
+    // Polling fallback every 5s to catch any missed realtime events
+    const poll = setInterval(fetchNotifications, 5000)
 
     return () => {
       if (channel) supabase.removeChannel(channel)
@@ -148,6 +143,7 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
 
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <span className="font-bold text-gray-900 text-sm">
               Notifications {unread > 0 && <span className="ml-1 bg-red-100 text-red-600 text-xs px-1.5 py-0.5 rounded-full">{unread}</span>}
@@ -164,6 +160,7 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
             </div>
           </div>
 
+          {/* List */}
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="py-10 text-center text-gray-400">
@@ -183,7 +180,7 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
                     {n.type === 'order' ? '🛒' : n.type === 'payment' ? '💳' : n.type === 'cancel' ? '❌' : n.type === 'success' ? '✅' : n.type === 'error' ? '🚫' : 'ℹ️'}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm text-gray-900 ${!n.is_read ? 'font-bold' : 'font-semibold'}`}>{n.title}</p>
+                    <p className={`text-sm font-semibold text-gray-900 ${!n.is_read ? 'font-bold' : ''}`}>{n.title}</p>
                     <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
                     <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
                   </div>
