@@ -13,7 +13,7 @@ const UPI_NAME = import.meta.env.VITE_UPI_NAME || 'Lakshmi Ram Collections'
 
 const INITIAL_FORM = {
   name: '', phone: '', email: '',
-  address: '', city: '', pincode: '',
+  address: '', city: '', state: '', pincode: '',
   paymentMethod: 'upi',
 }
 
@@ -93,6 +93,7 @@ export default function CheckoutPage() {
     if (!/^\d{10}$/.test(form.phone))  return 'Please enter a valid 10-digit phone number.'
     if (!form.address.trim())          return 'Please enter your address.'
     if (!form.city.trim())             return 'Please enter your city.'
+    if (!form.state.trim())            return 'Please select your state.'
     if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit pincode.'
     return null
   }
@@ -173,7 +174,7 @@ export default function CheckoutPage() {
       user_name:          form.name,
       phone:              form.phone,
       email:              form.email || null,
-      address:            `${form.address}, ${form.city} - ${form.pincode}`,
+      address:            `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
       items:              activeCart.map((i) => ({
         id: i.id, name: i.name,
         variant: i.selectedVariant,
@@ -506,11 +507,27 @@ export default function CheckoutPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A] resize-none" />
                   <p className="text-xs text-gray-400 mt-1.5">Include flat/house no., building name, street, landmark</p>
                 </div>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
                     <input name="city" value={form.city} onChange={handleChange} placeholder="City"
                       className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">State *</label>
+                    <select name="state" value={form.state} onChange={handleChange}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8895A] bg-white">
+                      <option value="">Select State</option>
+                      {[
+                        'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh',
+                        'Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka',
+                        'Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram',
+                        'Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana',
+                        'Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+                        'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu',
+                        'Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+                      ].map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Pincode *</label>
