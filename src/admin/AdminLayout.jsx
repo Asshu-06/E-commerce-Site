@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom'
 import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, Users, ExternalLink, FolderOpen, Image } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import NotificationBell from '../components/NotificationBell'
 import toast from 'react-hot-toast'
 
 const navItems = [
@@ -48,10 +49,11 @@ export default function AdminLayout() {
         <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 shadow-md">
           <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
         </div>
-        <div>
+        <div className="flex-1">
           <p className="font-bold text-gray-900 text-sm">Lakshmi Ram Collections</p>
           <p className="text-xs text-[#C8511B]">Admin Panel</p>
         </div>
+        <NotificationBell forAdmin={true} userId={user?.id} />
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -134,6 +136,9 @@ export default function AdminLayout() {
               <img src="/images/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-gray-900 text-sm">Admin Panel</span>
+          </div>
+          <div className="ml-auto">
+            <NotificationBell forAdmin={true} userId={user?.id} />
           </div>
         </header>
 

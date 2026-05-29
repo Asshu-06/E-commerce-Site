@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calcShipping } from '../lib/shipping'
+import { notifyAdmin } from '../lib/notifications'
 import toast from 'react-hot-toast'
 
 const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'q901588902@ybl'
@@ -156,7 +157,10 @@ export default function CheckoutPage() {
         screenshotUrl,
       })
       setOrderId(id)
-      if (!buyNowItem) clearCart()  // only clear cart if not Buy Now
+      if (!buyNowItem) clearCart()
+      // Notify admin of new order
+      notifyAdmin.newOrder({ id, user_name: form.name, total_price: snapshotTotal })
+      if (screenshotUrl) notifyAdmin.paymentUploaded({ id, user_name: form.name, total_price: snapshotTotal })
       setStep('success')
       window.scrollTo({ top: 0, behavior: 'instant' })
       toast.success('Order submitted! Admin will verify your payment.')

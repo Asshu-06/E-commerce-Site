@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import WhatsAppAnnouncement from './WhatsAppAnnouncement'
 import SearchModal from './SearchModal'
+import NotificationBell from './NotificationBell'
 import toast from 'react-hot-toast'
 
 export default function Navbar() {
@@ -110,6 +111,11 @@ export default function Navbar() {
             >
               <Search className="w-5 h-5" />
             </button>
+            {/* Notifications — only for logged in users */}
+            {user && (
+              <NotificationBell userId={user.id} transparent={transparent} />
+            )}
+
             {/* Wishlist */}
             {user && (
               <Link to="/profile?tab=wishlist"

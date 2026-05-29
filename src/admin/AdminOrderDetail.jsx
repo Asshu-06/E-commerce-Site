@@ -4,6 +4,7 @@ import { ArrowLeft, CheckCircle2, XCircle, ImageIcon, ZoomIn, X, Package } from 
 import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
+import { notifyUser } from '../lib/notifications'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
 const STATUS_COLORS = {
@@ -60,6 +61,11 @@ export default function AdminOrderDetail() {
       if (error) throw error
       setOrder(o => ({ ...o, status: newStatus }))
       toast.success(`Status updated to ${newStatus}`)
+      if (order?.user_id) {
+        if (newStatus === 'confirmed') notifyUser.orderConfirmed(order.user_id, order)
+        if (newStatus === 'shipped')   notifyUser.orderShipped(order.user_id, order)
+        if (newStatus === 'delivered') notifyUser.orderDelivered(order.user_id, order)
+      }
     } catch (err) { toast.error(err.message) }
     setUpdating(false)
   }
@@ -71,6 +77,7 @@ export default function AdminOrderDetail() {
       if (error) throw error
       setOrder(o => ({ ...o, payment_status: 'paid', status: 'confirmed' }))
       toast.success('✅ Payment verified! Order confirmed.')
+      if (order?.user_id) notifyUser.orderConfirmed(order.user_id, order)
     } catch (err) { toast.error(err.message) }
     setUpdating(false)
   }
@@ -84,6 +91,7 @@ export default function AdminOrderDetail() {
       setOrder(o => ({ ...o, payment_status: 'rejected', status: 'cancelled', rejection_reason: rejectReason.trim() }))
       setShowRejectInput(false)
       toast.error('❌ Payment rejected.')
+      if (order?.user_id) notifyUser.paymentRejected(order.user_id, { ...order, rejection_reason: rejectReason.trim() })
     } catch (err) { toast.error(err.message) }
     setUpdating(false)
   }

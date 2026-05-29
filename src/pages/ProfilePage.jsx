@@ -5,6 +5,7 @@ import { User, Package, Clock, CheckCircle2, Truck, XCircle, LogOut, ChevronRigh
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import { supabase } from '../lib/supabase'
+import { notifyAdmin } from '../lib/notifications'
 import toast from 'react-hot-toast'
 
 const CONTACT_PHONE    = '+91 799 706 0668'
@@ -303,6 +304,8 @@ export default function ProfilePage() {
       }).eq('id', cancelModal.id)
       if (error) throw error
       toast.success(isPaid ? 'Order cancelled. Refund will be processed in 3-5 days.' : 'Order cancelled.')
+      // Notify admin
+      notifyAdmin.orderCancelled({ ...cancelModal, cancel_reason: cancelReason.trim() })
       setCancelModal(null)
       setCancelReason('')
       if (selectedOrder?.id === cancelModal.id) setSelectedOrder(null)

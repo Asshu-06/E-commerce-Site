@@ -4,6 +4,7 @@ import { Search, RefreshCw, ChevronDown, X, CheckCircle2, Clock, ImageIcon, XCir
 import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
+import { notifyUser } from '../lib/notifications'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
 
@@ -71,6 +72,13 @@ export default function AdminOrders() {
       setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status: newStatus } : o))
       if (selectedOrder?.id === orderId) setSelectedOrder((o) => ({ ...o, status: newStatus }))
       toast.success(`Order marked as ${newStatus}`)
+      // Notify user on key status changes
+      const order = orders.find(o => o.id === orderId)
+      if (order?.user_id) {
+        if (newStatus === 'shipped')   notifyUser.orderShipped(order.user_id, order)
+        if (newStatus === 'delivered') notifyUser.orderDelivered(order.user_id, order)
+        if (newStatus === 'confirmed') notifyUser.orderConfirmed(order.user_id, order)
+      }
     } catch (err) {
       toast.error(err.message || 'Failed to update status')
     }
@@ -90,6 +98,7 @@ export default function AdminOrders() {
       if (selectedOrder?.id === order.id) setSelectedOrder(updated)
       setReviewOrder(null)
       toast.success('✅ Payment verified! Order confirmed.')
+      if (order.user_id) notifyUser.orderConfirmed(order.user_id, order)
     } catch (err) {
       toast.error(err.message || 'Failed to verify payment')
     }
@@ -137,6 +146,7 @@ export default function AdminOrders() {
       setRejectReason('')
       setShowRejectInput(false)
       toast.error('❌ Payment rejected. Order cancelled.')
+      if (order.user_id) notifyUser.paymentRejected(order.user_id, { ...order, rejection_reason: rejectReason.trim() })
     } catch (err) {
       toast.error(err.message || 'Failed to reject payment')
     }
