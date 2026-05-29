@@ -20,7 +20,11 @@ const EMPTY_FORM = {
   stock_quantity: '', min_quantity: '',
 }
 const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Return Bags' }
-const CATEGORIES  = ['pasupu', 'gifts', 'bags']
+const DEFAULT_CATEGORIES = [
+  { slug: 'pasupu', name: 'Pasupu-Kumkuma' },
+  { slug: 'gifts',  name: 'Return Gifts' },
+  { slug: 'bags',   name: 'Return Bags' },
+]
 
 async function uploadToSupabase(file) {
   const ext      = file.name.split('.').pop().toLowerCase()
@@ -56,15 +60,24 @@ export default function AdminProducts() {
   const [deleting,        setDeleting]        = useState(false)
   const [filterCat,       setFilterCat]       = useState('all')
   const [search,          setSearch]          = useState('')
+  const [dbCategories,    setDbCategories]    = useState(DEFAULT_CATEGORIES)
   const fileInputRef = useRef(null)
 
   useEffect(() => { init() }, [])
 
   const init = async () => {
     setLoading(true)
+    await fetchCategories()
     await fetchProducts()
     await checkStorage()
     setLoading(false)
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase.from('categories').select('slug, name').order('created_at', { ascending: true })
+      if (!error && data && data.length > 0) setDbCategories(data)
+    } catch { /* use defaults */ }
   }
 
   // ── Fetch: Supabase rows only ─────────────────────────────────────────────
@@ -282,12 +295,12 @@ export default function AdminProducts() {
             className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white" />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {['all', ...CATEGORIES].map((cat) => (
+          {['all', ...dbCategories.map(c => c.slug)].map((cat) => (
             <button key={cat} onClick={() => setFilterCat(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 filterCat === cat ? 'bg-amber-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-amber-300'
               }`}>
-              {cat === 'all' ? 'All' : CAT_LABELS[cat]}
+              {cat === 'all' ? 'All' : (dbCategories.find(c => c.slug === cat)?.name || CAT_LABELS[cat] || cat)}
             </button>
           ))}
         </div>
@@ -330,7 +343,7 @@ export default function AdminProducts() {
                         <span className="font-medium text-gray-900 line-clamp-1">{p.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3.5 text-gray-600">{CAT_LABELS[p.category] || p.category}</td>
+                    <td className="px-4 py-3.5 text-gray-600">{dbCategories.find(c => c.slug === p.category)?.name || CAT_LABELS[p.category] || p.category}</td>
                     <td className="px-4 py-3.5">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
                         p.type === 'standard' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
@@ -441,9 +454,9 @@ export default function AdminProducts() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Category <span className="text-red-400">*</span></label>
                   <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white">
-                    <option value="pasupu">Pasupu-Kumkuma</option>
-                    <option value="gifts">Return Gifts</option>
-                    <option value="bags">Return Bags</option>
+                    {dbCategories.map(c => (
+                      <option key={c.slug} value={c.slug}>{c.name}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
