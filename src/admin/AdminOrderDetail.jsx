@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, XCircle, ImageIcon, ZoomIn, X, Package } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -32,7 +32,31 @@ export default function AdminOrderDetail() {
   const [screenshotZoom, setScreenshotZoom] = useState(false)
   const [rejectReason, setRejectReason]     = useState('')
   const [showRejectInput, setShowRejectInput] = useState(false)
-  const [lastStatusChanged, setLastStatusChanged] = useState(null) // tracks last changed status for WA notify
+  const [lastStatusChanged, setLastStatusChanged] = useState(null)
+  const [trackingId, setTrackingId] = useState('')
+  const [showTrackingInput, setShowTrackingInput] = useState(false)
+  const [packageImageUrl, setPackageImageUrl] = useState('')
+  const [uploadingPkg, setUploadingPkg] = useState(false)
+  const pkgFileRef = useRef(null)
+
+  const handlePackageImage = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingPkg(true)
+    try {
+      const ext = file.name.split('.').pop().toLowerCase()
+      const path = `packages/${orderId}-${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: true })
+      if (!error) {
+        const url = supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl
+        setPackageImageUrl(url)
+        toast.success('Package image uploaded!')
+      } else {
+        toast.error('Upload failed: ' + error.message)
+      }
+    } catch { toast.error('Upload failed') }
+    setUploadingPkg(false)
+  }
 
   useEffect(() => { fetchOrder(); fetchProducts() }, [orderId])
 
@@ -62,6 +86,9 @@ export default function AdminOrderDetail() {
       if (error) throw error
       setOrder(o => ({ ...o, status: newStatus }))
       setLastStatusChanged(newStatus)
+      setTrackingId('')
+      setPackageImageUrl('')
+      setShowTrackingInput(newStatus === 'shipped')
       toast.success(`Status updated to ${newStatus}`)
       if (order?.user_id) {
         if (newStatus === 'confirmed') notifyUser.orderConfirmed(order.user_id, order)
@@ -347,30 +374,66 @@ export default function AdminOrderDetail() {
 
           {/* WhatsApp Notify button — appears after status change */}
           {lastStatusChanged && order.phone && (
-            <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-emerald-800">Notify customer via WhatsApp?</p>
-                <p className="text-xs text-emerald-600 mt-0.5">
-                  Send order status update to {order.phone}
-                </p>
+            <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
+              <p className="text-sm font-semibold text-emerald-800">
+                Notify customer via WhatsApp — Status: <span className="capitalize">{lastStatusChanged}</span>
+              </p>
+
+              {/* Tracking ID + Package image — only for shipped */}
+              {showTrackingInput && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Tracking ID (optional)</label>
+                    <input
+                      type="text"
+                      value={trackingId}
+                      onChange={e => setTrackingId(e.target.value)}
+                      placeholder="e.g. DTDC1234567890"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Package Image (optional)</label>
+                    {packageImageUrl ? (
+                      <div className="relative">
+                        <img src={packageImageUrl} alt="Package" className="w-full max-h-40 object-cover rounded-xl border border-gray-200" />
+                        <button onClick={() => setPackageImageUrl('')} className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">✕</button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center gap-2 cursor-pointer border-2 border-dashed border-gray-200 rounded-xl px-4 py-3 hover:border-emerald-400 transition-colors">
+                        <ImageIcon className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-500">{uploadingPkg ? 'Uploading...' : 'Click to upload package photo'}</span>
+                        <input type="file" accept="image/*" onChange={handlePackageImage} className="hidden" ref={pkgFileRef} disabled={uploadingPkg} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3">
+                <a
+                  href={`https://wa.me/91${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                    `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to *${lastStatusChanged.toUpperCase()}*.\n${
+                      lastStatusChanged === 'shipped' && trackingId ? `\n📦 Tracking ID: *${trackingId}*` : ''
+                    }${
+                      lastStatusChanged === 'shipped' && packageImageUrl ? `\n🖼️ Package image: ${packageImageUrl}` : ''
+                    }\n\nThank you for shopping with Lakshmi Ram Collections! 🙏`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => { setLastStatusChanged(null); setShowTrackingInput(false) }}
+                  className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-5 py-2.5 rounded-xl transition-all text-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" className="w-4 h-4">
+                    <path d="M16.003 2C8.28 2 2 8.28 2 16.003c0 2.478.65 4.897 1.885 7.02L2 30l7.18-1.858A13.94 13.94 0 0 0 16.003 30C23.72 30 30 23.72 30 16.003 30 8.28 23.72 2 16.003 2zm0 25.455a11.41 11.41 0 0 1-5.82-1.594l-.418-.248-4.26 1.102 1.13-4.14-.272-.432A11.41 11.41 0 0 1 4.545 16c0-6.32 5.138-11.455 11.458-11.455S27.455 9.68 27.455 16c0 6.318-5.135 11.455-11.452 11.455zm6.29-8.573c-.345-.172-2.04-1.006-2.356-1.12-.316-.115-.546-.172-.776.172-.23.345-.89 1.12-1.09 1.35-.2.23-.4.258-.745.086-.345-.172-1.456-.537-2.773-1.71-1.025-.913-1.717-2.04-1.918-2.385-.2-.345-.022-.532.15-.703.155-.155.345-.403.517-.604.172-.2.23-.345.345-.575.115-.23.057-.432-.029-.604-.086-.172-.776-1.87-1.063-2.56-.28-.672-.564-.58-.776-.59l-.66-.012c-.23 0-.604.086-.92.432-.316.345-1.205 1.178-1.205 2.872s1.234 3.33 1.406 3.56c.172.23 2.428 3.71 5.882 5.203.822.355 1.463.567 1.963.726.824.263 1.574.226 2.167.137.66-.099 2.04-.834 2.328-1.638.287-.804.287-1.493.2-1.638-.086-.144-.316-.23-.66-.402z"/>
+                  </svg>
+                  Send WhatsApp Notification
+                </a>
+                <button onClick={() => { setLastStatusChanged(null); setShowTrackingInput(false); setTrackingId(''); setPackageImageUrl('') }}
+                  className="text-xs text-gray-400 hover:text-gray-600 px-3 py-2 rounded-lg hover:bg-gray-100">
+                  Dismiss
+                </button>
               </div>
-              <a
-                href={`https://wa.me/91${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                  `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to *${lastStatusChanged.toUpperCase()}*.\n\nThank you for shopping with Lakshmi Ram Collections! 🙏`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setLastStatusChanged(null)}
-                className="shrink-0 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-4 py-2.5 rounded-xl transition-all text-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" className="w-4 h-4">
-                  <path d="M16.003 2C8.28 2 2 8.28 2 16.003c0 2.478.65 4.897 1.885 7.02L2 30l7.18-1.858A13.94 13.94 0 0 0 16.003 30C23.72 30 30 23.72 30 16.003 30 8.28 23.72 2 16.003 2zm0 25.455a11.41 11.41 0 0 1-5.82-1.594l-.418-.248-4.26 1.102 1.13-4.14-.272-.432A11.41 11.41 0 0 1 4.545 16c0-6.32 5.138-11.455 11.458-11.455S27.455 9.68 27.455 16c0 6.318-5.135 11.455-11.452 11.455zm6.29-8.573c-.345-.172-2.04-1.006-2.356-1.12-.316-.115-.546-.172-.776.172-.23.345-.89 1.12-1.09 1.35-.2.23-.4.258-.745.086-.345-.172-1.456-.537-2.773-1.71-1.025-.913-1.717-2.04-1.918-2.385-.2-.345-.022-.532.15-.703.155-.155.345-.403.517-.604.172-.2.23-.345.345-.575.115-.23.057-.432-.029-.604-.086-.172-.776-1.87-1.063-2.56-.28-.672-.564-.58-.776-.59l-.66-.012c-.23 0-.604.086-.92.432-.316.345-1.205 1.178-1.205 2.872s1.234 3.33 1.406 3.56c.172.23 2.428 3.71 5.882 5.203.822.355 1.463.567 1.963.726.824.263 1.574.226 2.167.137.66-.099 2.04-.834 2.328-1.638.287-.804.287-1.493.2-1.638-.086-.144-.316-.23-.66-.402z"/>
-                </svg>
-                Notify User
-              </a>
-              <button onClick={() => setLastStatusChanged(null)} className="text-xs text-gray-400 hover:text-gray-600">
-                Dismiss
-              </button>
             </div>
           )}
         </div>
