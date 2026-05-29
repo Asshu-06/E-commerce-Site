@@ -181,6 +181,7 @@ export default function CheckoutPage() {
         quantity: i.quantity, price: i.price,
       })),
       total_price:        snapshotTotal,
+      shipping_charge:    shippingCharge,
       payment_method:     paymentMethod,
       payment_status:     paymentStatus,
       status:             'pending',

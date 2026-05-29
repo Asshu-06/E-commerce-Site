@@ -795,7 +795,15 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+              <div className="flex justify-between items-center pt-3 border-t border-gray-100 space-y-1">
+                {selectedOrder.shipping_charge > 0 && (
+                  <div className="flex justify-between w-full text-sm text-gray-500 pb-2">
+                    <span>Shipping</span>
+                    <span>₹{selectedOrder.shipping_charge?.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-between items-center border-t border-gray-100 pt-2">
                 <span className="font-semibold text-gray-700">Total</span>
                 <span className="text-xl font-bold text-[#C8511B]">₹{selectedOrder.total_price?.toLocaleString()}</span>
               </div>
