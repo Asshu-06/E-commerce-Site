@@ -434,7 +434,7 @@ export default function AdminOrders() {
             </div>
 
             {/* Action buttons */}
-            {reviewOrder.payment_status === 'pending_verification' ? (
+            {(reviewOrder.payment_status === 'pending_verification' || reviewOrder.payment_status === 'pending') ? (
               <div className="px-6 py-5 space-y-3">
                 {/* Reject reason input — shown when reject is clicked */}
                 {showRejectInput ? (
