@@ -37,8 +37,9 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
         query = query.eq('user_id', userId)
       }
 
-      const { data } = await query
-      if (data) setNotifications(data)
+      const { data, error } = await query
+      if (!error && data) setNotifications(data)
+      // If table doesn't exist, silently ignore
     } catch { }
   }
 
@@ -46,20 +47,23 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
     if (!userId && !forAdmin) return
     fetchNotifications()
 
-    // Real-time subscription
-    const channel = supabase
-      .channel(`notifications-${forAdmin ? 'admin' : userId}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: forAdmin ? 'for_admin=eq.true' : `user_id=eq.${userId}`,
-      }, () => {
-        fetchNotifications()
-      })
-      .subscribe()
+    // Real-time subscription — only if table exists
+    let channel
+    try {
+      channel = supabase
+        .channel(`notifications-${forAdmin ? 'admin' : userId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: forAdmin ? 'for_admin=eq.true' : `user_id=eq.${userId}`,
+        }, () => {
+          fetchNotifications()
+        })
+        .subscribe()
+    } catch { }
 
-    return () => supabase.removeChannel(channel)
+    return () => { if (channel) supabase.removeChannel(channel) }
   }, [userId, forAdmin])
 
   // Close on outside click
