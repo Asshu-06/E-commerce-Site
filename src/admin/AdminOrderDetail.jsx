@@ -78,6 +78,7 @@ export default function AdminOrderDetail() {
       const { error } = await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId)
       if (error) throw error
       setOrder(o => ({ ...o, payment_status: 'paid', status: 'confirmed' }))
+      setLastStatusChanged('confirmed')
       toast.success('✅ Payment verified! Order confirmed.')
       if (order?.user_id) notifyUser.orderConfirmed(order.user_id, order)
     } catch (err) { toast.error(err.message) }
