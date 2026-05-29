@@ -477,8 +477,8 @@ export default function AdminOrderDetail() {
               <div className="flex items-center gap-3">
                 <a
                   href={`https://wa.me/91${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to *${lastStatusChanged.toUpperCase()}*.\n${
-                      lastStatusChanged === 'shipped' && trackingId ? `\nTracking ID: *${trackingId}*` : ''
+                    `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to ${lastStatusChanged.toUpperCase()}.\n${
+                      lastStatusChanged === 'shipped' && trackingId ? `\nTracking ID: ${trackingId}` : ''
                     }${
                       lastStatusChanged === 'shipped' && packageImageUrl ? `\nPackage image: ${packageImageUrl}` : ''
                     }\n\nThank you for shopping with Lakshmi Ram Collections!`
