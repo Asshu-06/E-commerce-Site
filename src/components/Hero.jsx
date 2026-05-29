@@ -178,22 +178,7 @@ export default function Hero() {
           
           </div>
 
-          {/* Stats */}
-          <div
-            className={`flex flex-wrap gap-8 transition-all duration-1000 delay-700 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
-            {[
-              { value: '50+', label: 'Products' },
-              { value: '100%', label: 'Authentic' },
-            ].map((stat) => (
-              <div key={stat.label} className="backdrop-blur-sm bg-white/5 px-5 py-3 rounded-xl border border-white/10">
-                <div className="text-3xl font-bold text-amber-400 drop-shadow-lg">{stat.value}</div>
-                <div className="text-sm text-gray-300">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          {/* Stats removed */}
         </div>
       </div>
 
