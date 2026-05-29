@@ -137,12 +137,12 @@ export default function AdminOrderDetail() {
       </div>
 
       <div className="space-y-5">
-        {/* UPI verification */}
-        {order.payment_status === 'pending_verification' && (
+        {/* UPI verification — pending_verification OR pending with screenshot */}
+        {(order.payment_status === 'pending_verification' || order.payment_status === 'pending') && order.status !== 'cancelled' && (
           <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
             <p className="font-bold text-orange-800 mb-1">⏳ UPI Payment Pending Verification</p>
-            <p className="text-orange-700 text-sm mb-4">Customer uploaded a payment screenshot. Review and verify or reject.</p>
-            {order.payment_screenshot && (
+            <p className="text-orange-700 text-sm mb-4">Review the payment screenshot and verify or reject.</p>
+            {order.payment_screenshot ? (
               <div className="mb-4">
                 <div className="relative rounded-2xl overflow-hidden bg-gray-900 cursor-zoom-in" onClick={() => setScreenshotZoom(true)}>
                   <img src={order.payment_screenshot} alt="Payment screenshot" className="w-full max-h-72 object-contain" />
@@ -150,6 +150,11 @@ export default function AdminOrderDetail() {
                     <ZoomIn className="w-4 h-4" />
                   </div>
                 </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-6 mb-4 text-gray-400">
+                <ImageIcon className="w-8 h-8 opacity-40" />
+                <p className="text-sm">No screenshot uploaded yet. You can still verify or reject manually.</p>
               </div>
             )}
             {showRejectInput ? (
@@ -178,6 +183,29 @@ export default function AdminOrderDetail() {
                   {updating ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                   Verify Payment
                 </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Cancellation reason — shown when cancelled by customer */}
+        {order.status === 'cancelled' && order.cancel_reason && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
+            <p className="font-bold text-red-800 mb-2 flex items-center gap-2">
+              <XCircle className="w-4 h-4" /> Order Cancelled by Customer
+            </p>
+            <p className="text-xs text-red-600 font-medium mb-1">Reason:</p>
+            <p className="text-sm text-red-800 bg-white rounded-xl px-4 py-3 border border-red-100">{order.cancel_reason}</p>
+            {/* Show screenshot for refund verification if paid */}
+            {order.payment_status === 'paid' && order.payment_screenshot && (
+              <div className="mt-4">
+                <p className="text-xs text-red-600 font-medium mb-2">Payment Screenshot (for refund verification):</p>
+                <div className="relative rounded-2xl overflow-hidden bg-gray-900 cursor-zoom-in" onClick={() => setScreenshotZoom(true)}>
+                  <img src={order.payment_screenshot} alt="Payment screenshot" className="w-full max-h-60 object-contain" />
+                  <div className="absolute top-3 right-3 bg-black/50 text-white p-1.5 rounded-lg">
+                    <ZoomIn className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
             )}
           </div>
