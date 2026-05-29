@@ -296,6 +296,22 @@ export default function AdminOrderDetail() {
           </div>
         </div>
 
+        {/* Payment Screenshot — always show if available */}
+        {order.payment_screenshot && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-gray-500" /> Payment Screenshot
+            </h2>
+            <div className="relative rounded-2xl overflow-hidden bg-gray-900 cursor-zoom-in" onClick={() => setScreenshotZoom(true)}>
+              <img src={order.payment_screenshot} alt="Payment screenshot" className="w-full max-h-72 object-contain" />
+              <div className="absolute top-3 right-3 bg-black/50 text-white p-1.5 rounded-lg">
+                <ZoomIn className="w-4 h-4" />
+              </div>
+              <p className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/60 text-xs">Click to zoom</p>
+            </div>
+          </div>
+        )}
+
         {/* Update status */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-900 mb-4">Update Order Status</h2>
