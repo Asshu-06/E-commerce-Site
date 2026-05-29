@@ -271,18 +271,24 @@ export default function AdminOrderDetail() {
         {/* Update status */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-900 mb-4">Update Order Status</h2>
-          <div className="flex flex-wrap gap-2">
-            {STATUS_OPTIONS.map((s) => (
-              <button key={s} onClick={() => updateStatus(s)} disabled={updating || order.status === s}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all capitalize ${
-                  order.status === s
-                    ? STATUS_COLORS[s] + ' scale-105'
-                    : 'border-gray-200 text-gray-600 hover:border-amber-300 hover:bg-amber-50'
-                }`}>
-                {s}
-              </button>
-            ))}
-          </div>
+          {order.status === 'cancelled' ? (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700 font-medium">
+              🚫 This order has been cancelled and cannot be updated.
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {STATUS_OPTIONS.filter(s => s !== 'cancelled').map((s) => (
+                <button key={s} onClick={() => updateStatus(s)} disabled={updating || order.status === s}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all capitalize ${
+                    order.status === s
+                      ? STATUS_COLORS[s] + ' scale-105'
+                      : 'border-gray-200 text-gray-600 hover:border-amber-300 hover:bg-amber-50'
+                  }`}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
