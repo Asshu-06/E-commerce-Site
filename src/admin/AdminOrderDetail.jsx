@@ -414,10 +414,10 @@ export default function AdminOrderDetail() {
                 <a
                   href={`https://wa.me/91${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
                     `Hello ${order.user_name},\n\nYour order (ID: ${order.id.slice(0,8).toUpperCase()}) status has been updated to *${lastStatusChanged.toUpperCase()}*.\n${
-                      lastStatusChanged === 'shipped' && trackingId ? `\n📦 Tracking ID: *${trackingId}*` : ''
+                      lastStatusChanged === 'shipped' && trackingId ? `\nTracking ID: *${trackingId}*` : ''
                     }${
-                      lastStatusChanged === 'shipped' && packageImageUrl ? `\n🖼️ Package image: ${packageImageUrl}` : ''
-                    }\n\nThank you for shopping with Lakshmi Ram Collections! 🙏`
+                      lastStatusChanged === 'shipped' && packageImageUrl ? `\nPackage image: ${packageImageUrl}` : ''
+                    }\n\nThank you for shopping with Lakshmi Ram Collections!`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
