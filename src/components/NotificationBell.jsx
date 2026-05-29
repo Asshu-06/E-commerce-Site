@@ -47,7 +47,7 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
     if (!userId && !forAdmin) return
     fetchNotifications()
 
-    // Real-time subscription — listen to all notification inserts, filter client-side
+    // Real-time subscription — listen to all inserts, filter client-side
     let channel
     try {
       channel = supabase
@@ -58,18 +58,36 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
           table: 'notifications',
         }, (payload) => {
           const n = payload.new
-          // Client-side filter
           const isForMe = forAdmin
             ? n.for_admin === true
-            : n.user_id === userId
+            : String(n.user_id) === String(userId)
           if (isForMe) {
             setNotifications(prev => [n, ...prev].slice(0, 30))
           }
         })
-        .subscribe()
-    } catch { }
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+        }, () => {
+          fetchNotifications()
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Realtime notifications subscribed')
+          }
+        })
+    } catch (err) {
+      console.warn('Realtime subscription failed:', err)
+    }
 
-    return () => { if (channel) supabase.removeChannel(channel) }
+    // Polling fallback every 5s to catch any missed realtime events
+    const poll = setInterval(fetchNotifications, 5000)
+
+    return () => {
+      if (channel) supabase.removeChannel(channel)
+      clearInterval(poll)
+    }
   }, [userId, forAdmin])
 
   // Close on outside click
