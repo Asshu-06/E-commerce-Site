@@ -47,18 +47,24 @@ export default function NotificationBell({ userId, forAdmin = false, transparent
     if (!userId && !forAdmin) return
     fetchNotifications()
 
-    // Real-time subscription — only if table exists
+    // Real-time subscription — listen to all notification inserts, filter client-side
     let channel
     try {
       channel = supabase
-        .channel(`notifications-${forAdmin ? 'admin' : userId}`)
+        .channel(`notifications-${forAdmin ? 'admin' : userId}-${Date.now()}`)
         .on('postgres_changes', {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'notifications',
-          filter: forAdmin ? 'for_admin=eq.true' : `user_id=eq.${userId}`,
-        }, () => {
-          fetchNotifications()
+        }, (payload) => {
+          const n = payload.new
+          // Client-side filter
+          const isForMe = forAdmin
+            ? n.for_admin === true
+            : n.user_id === userId
+          if (isForMe) {
+            setNotifications(prev => [n, ...prev].slice(0, 30))
+          }
         })
         .subscribe()
     } catch { }
