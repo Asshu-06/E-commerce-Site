@@ -53,7 +53,6 @@ export default function AdminLayout() {
           <p className="font-bold text-gray-900 text-sm">Lakshmi Ram Collections</p>
           <p className="text-xs text-[#C8511B]">Admin Panel</p>
         </div>
-        <NotificationBell forAdmin={true} userId={user?.id} />
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -141,6 +140,11 @@ export default function AdminLayout() {
             <NotificationBell forAdmin={true} userId={user?.id} />
           </div>
         </header>
+
+        {/* Desktop top bar with notification */}
+        <div className="hidden md:flex items-center justify-end px-6 py-3 bg-white border-b border-amber-100">
+          <NotificationBell forAdmin={true} userId={user?.id} />
+        </div>
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Outlet />
