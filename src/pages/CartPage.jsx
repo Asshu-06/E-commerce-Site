@@ -113,15 +113,15 @@ export default function CartPage() {
                   <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
                   <span className="font-medium text-gray-900">₹{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-500">
-                  <span>Shipping</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {totalQty > 0 ? `₹${shippingAPTS}` : <span className="text-xs text-gray-400">Calculated at checkout</span>}
-                  </span>
-                </div>
+                {shippingAPTS > 0 && (
+                  <div className="flex justify-between text-gray-500">
+                    <span>Shipping</span>
+                    <span className="font-medium text-gray-900">₹{shippingAPTS}</span>
+                  </div>
+                )}
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
-                  <span>Subtotal (excl. shipping)</span>
-                  <span className="text-[#C8511B] text-xl">₹{totalPrice.toLocaleString()}</span>
+                  <span>Total</span>
+                  <span className="text-[#C8511B] text-xl">₹{(totalPrice + shippingAPTS).toLocaleString()}</span>
                 </div>
               </div>
 
@@ -138,13 +138,6 @@ export default function CartPage() {
                   </span>
                 </div>
               )}
-
-              {/* Shipping note */}
-              <div className="bg-[#FDF3EC] rounded-xl px-4 py-3 mb-4 text-xs text-[#8B3410]">
-                🚚 <strong>Shipping charge: {shippingAPTS > 0 ? `₹${shippingAPTS}` : 'Free'}</strong>
-                {pasupuQty === 0 && <span className="text-gray-500"> (No Pasupu-Kumkuma items)</span>}
-                <span className="text-gray-400 block mt-1">Shipping applies to Pasupu-Kumkuma products only</span>
-              </div>
 
               <button
                 onClick={() => {
