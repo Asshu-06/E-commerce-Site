@@ -796,12 +796,19 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex justify-between items-center pt-3 border-t border-gray-100 space-y-1">
-                {selectedOrder.shipping_charge > 0 && (
-                  <div className="flex justify-between w-full text-sm text-gray-500 pb-2">
-                    <span>Shipping</span>
-                    <span>₹{selectedOrder.shipping_charge?.toLocaleString()}</span>
-                  </div>
-                )}
+                {(() => {
+                  const itemsSubtotal = (Array.isArray(selectedOrder.items) ? selectedOrder.items : [])
+                    .reduce((s, i) => s + (i.price * i.quantity), 0)
+                  const shipping = selectedOrder.shipping_charge > 0
+                    ? selectedOrder.shipping_charge
+                    : (selectedOrder.total_price - itemsSubtotal > 0 ? selectedOrder.total_price - itemsSubtotal : 0)
+                  return shipping > 0 ? (
+                    <div className="flex justify-between w-full text-sm text-gray-500 pb-2">
+                      <span>Shipping</span>
+                      <span>₹{shipping.toLocaleString()}</span>
+                    </div>
+                  ) : null
+                })()}
               </div>
               <div className="flex justify-between items-center border-t border-gray-100 pt-2">
                 <span className="font-semibold text-gray-700">Total</span>
