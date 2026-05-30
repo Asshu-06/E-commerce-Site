@@ -39,6 +39,16 @@ export default function AdminOrderDetail() {
   const [uploadingPkg, setUploadingPkg] = useState(false)
   const [pendingStatus, setPendingStatus] = useState(null) // status waiting for tracking ID
   const pkgFileRef = useRef(null)
+  const notifyRef  = useRef(null)
+
+  // Scroll to notify button when it appears
+  useEffect(() => {
+    if (lastStatusChanged && notifyRef.current) {
+      setTimeout(() => {
+        notifyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 100)
+    }
+  }, [lastStatusChanged])
 
   const handlePackageImage = async (e) => {
     const file = e.target.files?.[0]
@@ -444,7 +454,7 @@ export default function AdminOrderDetail() {
 
           {/* WhatsApp Notify button — appears after status change */}
           {lastStatusChanged && order.phone && (
-            <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
+            <div ref={notifyRef} className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
               <p className="text-sm font-semibold text-emerald-800">
                 Notify customer via WhatsApp — {lastStatusChanged === 'cancelled' ? 'Payment Rejected' : `Status: ${lastStatusChanged}`}
               </p>
