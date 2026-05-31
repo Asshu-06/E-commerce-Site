@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle, Zap } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { calcShipping } from '../lib/shipping'
@@ -28,6 +28,30 @@ export default function CartPage() {
     removeItem(id, variant)
     toast.success(`Removed from cart`, {
       style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7', fontSize: '14px' },
+    })
+  }
+
+  const handleBuyThisItem = (item) => {
+    if (!user) {
+      toast.error('Please login to proceed', { icon: '🔒' })
+      navigate('/login?redirect=/cart')
+      return
+    }
+    // Validate min quantity
+    const minQty = item.min_quantity || 1
+    if (item.quantity < minQty) {
+      toast.error(`Minimum ${minQty} pieces required for ${item.name}`)
+      return
+    }
+    // Navigate to checkout with only this item — cart stays untouched
+    navigate('/checkout', {
+      state: {
+        buyNowItem: {
+          ...item,
+          selectedVariant: item.selectedVariant,
+          quantity: item.quantity,
+        }
+      }
     })
   }
 
@@ -90,8 +114,17 @@ export default function CartPage() {
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-gray-900">₹{(item.price * item.quantity).toLocaleString()}</span>
+                      {/* Buy This Item */}
+                      <button
+                        onClick={() => handleBuyThisItem(item)}
+                        title="Buy only this item"
+                        className="flex items-center gap-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+                      >
+                        <Zap className="w-3 h-3" />
+                        Buy
+                      </button>
                       <button onClick={() => handleRemove(item.id, item.selectedVariant, item.name)}
                         className="p-1.5 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-colors">
                         <Trash2 className="w-4 h-4" />
