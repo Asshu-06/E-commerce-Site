@@ -162,6 +162,15 @@ export default function AdminOrders() {
     return matchSearch && matchStatus
   })
 
+  // Pagination
+  const PAGE_SIZE = 10
+  const [page, setPage] = useState(1)
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // Reset to page 1 when filter/search changes
+  useEffect(() => { setPage(1) }, [search, filterStatus])
+
   const pendingVerification = orders.filter((o) => o.payment_status === 'pending_verification').length
   const pendingRefund       = orders.filter((o) => o.status === 'cancelled' && o.refund_status === 'initiated').length
 
@@ -261,7 +270,7 @@ export default function AdminOrders() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((order) => (
+                {paginated.map((order) => (
                   <tr key={order.id} className={`hover:bg-gray-50 transition-colors ${
                     order.payment_status === 'pending_verification' ? 'bg-orange-50/40' :
                     order.refund_status === 'initiated' ? 'bg-blue-50/40' : ''
@@ -365,6 +374,33 @@ export default function AdminOrders() {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+                <p className="text-xs text-gray-500">
+                  Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} orders
+                </p>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    ← Prev
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                    <button key={p} onClick={() => setPage(p)}
+                      className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                        page === p ? 'bg-amber-500 text-white' : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}>
+                      {p}
+                    </button>
+                  ))}
+                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    Next →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -80,6 +80,20 @@ export default function AdminProducts() {
     } catch { /* use defaults */ }
   }
 
+  // Re-fetch categories when a new one is added (realtime)
+  useEffect(() => {
+    let channel
+    try {
+      channel = supabase
+        .channel('categories-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+          fetchCategories()
+        })
+        .subscribe()
+    } catch { }
+    return () => { if (channel) supabase.removeChannel(channel) }
+  }, [])
+
   // ── Fetch: Supabase rows only ─────────────────────────────────────────────
   const fetchProducts = async () => {
     try {

@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Plus, Pencil, Trash2, Save, X, ImagePlus } from 'lucide-react'
+import { Plus, Pencil, Trash2, Save, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const EMPTY = { name: '', description: '', image_url: '', slug: '', has_tabs: false }
+const EMPTY = { name: '' }
+
+// Auto-generate slug from name
+const toSlug = (name) => name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading]       = useState(true)
-  const [editing, setEditing]       = useState(null)   // null | 'new' | row object
+  const [editing, setEditing]       = useState(null)
   const [form, setForm]             = useState(EMPTY)
   const [saving, setSaving]         = useState(false)
-  const [imageFile, setImageFile]   = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
 
   useEffect(() => { fetchCategories() }, [])
 
@@ -22,75 +23,20 @@ export default function AdminCategories() {
       .from('categories')
       .select('*')
       .order('created_at', { ascending: true })
-
-    if (error) {
-      // Table may not exist yet — show empty state
-      console.warn('Categories table not found:', error.message)
-      setCategories([])
-    } else {
-      setCategories(data || [])
-    }
+    if (error) { console.warn('Categories table not found:', error.message); setCategories([]) }
+    else setCategories(data || [])
     setLoading(false)
   }
 
-  const openNew = () => {
-    setForm(EMPTY)
-    setImageFile(null)
-    setImagePreview('')
-    setEditing('new')
-  }
-
-  const openEdit = (cat) => {
-    setForm({
-      name:        cat.name        || '',
-      description: cat.description || '',
-      image_url:   cat.image_url   || '',
-      slug:        cat.slug        || '',
-      has_tabs:    cat.has_tabs    || false,
-    })
-    setImageFile(null)
-    setImagePreview(cat.image_url || '')
-    setEditing(cat)
-  }
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
-  }
-
-  const handleImagePick = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
-  }
-
-  const uploadImage = async () => {
-    if (!imageFile) return form.image_url
-    try {
-      const ext  = imageFile.name.split('.').pop().toLowerCase()
-      const path = `categories/${Date.now()}.${ext}`
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, imageFile, { cacheControl: '3600', upsert: true })
-      if (error) {
-        console.warn('Image upload failed (non-blocking):', error.message)
-        return form.image_url  // fall back to URL field
-      }
-      return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl
-    } catch (err) {
-      console.warn('Image upload exception (non-blocking):', err)
-      return form.image_url
-    }
-  }
+  const openNew = () => { setForm(EMPTY); setEditing('new') }
+  const openEdit = (cat) => { setForm({ name: cat.name || '' }); setEditing(cat) }
 
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error('Category name is required'); return }
-    if (!form.slug.trim()) { toast.error('Slug is required (e.g. pasupu, gifts, bags)'); return }
     setSaving(true)
     try {
-      const imageUrl = await uploadImage()
-      const payload  = { ...form, image_url: imageUrl }
+      const slug = toSlug(form.name)
+      const payload = { name: form.name.trim(), slug }
 
       if (editing === 'new') {
         const { error } = await supabase.from('categories').insert([payload])
@@ -140,46 +86,19 @@ export default function AdminCategories() {
             </button>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="e.g. Pasupu-Kumkuma"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Slug * <span className="text-gray-400 font-normal">(URL key)</span></label>
-              <input name="slug" value={form.slug} onChange={handleChange} placeholder="e.g. pasupu"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea name="description" value={form.description} onChange={handleChange} rows={2}
-                placeholder="Short description shown on the category card"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 resize-none" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Image URL <span className="text-gray-400 font-normal">(or upload below)</span></label>
-              <input name="image_url" value={form.image_url} onChange={handleChange} placeholder="https://..."
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
-              <label className="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-xl px-3 py-2 hover:border-amber-400 transition-colors">
-                <ImagePlus className="w-4 h-4 text-gray-400" />
-                <span className="text-sm text-gray-500">{imageFile ? imageFile.name : 'Choose file'}</span>
-                <input type="file" accept="image/*" onChange={handleImagePick} className="hidden" />
-              </label>
-            </div>
-            {imagePreview && (
-              <div className="sm:col-span-2">
-                <img src={imagePreview} alt="Preview" className="h-32 w-full object-cover rounded-xl border border-gray-100" />
-              </div>
+          <div className="max-w-sm">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category Name *</label>
+            <input
+              name="name"
+              value={form.name}
+              onChange={(e) => setForm({ name: e.target.value })}
+              placeholder="e.g. Pasupu-Kumkuma"
+              autoFocus
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+            />
+            {form.name && (
+              <p className="text-xs text-gray-400 mt-1">Slug: <span className="font-mono">{toSlug(form.name)}</span></p>
             )}
-            <div className="sm:col-span-2 flex items-center gap-2">
-              <input type="checkbox" id="has_tabs" name="has_tabs" checked={form.has_tabs} onChange={handleChange}
-                className="w-4 h-4 accent-amber-500 rounded" />
-              <label htmlFor="has_tabs" className="text-sm text-gray-700">Has Standard / Customization tabs</label>
-            </div>
           </div>
 
           <div className="flex gap-3 mt-5">
@@ -205,43 +124,38 @@ export default function AdminCategories() {
         <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
           <div className="text-5xl mb-3">🗂️</div>
           <p className="text-gray-500 text-sm">No categories yet. Click "Add Category" to create one.</p>
-          <p className="text-xs text-gray-400 mt-2">Make sure the <code className="bg-gray-100 px-1 rounded">categories</code> table exists in Supabase.</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((cat) => (
-            <div key={cat.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {cat.image_url ? (
-                <img src={cat.image_url} alt={cat.name} className="w-full h-36 object-cover" />
-              ) : (
-                <div className="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-300 text-4xl">🖼️</div>
-              )}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm">{cat.name}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">/{cat.slug}</p>
-                    {cat.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{cat.description}</p>}
-                    {cat.has_tabs && (
-                      <span className="inline-block mt-2 text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full">
-                        Standard + Custom tabs
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-1.5 shrink-0">
-                    <button onClick={() => openEdit(cat)}
-                      className="p-1.5 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors">
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete(cat)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Name</th>
+                <th className="text-left px-4 py-3.5 font-semibold text-gray-600">Slug</th>
+                <th className="text-right px-5 py-3.5 font-semibold text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {categories.map((cat) => (
+                <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-5 py-3.5 font-medium text-gray-900">{cat.name}</td>
+                  <td className="px-4 py-3.5 text-gray-400 font-mono text-xs">{cat.slug}</td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => openEdit(cat)}
+                        className="p-2 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(cat)}
+                        className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
