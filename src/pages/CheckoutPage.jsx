@@ -344,7 +344,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* UPI ID copy */}
-              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-6">
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-3">
                 <div className="flex-1">
                   <p className="text-xs text-gray-400 mb-0.5">UPI ID</p>
                   <p className="font-mono font-semibold text-gray-900 text-sm">{UPI_ID}</p>
@@ -356,14 +356,24 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
+              {/* Open UPI App button — pre-fills amount */}
+              <a
+                href={`upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${parseFloat(snapshotTotal).toFixed(2)}&cu=INR`}
+                className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold py-3 rounded-xl transition-colors mb-2"
+              >
+                Open UPI App (amount auto-filled)
+              </a>
+              <p className="text-xs text-gray-400 text-center mb-4">
+                Tap above to open your UPI app with ₹{snapshotTotal.toLocaleString()} pre-filled. If copying the UPI ID manually, enter the amount <strong>₹{snapshotTotal.toLocaleString()}</strong> yourself.
+              </p>
+
               {/* Instructions */}
               <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
                 <p className="text-xs font-semibold text-blue-800 mb-2">How to pay:</p>
                 <ol className="text-xs text-blue-700 space-y-1 list-decimal list-inside">
-                  <li>Open any UPI app (GPay, PhonePe, Paytm, BHIM)</li>
-                  <li>Scan the QR code or enter the UPI ID</li>
-                  <li>Amount of <strong>₹{snapshotTotal.toLocaleString()}</strong> will be auto-filled — just confirm</li>
-                  <li>Complete the payment</li>
+                  <li>Scan the QR code <strong>or</strong> tap "Open UPI App" above</li>
+                  <li>Amount ₹{snapshotTotal.toLocaleString()} will be auto-filled — confirm and pay</li>
+                  <li>If entering UPI ID manually, type the amount <strong>₹{snapshotTotal.toLocaleString()}</strong> yourself</li>
                   <li>Take a screenshot of the success screen</li>
                   <li>Upload it below to confirm your order</li>
                 </ol>
