@@ -128,9 +128,6 @@ export default function CategoryPage() {
                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-                        <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
-                      </div>
                       <span className="leading-tight">{cat.name}</span>
                     </button>
                   )

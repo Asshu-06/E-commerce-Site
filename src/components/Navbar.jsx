@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ShoppingCart, Menu, X, Leaf, User, LogOut, ChevronDown, Heart, Search } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
+import { supabase } from '../lib/supabase'
+import { categories as mockCategories } from '../lib/mockData'
 import WhatsAppAnnouncement from './WhatsAppAnnouncement'
 import SearchModal from './SearchModal'
 import NotificationBell from './NotificationBell'
@@ -12,8 +14,11 @@ import toast from 'react-hot-toast'
 export default function Navbar() {
   const [menuOpen, setMenuOpen]       = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [catMenuOpen, setCatMenuOpen]  = useState(false)
   const [scrolled, setScrolled]       = useState(false)
   const [searchOpen, setSearchOpen]   = useState(false)
+  const [dbCategories, setDbCategories] = useState(mockCategories.map(c => ({ slug: c.id, name: c.name })))
+  const catMenuRef = useRef(null)
   const { totalItems, cart }          = useCart()
   const { items: wishlistItems }      = useWishlist()
   const { user, signOut, isAdmin }    = useAuth()
@@ -27,7 +32,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  useEffect(() => { setMenuOpen(false); setUserMenuOpen(false) }, [location])
+  useEffect(() => { setMenuOpen(false); setUserMenuOpen(false); setCatMenuOpen(false) }, [location])
 
   useEffect(() => {
     if (!userMenuOpen) return
@@ -35,6 +40,23 @@ export default function Navbar() {
     const t = setTimeout(() => document.addEventListener('mousedown', fn), 10)
     return () => { clearTimeout(t); document.removeEventListener('mousedown', fn) }
   }, [userMenuOpen])
+
+  useEffect(() => {
+    if (!catMenuOpen) return
+    const fn = (e) => { if (catMenuRef.current && !catMenuRef.current.contains(e.target)) setCatMenuOpen(false) }
+    const t = setTimeout(() => document.addEventListener('mousedown', fn), 10)
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', fn) }
+  }, [catMenuOpen])
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const { data } = await supabase.from('categories').select('slug, name').order('created_at', { ascending: true })
+        if (data && data.length > 0) setDbCategories(data)
+      } catch { }
+    }
+    fetch()
+  }, [])
 
   const transparent = isHome && !scrolled && !menuOpen
 
@@ -47,12 +69,7 @@ export default function Navbar() {
   const avatarUrl   = user?.user_metadata?.avatar_url
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Account'
 
-  const navLinks = [
-    { label: 'Home',            to: '/' },
-    { label: 'Pasupu-Kumkuma', to: '/category/pasupu' },
-    { label: 'Return Gifts',   to: '/category/gifts' },
-    { label: 'Return Bags',    to: '/category/bags' },
-  ]
+
 
   return (
   <>
@@ -83,34 +100,66 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const active = location.pathname === link.to
-              return (
-                <Link key={link.to} to={link.to}
-                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    transparent
-                      ? active ? 'text-white bg-white/15' : 'text-white/80 hover:text-white hover:bg-white/10'
-                      : active ? 'text-[#C8511B] bg-[#FDF3EC]' : 'text-gray-600 hover:text-[#1C1917] hover:bg-[#FAF7F2]'
-                  }`}>
-                  {link.label}
-                  {active && !transparent && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#C8511B]" />
-                  )}
-                </Link>
-              )
-            })}
+            <Link to="/"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                transparent
+                  ? location.pathname === '/' ? 'text-white bg-white/15' : 'text-white/80 hover:text-white hover:bg-white/10'
+                  : location.pathname === '/' ? 'text-[#C8511B] bg-[#FDF3EC]' : 'text-gray-600 hover:text-[#1C1917] hover:bg-[#FAF7F2]'
+              }`}>
+              Home
+            </Link>
+
+            <Link to="/category/pasupu"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                transparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-[#1C1917] hover:bg-[#FAF7F2]'
+              }`}>
+              All Products
+            </Link>
+
+            {/* Categories dropdown */}
+            <div className="relative" ref={catMenuRef}>
+              <button
+                onClick={() => setCatMenuOpen(v => !v)}
+                className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  transparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-[#1C1917] hover:bg-[#FAF7F2]'
+                }`}>
+                Categories
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${catMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {catMenuOpen && (
+                <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 animate-fade-up">
+                  {dbCategories.map(cat => (
+                    <Link
+                      key={cat.slug}
+                      to={`/category/${cat.slug}`}
+                      onClick={() => setCatMenuOpen(false)}
+                      className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-[#FDF3EC] hover:text-[#C8511B] transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Inline search box */}
+          <div className="hidden lg:flex items-center flex-1 max-w-xs mx-4">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className={`w-full flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-all ${
+                transparent
+                  ? 'bg-white/10 border-white/20 text-white/60 hover:bg-white/20'
+                  : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-[#C8511B]/40 hover:bg-white'
+              }`}
+            >
+              <Search className="w-4 h-4 shrink-0" />
+              <span>Search products...</span>
+            </button>
           </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-1">
-            {/* Search */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className={`p-2.5 rounded-xl transition-all duration-200 ${transparent ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-600'}`}
-              aria-label="Search products"
-            >
-              <Search className="w-5 h-5" />
-            </button>
             {/* Notifications — only for logged in users */}
             {user && (
               <NotificationBell userId={user.id} transparent={transparent} />
@@ -214,14 +263,28 @@ export default function Navbar() {
         transparent ? 'bg-black/80 backdrop-blur-xl' : 'bg-white border-t border-gray-100'
       }`}>
         <div className="px-4 py-4 space-y-1">
-          {navLinks.map((link) => (
-            <Link key={link.to} to={link.to}
+          <Link to="/"
+            className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              location.pathname === '/'
+                ? transparent ? 'bg-white/15 text-white' : 'bg-amber-50 text-amber-700'
+                : transparent ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-50'
+            }`}>
+            Home
+          </Link>
+          <Link to="/category/pasupu"
+            className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              transparent ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-50'
+            }`}>
+            All Products
+          </Link>
+          {dbCategories.map(cat => (
+            <Link key={cat.slug} to={`/category/${cat.slug}`}
               className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                location.pathname === link.to
+                location.pathname === `/category/${cat.slug}`
                   ? transparent ? 'bg-white/15 text-white' : 'bg-amber-50 text-amber-700'
                   : transparent ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-50'
               }`}>
-              {link.label}
+              {cat.name}
             </Link>
           ))}
           <div className="border-t border-white/10 pt-3 mt-3 space-y-1">
