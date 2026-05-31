@@ -220,7 +220,7 @@ export default function AdminOrders() {
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
           className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white text-gray-700">
           <option value="all">All Statuses</option>
-          {STATUS_OPTIONS.map((s) => <option key={s} value={s} className="capitalize">{s}</option>)}
+          {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
         </select>
       </div>
 
