@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
 import toast from 'react-hot-toast'
 import { notifyUser } from '../lib/notifications'
+import { deductStock } from '../lib/stockUtils'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
 
@@ -99,6 +100,8 @@ export default function AdminOrders() {
       setReviewOrder(null)
       toast.success('✅ Payment verified! Order confirmed.')
       if (order.user_id) notifyUser.orderConfirmed(order.user_id, order)
+      // Deduct stock for confirmed order
+      deductStock(order.items)
     } catch (err) {
       toast.error(err.message || 'Failed to verify payment')
     }
