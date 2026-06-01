@@ -28,6 +28,9 @@ import AdminBanners from './admin/AdminBanners'
 import WhatsAppButton from './components/WhatsAppButton'
 import InstagramButton from './components/InstagramButton'
 
+// ── Set to true to show maintenance page to visitors ──
+const MAINTENANCE_MODE = true
+
 // Wrapper that adds Navbar + Footer
 function StoreLayout({ children }) {
   return (
@@ -39,6 +42,17 @@ function StoreLayout({ children }) {
     </div>
   )
 }
+
+const MaintenancePage = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-[#FAF7F2]">
+    <div className="text-7xl mb-6">🪔</div>
+    <h1 className="text-3xl font-bold text-[#C8511B] mb-3">We'll be back soon</h1>
+    <p className="text-gray-600 text-lg max-w-md mb-2">
+      Our store is currently under maintenance. We're working hard to bring you a better experience.
+    </p>
+    <p className="text-gray-400 text-sm">Thank you for your patience.</p>
+  </div>
+)
 
 const NotFound = () => (
   <div className="min-h-screen flex flex-col items-center justify-center pt-16 px-4 text-center bg-[#FAF7F2]">
@@ -77,20 +91,20 @@ export default function App() {
               </Route>
 
               {/* ── Public store routes (flat, no nesting) ── */}
-              <Route path="/" element={<StoreLayout><HomePage /></StoreLayout>} />
-              <Route path="/category/:categoryId" element={<StoreLayout><CategoryPage /></StoreLayout>} />
-              <Route path="/product/:productId" element={<StoreLayout><ProductPage /></StoreLayout>} />
-              <Route path="/cart" element={<StoreLayout><CartPage /></StoreLayout>} />
-              <Route path="/checkout" element={<StoreLayout><CheckoutPage /></StoreLayout>} />
-              <Route path="/login" element={<StoreLayout><LoginPage /></StoreLayout>} />
-              <Route path="/profile" element={<StoreLayout><ProfilePage /></StoreLayout>} />
-              <Route path="/contact" element={<StoreLayout><ContactPage /></StoreLayout>} />
-              <Route path="/shipping-policy" element={<StoreLayout><ShippingPolicyPage /></StoreLayout>} />
-              <Route path="/refund-policy" element={<StoreLayout><RefundPolicyPage /></StoreLayout>} />
-              <Route path="/privacy-policy" element={<StoreLayout><PrivacyPolicyPage /></StoreLayout>} />
+              <Route path="/" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><HomePage /></StoreLayout>} />
+              <Route path="/category/:categoryId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CategoryPage /></StoreLayout>} />
+              <Route path="/product/:productId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ProductPage /></StoreLayout>} />
+              <Route path="/cart" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CartPage /></StoreLayout>} />
+              <Route path="/checkout" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CheckoutPage /></StoreLayout>} />
+              <Route path="/login" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><LoginPage /></StoreLayout>} />
+              <Route path="/profile" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ProfilePage /></StoreLayout>} />
+              <Route path="/contact" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ContactPage /></StoreLayout>} />
+              <Route path="/shipping-policy" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ShippingPolicyPage /></StoreLayout>} />
+              <Route path="/refund-policy" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><RefundPolicyPage /></StoreLayout>} />
+              <Route path="/privacy-policy" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><PrivacyPolicyPage /></StoreLayout>} />
 
               {/* ── 404 ── */}
-              <Route path="*" element={<StoreLayout><NotFound /></StoreLayout>} />
+              <Route path="*" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><NotFound /></StoreLayout>} />
             </Routes>
 
             <Toaster position="top-right" />
