@@ -130,8 +130,11 @@ export default function ProductCard({ product }) {
               </button>
             </div>
             <button onClick={handleAddToCart}
+              disabled={isOutOfStock}
               className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-300 ${
-                added
+                isOutOfStock
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : added
                   ? 'bg-emerald-500 text-white'
                   : 'bg-gray-900 hover:bg-[#C8511B] text-white'
               }`}>
