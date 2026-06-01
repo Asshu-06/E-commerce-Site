@@ -42,6 +42,6 @@ export function shippingTierLabel(totalQty) {
 }
 
 // Kept for backward compatibility — no longer affects shipping rate
-export function isAPTS(city = '', address = '') {
+export function isAPTS() {
   return true
 }

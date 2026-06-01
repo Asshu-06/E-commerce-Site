@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { User, Package, Clock, CheckCircle2, Truck, XCircle, LogOut, ChevronRight, ShoppingBag, Phone, MessageCircle, AlertTriangle, Heart, Star } from 'lucide-react'
+import { User, Package, Clock, CheckCircle2, XCircle, LogOut, ChevronRight, ShoppingBag, Phone, AlertTriangle, Heart, Star } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import { supabase } from '../lib/supabase'

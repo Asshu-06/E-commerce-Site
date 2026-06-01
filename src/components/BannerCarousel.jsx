@@ -34,8 +34,6 @@ export default function BannerCarousel() {
 
   if (loading || slides.length === 0) return null
 
-  const slide = slides[current]
-
   return (
     <div className="relative w-full overflow-hidden bg-gray-900" style={{ aspectRatio: '3/1', maxHeight: '400px' }}>
       {/* Slides */}

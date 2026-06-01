@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { ShoppingCart, MessageCircle, Plus, Minus, Heart, Star } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { ShoppingCart, Plus, Minus, Heart, Star } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
@@ -12,7 +12,6 @@ export default function ProductCard({ product }) {
   const { addItem }                       = useCart()
   const { isWishlisted, toggleWishlist }  = useWishlist()
   const { user }                          = useAuth()
-  const navigate                          = useNavigate()
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || '')
   const [quantity, setQuantity]           = useState(1)
   const [added, setAdded]                 = useState(false)

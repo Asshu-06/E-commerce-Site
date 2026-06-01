@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight, Sparkles, Play } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
 export default function Hero() {
   const [visible, setVisible] = useState(false)

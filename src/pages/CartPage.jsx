@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, AlertCircle, Zap } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, AlertCircle, Zap } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { calcShipping } from '../lib/shipping'
@@ -9,8 +9,6 @@ export default function CartPage() {
   const { cart, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
-
-  const totalQty     = cart.reduce((s, i) => s + i.quantity, 0)
 
   // Check if any item is below its own min_quantity
   const itemsBelowMin = cart.filter(i => {
@@ -22,9 +20,8 @@ export default function CartPage() {
   // Shipping only applies to Pasupu Kumkuma products
   const pasupuQty    = cart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
   const shippingAPTS  = pasupuQty > 0 ? calcShipping(pasupuQty) : 0
-  const shippingOther = shippingAPTS
 
-  const handleRemove = (id, variant, name) => {
+  const handleRemove = (id, variant) => {
     removeItem(id, variant)
     toast.success(`Removed from cart`, {
       style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7', fontSize: '14px' },
@@ -125,7 +122,7 @@ export default function CartPage() {
                         <Zap className="w-3 h-3" />
                         Buy
                       </button>
-                      <button onClick={() => handleRemove(item.id, item.selectedVariant, item.name)}
+                      <button onClick={() => handleRemove(item.id, item.selectedVariant)}
                         className="p-1.5 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>

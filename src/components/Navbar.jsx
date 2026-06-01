@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Menu, X, Leaf, User, LogOut, ChevronDown, Heart, Search } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
@@ -19,11 +19,10 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen]   = useState(false)
   const [dbCategories, setDbCategories] = useState(mockCategories.map(c => ({ slug: c.id, name: c.name })))
   const catMenuRef = useRef(null)
-  const { totalItems, cart }          = useCart()
+  const { cart }          = useCart()
   const { items: wishlistItems }      = useWishlist()
   const { user, signOut, isAdmin }    = useAuth()
   const location                      = useLocation()
-  const navigate                      = useNavigate()
   const isHome                        = location.pathname === '/'
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Bell, X, CheckCheck, ShoppingBag } from 'lucide-react'
+import { Bell, X, CheckCheck } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { markRead, markAllRead } from '../lib/notifications'
 import { useNavigate } from 'react-router-dom'

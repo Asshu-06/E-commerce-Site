@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search, RefreshCw, User, ShoppingCart, Heart, ChevronRight, X, Package, IndianRupee, MapPin } from 'lucide-react'
+import { Search, RefreshCw, User, ShoppingCart, Heart, ChevronRight, X, Package } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Return Bags' }

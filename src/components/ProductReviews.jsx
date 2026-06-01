@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Star, ThumbsUp, User } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 function StarDisplay({ rating, size = 'sm' }) {

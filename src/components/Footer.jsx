@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Phone, Mail, MapPin, MessageCircle, Lock, Share2, Users } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 const WHATSAPP_PHONE = import.meta.env.VITE_WHATSAPP_PHONE || '917997060668'
 

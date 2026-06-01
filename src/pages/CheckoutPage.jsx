@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   // All state declarations first
   const [form, setForm]               = useState({ ...INITIAL_FORM })
   const [step, setStep]               = useState('form')
-  const [submitting, setSubmitting]   = useState(false)
+  const [submitting]                  = useState(false)
   const [orderId, setOrderId]         = useState(null)
   const [snapshotTotal, setSnapshotTotal] = useState(0)
   const [tempOrderId]                 = useState(`ST${Date.now().toString().slice(-6)}`)
@@ -76,9 +76,6 @@ export default function CheckoutPage() {
   }, [user])
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
-
-  // Total pieces in cart
-  const totalQty = activeCart.reduce((s, i) => s + i.quantity, 0)
 
   // Shipping only applies to Pasupu Kumkuma products
   const pasupuQty = activeCart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)

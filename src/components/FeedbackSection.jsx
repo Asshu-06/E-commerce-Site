@@ -17,7 +17,6 @@ export default function FeedbackSection() {
     setLoading(true)
 
     // Send via WhatsApp as fallback (no separate feedback table needed)
-    const msg = `📝 New Feedback\nName: ${form.name || 'Anonymous'}\nEmail: ${form.email || 'N/A'}\nRating: ${'⭐'.repeat(form.rating || 0)}\nMessage: ${form.message}`
     try {
       // Try saving to Supabase if feedback table exists
       await supabase.from('feedback').insert([{

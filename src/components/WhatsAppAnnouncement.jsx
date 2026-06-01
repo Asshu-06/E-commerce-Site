@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
 
 const WHATSAPP_NUMBER = '917997060668'
 const MSG = 'For customised / international orders please contact us on WhatsApp'
@@ -12,7 +11,6 @@ const WaIcon = ({ size = 16, color = 'white' }) => (
 
 export default function WhatsAppAnnouncement() {
   const [paused, setPaused] = useState(false)
-  const { pathname } = useLocation()
 
   const openWhatsApp = (e) => {
     e.stopPropagation()

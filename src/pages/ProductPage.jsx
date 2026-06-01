@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
-  ShoppingCart, Heart, MessageCircle, ChevronRight,
-  Star, Truck, Shield, RotateCcw, Plus, Minus,
+  ShoppingCart, Heart, ChevronRight,
+  Star, Truck, Shield, Plus, Minus,
   Share2, Check, ArrowLeft
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { mockProducts, categories } from '../lib/mockData'
+import { mockProducts } from '../lib/mockData'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
 import { sendToWhatsApp } from '../lib/whatsapp'
-import { calcShipping } from '../lib/shipping'
 import ProductCard from '../components/ProductCard'
 import ProductReviews from '../components/ProductReviews'
 import LoginPromptModal from '../components/LoginPromptModal'
@@ -37,7 +36,6 @@ export default function ProductPage() {
   const magnetExtra    = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
   const effectivePrice = (product?.price || 0) + magnetExtra
   const qty            = parseInt(quantity) || 0
-  const lineTotal      = effectivePrice * qty
   const [selectedImage, setSelectedImage] = useState(0)
   const [addedToCart, setAddedToCart]   = useState(false)
   const [copied, setCopied]             = useState(false)
