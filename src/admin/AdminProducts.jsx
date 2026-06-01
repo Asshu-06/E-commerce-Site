@@ -200,7 +200,9 @@ export default function AdminProducts() {
         unit:        form.unit.trim()        || null,
         description: form.description.trim() || null,
         image_url:   finalImageUrl           || null,
-        variants:    ['Without Magnet', 'With Magnet (+₹3)'],
+        variants:    form.variants.trim()
+          ? form.variants.split(',').map(v => v.trim()).filter(Boolean)
+          : ['Without Magnet', 'With Magnet (+₹3)'],
         stock_quantity: form.stock_quantity !== '' ? parseInt(form.stock_quantity) : null,
         min_quantity:   form.min_quantity   !== '' ? parseInt(form.min_quantity)   : null,
       }

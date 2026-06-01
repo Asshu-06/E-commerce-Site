@@ -106,11 +106,12 @@ export default function AdminOrderDetail() {
     setUpdating(true)
     try {
       const updatePayload = { status: newStatus }
-      // Only include tracking_id if it's provided (column may not exist yet)
       if (newStatus === 'shipped' && tId) {
         try {
-          await supabase.from('orders').update({ tracking_id: tId }).eq('id', orderId)
-        } catch { /* column may not exist */ }
+          const shippedPayload = { tracking_id: tId }
+          if (pkgImg) shippedPayload.package_image = pkgImg
+          await supabase.from('orders').update(shippedPayload).eq('id', orderId)
+        } catch { /* columns may not exist */ }
       }
       const { error } = await supabase.from('orders').update(updatePayload).eq('id', orderId)
       if (error) throw error

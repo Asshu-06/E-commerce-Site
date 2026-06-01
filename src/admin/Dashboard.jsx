@@ -27,7 +27,6 @@ export default function Dashboard() {
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5)
       if (!error && data) setOrders(data)
     } catch {
       // Supabase not configured yet
@@ -115,7 +114,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
-            {orders.map((order) => (
+            {orders.slice(0, 5).map((order) => (
               <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{order.user_name}</p>

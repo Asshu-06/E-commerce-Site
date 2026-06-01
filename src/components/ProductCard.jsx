@@ -20,6 +20,7 @@ export default function ProductCard({ product }) {
 
   const isCustomization = product.type === 'customization'
   const wishlisted      = isWishlisted(product.id)
+  const isOutOfStock    = product.stock_quantity != null && product.stock_quantity <= 0
 
   const handleAddToCart = () => {
     if (!user) {
@@ -64,7 +65,11 @@ export default function ProductCard({ product }) {
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-
+          {isOutOfStock && (
+            <span className="bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+              Out of Stock
+            </span>
+          )}
         </div>
 
         {/* Price bottom-left */}
