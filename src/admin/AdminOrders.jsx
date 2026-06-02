@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Search, RefreshCw, ChevronDown, X, CheckCircle2, Clock, ImageIcon, XCircle, ZoomIn } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { mockProducts } from '../lib/mockData'
@@ -29,7 +29,11 @@ export default function AdminOrders() {
   const [orders, setOrders]               = useState([])
   const [loading, setLoading]             = useState(true)
   const [search, setSearch]               = useState('')
-  const [filterStatus, setFilterStatus]   = useState('all')
+  const location = useLocation()
+  const [filterStatus, setFilterStatus]   = useState(() => {
+    const params = new URLSearchParams(location.search)
+    return params.get('status') || 'all'
+  })
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [updatingId, setUpdatingId]       = useState(null)
   const [productMap, setProductMap]       = useState({}) // id → image_url
