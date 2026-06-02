@@ -44,24 +44,28 @@ export default function Dashboard() {
       value: orders.length,
       icon: <ShoppingBag className="w-6 h-6 text-amber-500" />,
       bg: 'bg-amber-50',
+      to: '/admin/orders',
     },
     {
       label: 'Revenue',
       value: `₹${totalRevenue.toLocaleString()}`,
       icon: <IndianRupee className="w-6 h-6 text-green-500" />,
       bg: 'bg-green-50',
+      to: '/admin/orders',
     },
     {
       label: 'Pending Orders',
       value: pendingCount,
       icon: <Clock className="w-6 h-6 text-orange-500" />,
       bg: 'bg-orange-50',
+      to: '/admin/orders?status=pending',
     },
     {
       label: 'Products',
       value: productCount,
       icon: <Package className="w-6 h-6 text-purple-500" />,
       bg: 'bg-purple-50',
+      to: '/admin/products',
     },
   ]
 
@@ -75,13 +79,14 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <Link key={s.label} to={s.to}
+            className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-amber-200 transition-all hover:-translate-y-0.5">
             <div className={`w-12 h-12 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
               {s.icon}
             </div>
             <p className="text-2xl font-bold text-gray-900">{s.value}</p>
             <p className="text-sm text-gray-500 mt-0.5">{s.label}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -115,7 +120,8 @@ export default function Dashboard() {
         ) : (
           <div className="divide-y divide-gray-50">
             {orders.slice(0, 5).map((order) => (
-              <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
+              <Link key={order.id} to={`/admin/orders/${order.id}`}
+                className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{order.user_name}</p>
                   <p className="text-xs text-gray-400">{order.phone} · {new Date(order.created_at).toLocaleDateString('en-IN')}</p>
@@ -126,7 +132,7 @@ export default function Dashboard() {
                     {order.status}
                   </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
