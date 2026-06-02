@@ -105,7 +105,20 @@ export default function CartPage() {
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-8 text-center text-sm font-semibold text-gray-900">{item.quantity}</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value)
+                          if (!isNaN(v) && v >= 1) updateQuantity(item.id, item.selectedVariant, v)
+                        }}
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value)
+                          if (isNaN(v) || v < 1) updateQuantity(item.id, item.selectedVariant, 1)
+                        }}
+                        className="w-12 text-center text-sm font-semibold text-gray-900 bg-gray-50 border-none outline-none"
+                      />
                       <button onClick={() => updateQuantity(item.id, item.selectedVariant, item.quantity + 1)}
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
                         <Plus className="w-3 h-3" />

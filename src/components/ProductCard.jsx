@@ -122,8 +122,22 @@ export default function ProductCard({ product }) {
                 className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
                 <Minus className="w-3 h-3" />
               </button>
-              <span className="w-7 text-center text-sm font-semibold text-gray-800">{quantity}</span>
-              <button onClick={() => setQuantity(q => q + 1)}
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value)
+                  if (!isNaN(v) && v >= 1) setQuantity(v)
+                  else if (e.target.value === '') setQuantity('')
+                }}
+                onBlur={(e) => {
+                  const v = parseInt(e.target.value)
+                  setQuantity(!isNaN(v) && v >= 1 ? v : 1)
+                }}
+                className="w-10 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none"
+              />
+              <button onClick={() => setQuantity(q => (parseInt(q) || 0) + 1)}
                 className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
                 <Plus className="w-3 h-3" />
               </button>
