@@ -43,10 +43,7 @@ export function ContactPage() {
           <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer"
             className="text-emerald-600 font-medium hover:underline">Chat on WhatsApp →</a>
         </div>
-        <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-          <p className="font-semibold text-gray-900 mb-1">📍 Address</p>
-          <p className="text-gray-600 text-sm">Gothic Pentagon Clouds, beside Pista House,<br />Bachupally, Hyderabad, Telangana</p>
-        </div>
+       
       </div>
       <p className="text-sm text-gray-400 mt-4">We typically respond within 1–2 hours on WhatsApp.</p>
     </PolicyLayout>
@@ -84,8 +81,7 @@ export function ShippingPolicyPage() {
         </table>
       </div>
 
-      <h2 className="text-lg font-bold text-gray-900 mt-6 mb-2">Minimum Order</h2>
-      <p>Minimum order quantity is <strong>20 pieces</strong> per order.</p>
+      
 
       <h2 className="text-lg font-bold text-gray-900 mt-6 mb-2">Delivery Time</h2>
       <p>Orders are typically delivered within <strong>5–7 business days</strong> after dispatch. Remote areas may take longer.</p>
