@@ -29,7 +29,7 @@ import WhatsAppButton from './components/WhatsAppButton'
 import InstagramButton from './components/InstagramButton'
 
 // ── Set to true to show maintenance page to visitors ──
-const MAINTENANCE_MODE = true
+const MAINTENANCE_MODE = false
 
 // Wrapper that adds Navbar + Footer
 function StoreLayout({ children }) {
