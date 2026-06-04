@@ -26,9 +26,14 @@ export default function ProductCard({ product }) {
       setShowLoginModal(true)
       return
     }
+    if (added) {
+      // Already added — navigate to cart
+      window.location.href = '/cart'
+      return
+    }
     addItem(product, selectedVariant, quantity)
     setAdded(true)
-    setTimeout(() => setAdded(false), 1800)
+    // Don't reset — stays as "Go to Cart"
     toast.success(`Added to cart!`, {
       icon: '🛒',
       style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7', fontSize: '14px' },
@@ -152,7 +157,7 @@ export default function ProductCard({ product }) {
                   : 'bg-gray-900 hover:bg-[#C8511B] text-white'
               }`}>
               <ShoppingCart className="w-3.5 h-3.5" />
-              {added ? 'Added!' : 'Add to Cart'}
+              {added ? 'Go to Cart' : 'Add to Cart'}
             </button>
           </div>
         )}
