@@ -135,7 +135,7 @@ export default function ProductCard({ product }) {
                   const v = parseInt(e.target.value)
                   setQuantity(!isNaN(v) && v >= 1 ? v : 1)
                 }}
-                className="w-10 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none"
+                className="w-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none"
               />
               <button onClick={() => setQuantity(q => (parseInt(q) || 0) + 1)}
                 className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">

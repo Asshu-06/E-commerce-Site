@@ -100,11 +100,11 @@ export default function ProductPage() {
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
     addItem(productToAdd, selectedVariant, qty)
     setAddedToCart(true)
+    // Don't reset — button stays as "Go to Cart"
     toast.success(`${product.name} added to cart!`, {
       icon: '🛒',
       style: { borderRadius: '12px', background: '#fff7ed', color: '#92400e' },
     })
-    setTimeout(() => setAddedToCart(false), 2000)
   }
 
   const handleBuyNow = () => {
@@ -389,15 +389,17 @@ export default function ProductPage() {
                   </button>
                 ) : (
                   <>
-                    <button onClick={handleAddToCart}
-                      disabled={isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity)}
+                    <button
+                      onClick={addedToCart ? () => navigate('/cart') : handleAddToCart}
+                      disabled={!addedToCart && (isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity))}
                       className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
                         addedToCart
-                          ? 'bg-green-500 text-white shadow-green-200'
+                          ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-200'
                           : 'bg-[#C8511B] hover:bg-[#B04516] text-white shadow-[#C8511B]/20'
-                      }`}>
-                      {addedToCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
-                      {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
+                      }`}
+                    >
+                      {addedToCart ? <ShoppingCart className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                      {addedToCart ? 'Go to Cart →' : 'Add to Cart'}
                     </button>
                     <button onClick={handleBuyNow}
                       disabled={isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity)}
