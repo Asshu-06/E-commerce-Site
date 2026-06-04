@@ -21,8 +21,7 @@ const CAT_LABELS = { pasupu: 'Pasupu-Kumkuma', gifts: 'Return Gifts', bags: 'Ret
 export default function ProductPage() {
   const { productId } = useParams()
   const navigate = useNavigate()
-  const { addItem } = useCart()
-  const { cart } = useCart()
+  const { addItem, cart } = useCart()
   const { isWishlisted, toggleWishlist } = useWishlist()
   const { user } = useAuth()
 
@@ -40,6 +39,10 @@ export default function ProductPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [addedToCart, setAddedToCart]   = useState(false)
   const [copied, setCopied]             = useState(false)
+
+  // Check if product is already in cart
+  const inCart = product ? cart.some(i => String(i.id) === String(product.id)) : false
+  const isGoToCart = addedToCart || inCart
 
   useEffect(() => {
     fetchProduct()
@@ -391,16 +394,16 @@ export default function ProductPage() {
                 ) : (
                   <>
                     <button
-                      onClick={addedToCart ? () => navigate('/cart') : handleAddToCart}
-                      disabled={!addedToCart && (isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity))}
+                      onClick={isGoToCart ? () => navigate('/cart') : handleAddToCart}
+                      disabled={!isGoToCart && (isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity))}
                       className={`flex-1 flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all text-base shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
-                        addedToCart
+                        isGoToCart
                           ? 'bg-green-500 hover:bg-green-600 text-white shadow-green-200'
                           : 'bg-[#C8511B] hover:bg-[#B04516] text-white shadow-[#C8511B]/20'
                       }`}
                     >
-                      {addedToCart ? <ShoppingCart className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
-                      {addedToCart ? 'Go to Cart →' : 'Add to Cart'}
+                      <ShoppingCart className="w-5 h-5" />
+                      {isGoToCart ? 'Go to Cart →' : 'Add to Cart'}
                     </button>
                     <button onClick={handleBuyNow}
                       disabled={isOutOfStock || quantity < minQty || (product?.stock_quantity != null && qty > product.stock_quantity)}
