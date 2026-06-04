@@ -22,6 +22,7 @@ export default function ProductPage() {
   const { productId } = useParams()
   const navigate = useNavigate()
   const { addItem } = useCart()
+  const { cart } = useCart()
   const { isWishlisted, toggleWishlist } = useWishlist()
   const { user } = useAuth()
 
