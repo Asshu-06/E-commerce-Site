@@ -9,7 +9,7 @@ import LoginPromptModal from './LoginPromptModal'
 import toast from 'react-hot-toast'
 
 export default function ProductCard({ product }) {
-  const { addItem }                       = useCart()
+  const { addItem, cart }                 = useCart()
   const { isWishlisted, toggleWishlist }  = useWishlist()
   const { user }                          = useAuth()
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || '')
@@ -20,20 +20,25 @@ export default function ProductCard({ product }) {
   const isCustomization = product.type === 'customization'
   const wishlisted      = isWishlisted(product.id)
   const isOutOfStock    = product.stock_quantity != null && product.stock_quantity <= 0
+  const minQty          = product.min_quantity || 1
+  // Check if already in cart
+  const inCart          = cart.some(i => String(i.id) === String(product.id))
+  const isAdded         = added || inCart
 
   const handleAddToCart = () => {
-    if (!user) {
-      setShowLoginModal(true)
+    if (!user) { setShowLoginModal(true); return }
+    if (isAdded) { window.location.href = '/cart'; return }
+    // Min quantity check
+    const qty = parseInt(quantity) || 1
+    if (qty < minQty) {
+      toast.error(`Minimum order is ${minQty} pieces. Go to the product page to set the quantity.`, {
+        icon: '⚠️',
+        style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7', fontSize: '13px' },
+      })
       return
     }
-    if (added) {
-      // Already added — navigate to cart
-      window.location.href = '/cart'
-      return
-    }
-    addItem(product, selectedVariant, quantity)
+    addItem(product, selectedVariant, qty)
     setAdded(true)
-    // Don't reset — stays as "Go to Cart"
     toast.success(`Added to cart!`, {
       icon: '🛒',
       style: { borderRadius: '12px', background: '#1c1917', color: '#fef3c7', fontSize: '14px' },
@@ -152,12 +157,12 @@ export default function ProductCard({ product }) {
               className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-300 ${
                 isOutOfStock
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : added
+                  : isAdded
                   ? 'bg-emerald-500 text-white'
                   : 'bg-gray-900 hover:bg-[#C8511B] text-white'
               }`}>
               <ShoppingCart className="w-3.5 h-3.5" />
-              {added ? 'Go to Cart' : 'Add to Cart'}
+              {isAdded ? 'Go to Cart' : 'Add to Cart'}
             </button>
           </div>
         )}
