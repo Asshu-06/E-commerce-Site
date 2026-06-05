@@ -155,8 +155,12 @@ export default function CheckoutPage() {
       })
       setOrderId(id)
       if (!buyNowItem) clearCart()
-      // Notify admin of new order
+      // Notify admin of new order (in-app)
       notifyAdmin.newOrder({ id, user_name: form.name, total_price: snapshotTotal })
+      // Send WhatsApp message to admin
+      const adminPhone = '917997060668'
+      const adminMsg = `New Order Received!\n\nOrder ID: ${id}\nCustomer: ${form.name}\nPhone: ${form.phone}\nAmount: Rs.${snapshotTotal}\n\nView Order: https://www.lakshmiramcollections.in/admin/orders/${id}`
+      window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(adminMsg)}`, '_blank', 'noopener,noreferrer')
       setStep('success')
       window.scrollTo({ top: 0, behavior: 'instant' })
       toast.success('Order submitted! Admin will verify your payment.')
