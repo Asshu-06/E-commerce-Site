@@ -25,6 +25,7 @@ import AdminUsers from './admin/AdminUsers'
 import AdminOrderDetail from './admin/AdminOrderDetail'
 import AdminCategories from './admin/AdminCategories'
 import AdminBanners from './admin/AdminBanners'
+import WishlistPage from './pages/WishlistPage'
 import WhatsAppButton from './components/WhatsAppButton'
 import InstagramButton from './components/InstagramButton'
 
@@ -95,6 +96,7 @@ export default function App() {
               <Route path="/category/:categoryId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CategoryPage /></StoreLayout>} />
               <Route path="/product/:productId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ProductPage /></StoreLayout>} />
               <Route path="/cart" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CartPage /></StoreLayout>} />
+              <Route path="/wishlist" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><WishlistPage /></StoreLayout>} />
               <Route path="/checkout" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CheckoutPage /></StoreLayout>} />
               <Route path="/login" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><LoginPage /></StoreLayout>} />
               <Route path="/profile" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ProfilePage /></StoreLayout>} />
