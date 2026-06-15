@@ -29,7 +29,7 @@ function buildUpiString(amount, orderId) {
 }
 
 export default function CheckoutPage() {
-  const { cart, totalPrice, clearCart } = useCart()
+  const { cart, totalPrice, clearCart, removeItem } = useCart()
   const navigate = useNavigate()
   const { state: locationState } = useLocation()
   const { user, loading: authLoading } = useAuth()
@@ -154,7 +154,12 @@ export default function CheckoutPage() {
         screenshotUrl,
       })
       setOrderId(id)
-      if (!buyNowItem) clearCart()
+      if (!buyNowItem) {
+        clearCart()
+      } else {
+        // Remove only the bought item from cart
+        removeItem(buyNowItem.id, buyNowItem.selectedVariant)
+      }
       // Notify admin of new order (in-app)
       notifyAdmin.newOrder({ id, user_name: form.name, total_price: snapshotTotal })
       setStep('success')

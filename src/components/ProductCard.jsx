@@ -127,9 +127,9 @@ export default function ProductCard({ product }) {
         {/* Standard controls */}
         {!isCustomization && (
           <div className="flex items-center gap-2">
-            <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
+            <div className="flex items-center border border-gray-200 rounded-xl bg-gray-50">
               <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
+                className="w-8 h-8 flex-shrink-0 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500 rounded-l-xl">
                 <Minus className="w-3 h-3" />
               </button>
               <input
@@ -145,10 +145,11 @@ export default function ProductCard({ product }) {
                   const v = parseInt(e.target.value)
                   setQuantity(!isNaN(v) && v >= 1 ? v : 1)
                 }}
-                className="w-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none"
+                className="w-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none flex-shrink-0"
+                style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
               />
               <button onClick={() => setQuantity(q => (parseInt(q) || 0) + 1)}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500">
+                className="w-8 h-8 flex-shrink-0 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500 rounded-r-xl">
                 <Plus className="w-3 h-3" />
               </button>
             </div>
