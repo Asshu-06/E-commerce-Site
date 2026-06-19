@@ -279,7 +279,9 @@ export default function AdminProducts() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500 text-sm mt-1">{products.length} total products</p>
+          <p className="text-gray-500 text-sm mt-1">
+            {filtered.length} of {products.length} products
+          </p>
         </div>
         <button onClick={openAdd}
           className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-sm shadow-sm">

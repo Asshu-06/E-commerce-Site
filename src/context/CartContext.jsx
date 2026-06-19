@@ -23,7 +23,7 @@ function cartReducer(state, action) {
     }
     case 'REMOVE_ITEM':
       return state.filter(
-        (i) => !(i.id === action.payload.id && i.selectedVariant === action.payload.selectedVariant)
+        (i) => !(String(i.id) === String(action.payload.id) && i.selectedVariant === action.payload.selectedVariant)
       )
     case 'UPDATE_QUANTITY': {
       if (action.payload.quantity <= 0) {

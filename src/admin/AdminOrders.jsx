@@ -160,14 +160,17 @@ export default function AdminOrders() {
     setUpdatingId(null)
   }
 
-  const filtered = orders.filter((o) => {
-    const matchSearch = !search.trim() ||
+  // Orders matching only the search (used for per-status counts in pills)
+  const searchFiltered = orders.filter((o) => {
+    return !search.trim() ||
       o.user_name?.toLowerCase().includes(search.toLowerCase()) ||
       o.phone?.includes(search) ||
       o.id?.toString().includes(search)
-    const matchStatus = filterStatus === 'all' || o.status === filterStatus
-    return matchSearch && matchStatus
   })
+
+  const filtered = searchFiltered.filter((o) =>
+    filterStatus === 'all' || o.status === filterStatus
+  )
 
   // Pagination
   const PAGE_SIZE = 10
@@ -187,7 +190,11 @@ export default function AdminOrders() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-500 text-sm mt-1">{orders.length} total orders</p>
+          <p className="text-gray-500 text-sm mt-1">
+            {filtered.length === orders.length
+              ? `${orders.length} total orders`
+              : `${filtered.length} of ${orders.length} orders`}
+          </p>
         </div>
         <button onClick={fetchOrders}
           className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium px-4 py-2.5 rounded-xl transition-colors text-sm">
@@ -243,7 +250,7 @@ export default function AdminOrders() {
       {/* Status pills */}
       <div className="flex flex-wrap gap-2 mb-5">
         {STATUS_OPTIONS.map((s) => {
-          const count = orders.filter((o) => o.status === s).length
+          const count = searchFiltered.filter((o) => o.status === s).length
           return (
             <button key={s} onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}
               className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors capitalize ${
