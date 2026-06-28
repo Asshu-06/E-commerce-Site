@@ -160,8 +160,11 @@ export default function ProductPage() {
   const minQty = product.min_quantity || 1
   const isOutOfStock = product.stock_quantity != null && product.stock_quantity <= 0
 
-  // Build image array (main + placeholder extras for gallery feel)
-  const images = [product.image_url].filter(Boolean)
+  // Build image array from image_urls (multi) or fallback to single image_url
+  const images = (Array.isArray(product.image_urls) && product.image_urls.length > 0
+    ? product.image_urls
+    : product.image_url ? [product.image_url] : []
+  ).filter(Boolean)
 
   return (
     <div className="min-h-screen pt-16 pb-16 bg-gray-50">

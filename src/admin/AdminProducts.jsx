@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Plus, Pencil, Trash2, X, Save, ImagePlus, Package, Search, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Save, ImagePlus, Package, Search, AlertCircle, GripVertical } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
@@ -54,8 +54,8 @@ export default function AdminProducts() {
   const [form,            setForm]            = useState(EMPTY_FORM)
   const [saving,          setSaving]          = useState(false)
   const [uploadProgress,  setUploadProgress]  = useState('')
-  const [imageFile,       setImageFile]       = useState(null)
-  const [imagePreview,    setImagePreview]    = useState('')
+  // Multi-image state: array of { file, preview } for new files, or { url } for existing
+  const [imageSlots,      setImageSlots]      = useState([]) // [{ file?, preview, url? }]
   const [deleteTarget,    setDeleteTarget]    = useState(null)
   const [deleting,        setDeleting]        = useState(false)
   const [filterCat,       setFilterCat]       = useState('all')
@@ -125,8 +125,7 @@ export default function AdminProducts() {
   const openAdd = () => {
     setEditProduct(null)
     setForm(EMPTY_FORM)
-    setImageFile(null)
-    setImagePreview('')
+    setImageSlots([])
     setUploadProgress('')
     setShowModal(true)
   }
@@ -141,27 +140,48 @@ export default function AdminProducts() {
       price:       p.price       ?? '',
       unit:        p.unit        || 'set',
       description: p.description || '',
-      image_url:   p.image_url   || '',   // kept for save logic
+      image_url:   '',
       variants:    Array.isArray(p.variants) ? p.variants.join(', ') : (p.variants || ''),
       stock_quantity: p.stock_quantity ?? '',
       min_quantity:   p.min_quantity   ?? '',
     })
-    setImageFile(null)
-    setImagePreview(p.image_url || '')   // show existing image immediately
+    // Populate slots from existing image_urls or single image_url
+    const existingUrls = Array.isArray(p.image_urls) && p.image_urls.length > 0
+      ? p.image_urls
+      : p.image_url ? [p.image_url] : []
+    setImageSlots(existingUrls.map(url => ({ url, preview: url })))
     setUploadProgress('')
     setShowModal(true)
   }
 
-  // ── Image file picked ─────────────────────────────────────────────────────
+  // ── Image files picked (multi) ────────────────────────────────────────────
   const handleImageChange = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/'))    { toast.error('Please select an image file'); return }
-    if (file.size > 5 * 1024 * 1024)       { toast.error('Image must be under 5MB');     return }
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
-    // clear manual URL since we have a file now
-    setForm((f) => ({ ...f, image_url: '' }))
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    const remaining = 6 - imageSlots.length
+    if (remaining <= 0) { toast.error('Maximum 6 images allowed'); return }
+    const toAdd = files.slice(0, remaining)
+    const invalid = toAdd.filter(f => !f.type.startsWith('image/'))
+    const tooBig  = toAdd.filter(f => f.size > 5 * 1024 * 1024)
+    if (invalid.length) { toast.error('Only image files are allowed'); return }
+    if (tooBig.length)  { toast.error('Each image must be under 5MB');  return }
+    const newSlots = toAdd.map(file => ({ file, preview: URL.createObjectURL(file) }))
+    setImageSlots(prev => [...prev, ...newSlots])
+    // reset input so same files can be re-added if removed
+    e.target.value = ''
+  }
+
+  const removeImageSlot = (idx) => {
+    setImageSlots(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  const moveImageSlot = (from, to) => {
+    setImageSlots(prev => {
+      const arr = [...prev]
+      const [item] = arr.splice(from, 1)
+      arr.splice(to, 0, item)
+      return arr
+    })
   }
 
   // ── Save ──────────────────────────────────────────────────────────────────
@@ -172,23 +192,23 @@ export default function AdminProducts() {
     setUploadProgress('')
 
     try {
-      // Determine final image URL
-      // Priority: new file upload > manual URL input > existing product image
-      let finalImageUrl = form.image_url.trim() || editProduct?.image_url || ''
-
-      if (imageFile) {
-        if (storageReady) {
-          setUploadProgress('Uploading image...')
+      // Upload new file slots, keep existing URL slots as-is
+      const finalUrls = []
+      for (let i = 0; i < imageSlots.length; i++) {
+        const slot = imageSlots[i]
+        if (slot.file) {
+          setUploadProgress(`Uploading image ${i + 1} of ${imageSlots.filter(s => s.file).length}...`)
           try {
-            finalImageUrl = await uploadToSupabase(imageFile)
-          } catch (err) {
-            console.warn('Storage upload failed, using base64:', err)
-            setUploadProgress('Using local image...')
-            finalImageUrl = await fileToDataUrl(imageFile)
+            const url = storageReady
+              ? await uploadToSupabase(slot.file)
+              : await fileToDataUrl(slot.file)
+            finalUrls.push(url)
+          } catch {
+            setUploadProgress('Using local fallback...')
+            finalUrls.push(await fileToDataUrl(slot.file))
           }
-        } else {
-          setUploadProgress('Converting image...')
-          finalImageUrl = await fileToDataUrl(imageFile)
+        } else if (slot.url) {
+          finalUrls.push(slot.url)
         }
       }
 
@@ -199,7 +219,8 @@ export default function AdminProducts() {
         price:       form.price !== '' ? parseFloat(form.price) : null,
         unit:        form.unit.trim()        || null,
         description: form.description.trim() || null,
-        image_url:   finalImageUrl           || null,
+        image_url:   finalUrls[0]            || null,   // primary image (backward compat)
+        image_urls:  finalUrls.length > 0 ? finalUrls : null,
         variants:    form.variants.trim()
           ? form.variants.split(',').map(v => v.trim()).filter(Boolean)
           : ['Without Magnet', 'With Magnet (+₹3)'],
@@ -212,27 +233,24 @@ export default function AdminProducts() {
       if (editProduct) {
         const isMock = !editProduct.id || !/^[0-9a-f-]{36}$/.test(editProduct.id)
         if (isMock) {
-          // Generate a stable UUID from the mock id so upsert always hits the same row
           const stableId = await mockIdToUUID(editProduct.id)
           const { error } = await supabase
             .from('products')
             .upsert([{ ...payload, id: stableId }], { onConflict: 'id' })
           if (error) throw error
-          toast.success('Product updated!')
         } else {
           const { error } = await supabase.from('products').update(payload).eq('id', editProduct.id)
           if (error) throw error
-          toast.success('Product updated!')
         }
+        toast.success('Product updated!')
       } else {
         const { error } = await supabase.from('products').insert([payload])
         if (error) throw error
         toast.success('Product added!')
       }
 
-      toast.success(editProduct ? 'Product updated!' : 'Product added!')
       setShowModal(false)
-      await fetchProducts()   // refresh list
+      await fetchProducts()
     } catch (err) {
       console.error(err)
       toast.error(err.message || 'Failed to save product')
@@ -415,29 +433,68 @@ export default function AdminProducts() {
 
             <form onSubmit={handleSave} className="p-6 space-y-5">
 
-              {/* Image upload area */}
+              {/* Multi-image upload area */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                <div onClick={() => fileInputRef.current?.click()}
-                  className="relative w-full h-44 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 hover:bg-amber-50 transition-all cursor-pointer overflow-hidden group">
-                  {imagePreview ? (
-                    <>
-                      <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-sm font-medium flex items-center gap-2">
-                          <ImagePlus className="w-5 h-5" /> Change Image
-                        </span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Product Images <span className="text-gray-400 font-normal text-xs">(up to 6 · first is primary)</span>
+                </label>
+
+                {/* Grid of existing + new slots */}
+                {imageSlots.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {imageSlots.map((slot, idx) => (
+                      <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50">
+                        <img src={slot.preview} alt="" className="w-full h-full object-cover" />
+                        {/* Primary badge */}
+                        {idx === 0 && (
+                          <span className="absolute top-1 left-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                            Primary
+                          </span>
+                        )}
+                        {/* Remove */}
+                        <button type="button" onClick={() => removeImageSlot(idx)}
+                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="w-3 h-3" />
+                        </button>
+                        {/* Move left */}
+                        {idx > 0 && (
+                          <button type="button" onClick={() => moveImageSlot(idx, idx - 1)}
+                            className="absolute bottom-1 left-1 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">
+                            ←
+                          </button>
+                        )}
+                        {/* Move right */}
+                        {idx < imageSlots.length - 1 && (
+                          <button type="button" onClick={() => moveImageSlot(idx, idx + 1)}
+                            className="absolute bottom-1 right-1 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">
+                            →
+                          </button>
+                        )}
                       </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-400 group-hover:text-amber-500 transition-colors">
-                      <ImagePlus className="w-10 h-10" />
-                      <p className="text-sm font-medium">Click to upload image</p>
-                      <p className="text-xs">PNG, JPG, WEBP — max 5MB</p>
-                    </div>
-                  )}
-                </div>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    ))}
+
+                    {/* Add more slot */}
+                    {imageSlots.length < 6 && (
+                      <div onClick={() => fileInputRef.current?.click()}
+                        className="aspect-square rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 hover:bg-amber-50 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-amber-500">
+                        <ImagePlus className="w-6 h-6" />
+                        <span className="text-xs font-medium">Add</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Empty state — big upload area */}
+                {imageSlots.length === 0 && (
+                  <div onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-44 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 hover:bg-amber-50 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-amber-500">
+                    <ImagePlus className="w-10 h-10" />
+                    <p className="text-sm font-medium">Click to upload images</p>
+                    <p className="text-xs">PNG, JPG, WEBP · max 5MB each · up to 6 images</p>
+                  </div>
+                )}
+
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
 
                 {uploadProgress && (
                   <p className="text-xs text-amber-600 mt-1.5 flex items-center gap-1.5">
@@ -446,13 +503,10 @@ export default function AdminProducts() {
                   </p>
                 )}
 
-                {/* Show clear button if image is set */}
-                {imagePreview && (
-                  <button type="button"
-                    onClick={() => { setImagePreview(''); setImageFile(null); setForm((f) => ({ ...f, image_url: '' })) }}
-                    className="mt-2 text-xs text-red-400 hover:text-red-600 flex items-center gap-1">
-                    <X className="w-3 h-3" /> Remove image
-                  </button>
+                {imageSlots.length > 0 && (
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    Hover over an image to remove or reorder. ← → arrows change position. First image is shown as primary.
+                  </p>
                 )}
               </div>
 
