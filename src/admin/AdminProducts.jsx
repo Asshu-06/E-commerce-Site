@@ -216,7 +216,7 @@ export default function AdminProducts() {
         name:        form.name.trim(),
         category:    form.category,
         type:        form.type,
-        price:       form.price !== '' ? parseFloat(form.price) : null,
+        price:       form.price !== '' ? parseInt(form.price) : null,
         unit:        form.unit.trim()        || null,
         description: form.description.trim() || null,
         image_url:   finalUrls[0]            || null,   // primary image (backward compat)
@@ -548,7 +548,7 @@ export default function AdminProducts() {
                     Price (₹) {form.type === 'customization' && <span className="text-gray-400 font-normal text-xs">(optional)</span>}
                   </label>
                   <input type="number" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                    placeholder="e.g. 150" min="0" step="0.01"
+                    placeholder="e.g. 150" min="0" step="1"
                     className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" />
                 </div>
                 <div>

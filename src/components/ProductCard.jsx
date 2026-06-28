@@ -16,19 +16,24 @@ export default function ProductCard({ product }) {
   const [quantity, setQuantity]           = useState(1)
   const [added, setAdded]                 = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [activeImg, setActiveImg]         = useState(0)
+
+  // Build image array from image_urls (multi) or fallback to single image_url
+  const images = (Array.isArray(product.image_urls) && product.image_urls.length > 0
+    ? product.image_urls
+    : product.image_url ? [product.image_url] : []
+  ).filter(Boolean)
 
   const isCustomization = product.type === 'customization'
   const wishlisted      = isWishlisted(product.id)
   const isOutOfStock    = product.stock_quantity != null && product.stock_quantity <= 0
   const minQty          = product.min_quantity || 1
-  // Check if already in cart
   const inCart          = cart.some(i => String(i.id) === String(product.id))
   const isAdded         = added || inCart
 
   const handleAddToCart = () => {
     if (!user) { setShowLoginModal(true); return }
     if (isAdded) { window.location.href = '/cart'; return }
-    // Min quantity check
     const qty = parseInt(quantity) || 1
     if (qty < minQty) {
       toast.error(`Minimum order is ${minQty} pieces. Go to the product page to set the quantity.`, {
@@ -45,19 +50,42 @@ export default function ProductCard({ product }) {
     })
   }
 
+  const prevImg = (e) => {
+    e.preventDefault()
+    setActiveImg(i => (i - 1 + images.length) % images.length)
+  }
+  const nextImg = (e) => {
+    e.preventDefault()
+    setActiveImg(i => (i + 1) % images.length)
+  }
+
   return (
     <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 card-hover">
-      {/* Image */}
+      {/* Image carousel */}
       <div className="relative overflow-hidden bg-stone-100" style={{ aspectRatio: '4/3' }}>
         <Link to={`/product/${product.id}`} className="block w-full h-full">
-          {product.image_url ? (
-            <img src={product.image_url} alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          {images.length > 0 ? (
+            <img src={images[activeImg]} alt={product.name}
+              className="w-full h-full object-cover transition-all duration-500"
               loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
           )}
         </Link>
+
+        {/* Prev / Next arrows — only when multiple images */}
+        {images.length > 1 && (
+          <>
+            <button onClick={prevImg}
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold z-10">
+              ‹
+            </button>
+            <button onClick={nextImg}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold z-10">
+              ›
+            </button>
+          </>
+        )}
 
         {/* Overlay on hover — pointer-events-none so clicks pass through to link */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -81,11 +109,26 @@ export default function ProductCard({ product }) {
           )}
         </div>
 
+        {/* Dot indicators — only when multiple images */}
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+            {images.map((_, i) => (
+              <button key={i}
+                onClick={(e) => { e.preventDefault(); setActiveImg(i) }}
+                className={`rounded-full transition-all duration-300 ${
+                  i === activeImg
+                    ? 'w-4 h-1.5 bg-white shadow'
+                    : 'w-1.5 h-1.5 bg-white/60 hover:bg-white/90'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
         {/* Price bottom-left */}
         {!isCustomization && product.price && (
           <div className="absolute bottom-3 left-3">
-            <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-full shadow-md">
-              ₹{product.price}
+            <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-full shadow-md">              ₹{product.price}
             </span>
           </div>
         )}
