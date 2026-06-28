@@ -158,8 +158,8 @@ export default function AdminProducts() {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || [])
     if (!files.length) return
-    const remaining = 6 - imageSlots.length
-    if (remaining <= 0) { toast.error('Maximum 6 images allowed'); return }
+    const remaining = 8 - imageSlots.length
+    if (remaining <= 0) { toast.error('Maximum 8 images allowed'); return }
     const toAdd = files.slice(0, remaining)
     const invalid = toAdd.filter(f => !f.type.startsWith('image/'))
     const tooBig  = toAdd.filter(f => f.size > 5 * 1024 * 1024)
@@ -436,7 +436,7 @@ export default function AdminProducts() {
               {/* Multi-image upload area */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product Images <span className="text-gray-400 font-normal text-xs">(up to 6 · first is primary)</span>
+                  Product Images <span className="text-gray-400 font-normal text-xs">(up to 8 · first is primary)</span>
                 </label>
 
                 {/* Grid of existing + new slots */}
@@ -474,7 +474,7 @@ export default function AdminProducts() {
                     ))}
 
                     {/* Add more slot */}
-                    {imageSlots.length < 6 && (
+                    {imageSlots.length < 8 && (
                       <div onClick={() => fileInputRef.current?.click()}
                         className="aspect-square rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 hover:bg-amber-50 transition-all cursor-pointer flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-amber-500">
                         <ImagePlus className="w-6 h-6" />
@@ -490,7 +490,7 @@ export default function AdminProducts() {
                     className="w-full h-44 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 hover:bg-amber-50 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-amber-500">
                     <ImagePlus className="w-10 h-10" />
                     <p className="text-sm font-medium">Click to upload images</p>
-                    <p className="text-xs">PNG, JPG, WEBP · max 5MB each · up to 6 images</p>
+                    <p className="text-xs">PNG, JPG, WEBP · max 5MB each · up to 8 images</p>
                   </div>
                 )}
 
