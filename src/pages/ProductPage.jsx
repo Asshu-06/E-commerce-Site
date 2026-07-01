@@ -194,7 +194,7 @@ export default function ProductPage() {
             {/* ── Left: Image gallery ── */}
             <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
               {/* Main image */}
-              <div className="relative w-full rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]" style={{ aspectRatio: '1/1', maxHeight: '400px' }}>
+              <div className="relative rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]" style={{ height: '320px' }}>
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
