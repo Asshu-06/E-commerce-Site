@@ -198,14 +198,14 @@ export default function ProductCard({ product }) {
             </div>
             <button onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-300 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2 px-3 rounded-xl transition-all duration-300 whitespace-nowrap ${
                 isOutOfStock
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : isAdded
                   ? 'bg-emerald-500 text-white'
                   : 'bg-gray-900 hover:bg-[#C8511B] text-white'
               }`}>
-              <ShoppingCart className="w-3.5 h-3.5" />
+              <ShoppingCart className="w-3.5 h-3.5 flex-shrink-0" />
               {isAdded ? 'Go to Cart' : 'Add to Cart'}
             </button>
           </div>

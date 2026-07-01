@@ -32,8 +32,8 @@ export default function ProductPage() {
   const [quantity, setQuantity]         = useState(1)
   const [showLoginModal, setShowLoginModal] = useState(false)
 
-  // Magnet adds ₹3 per piece
-  const magnetExtra    = selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
+  // Magnet adds ₹3 per piece — only for pasupu category
+  const magnetExtra    = product?.category === 'pasupu' && selectedVariant === 'With Magnet (+₹3)' ? 3 : 0
   const effectivePrice = (product?.price || 0) + magnetExtra
   const qty            = parseInt(quantity) || 0
   const [selectedImage, setSelectedImage] = useState(0)
@@ -297,7 +297,7 @@ export default function ProductPage() {
               )}
 
               {/* Variants */}
-              {!isCustomization && product.variants && product.variants.length > 0 && (
+              {!isCustomization && product.category === 'pasupu' && product.variants && product.variants.length > 0 && (
                 <div className="mb-5">
                   <p className="text-sm font-semibold text-gray-700 mb-2">
                     Magnet Option: <span className="text-[#C8511B]">{selectedVariant || 'Select one'}</span>
