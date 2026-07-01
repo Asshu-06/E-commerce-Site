@@ -195,12 +195,12 @@ export default function ProductPage() {
             <div className="bg-[#FDF3EC]/30 flex flex-col">
               {/* Main image — full width on mobile, padded on desktop */}
               <div className="relative w-full bg-white overflow-hidden"
-                style={{ aspectRatio: '1/1' }}>
+                style={{ aspectRatio: '4/3' }}>
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🛍️</div>
