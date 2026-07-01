@@ -65,7 +65,7 @@ export default function BannerCarousel() {
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl"
-      style={{ aspectRatio: '16/6', minHeight: '160px', maxHeight: '420px', backgroundColor: bgColors[current] || '#1C1917', transition: 'background-color 0.7s ease' }}>
+      style={{ aspectRatio: '16/6', minHeight: '160px', maxHeight: '420px', backgroundColor: '#1C1917' }}>
 
       {/* Slides */}
       {slides.map((slide, i) => (
@@ -76,17 +76,33 @@ export default function BannerCarousel() {
         >
           {slide.image_url && (
             <>
+              {/* Background color layer — dominant color fills the whole slide */}
+              <div className="absolute inset-0" style={{ backgroundColor: bgColors[i] || '#1C1917' }} />
+
+              {/* Hidden img just for color extraction */}
               <img
                 ref={el => { if (el) imgRefs.current[i] = el }}
                 src={slide.image_url}
-                alt={slide.title || `Slide ${i + 1}`}
-                className="w-full h-full object-cover"
+                alt=""
+                className="hidden"
                 crossOrigin="anonymous"
                 onLoad={(e) => handleImageLoad(i, e.target)}
               />
-              {/* Left gradient so text is readable */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
+
+              {/* Product image in rounded rectangle on the right */}
+              <div className="absolute right-4 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 z-10">
+                <img
+                  src={slide.image_url}
+                  alt={slide.title || `Slide ${i + 1}`}
+                  className="rounded-2xl shadow-2xl object-cover"
+                  style={{ height: '110px', width: '140px', objectFit: 'cover' }}
+                />
+              </div>
             </>
+          )}
+
+          {!slide.image_url && (
+            <div className="absolute inset-0 bg-gradient-to-r from-[#7B1E1E] to-[#C8511B]" />
           )}
 
           {/* Text overlay */}
