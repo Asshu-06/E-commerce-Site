@@ -1,13 +1,38 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
+// Extract dominant color from an image using canvas
+function getDominantColor(imgEl) {
+  try {
+    const canvas = document.createElement('canvas')
+    const size = 50 // sample at small size for speed
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(imgEl, 0, 0, size, size)
+    const data = ctx.getImageData(0, 0, size, size).data
+    let r = 0, g = 0, b = 0, count = 0
+    for (let i = 0; i < data.length; i += 16) { // sample every 4th pixel
+      r += data[i]; g += data[i+1]; b += data[i+2]; count++
+    }
+    r = Math.round(r / count)
+    g = Math.round(g / count)
+    b = Math.round(b / count)
+    // Darken slightly for background
+    const darken = 0.5
+    return `rgb(${Math.round(r*darken)},${Math.round(g*darken)},${Math.round(b*darken)})`
+  } catch { return '#1C1917' }
+}
+
 export default function BannerCarousel() {
-  const [slides, setSlides]     = useState([])
-  const [current, setCurrent]   = useState(0)
-  const [loading, setLoading]   = useState(true)
-  const navigate                = useNavigate()
+  const [slides, setSlides]       = useState([])
+  const [current, setCurrent]     = useState(0)
+  const [loading, setLoading]     = useState(true)
+  const [bgColors, setBgColors]   = useState({}) // index → color
+  const navigate                  = useNavigate()
+  const imgRefs                   = useRef({})
 
   useEffect(() => {
     const fetch = async () => {
@@ -25,20 +50,22 @@ export default function BannerCarousel() {
   const next = useCallback(() => setCurrent(c => (c + 1) % slides.length), [slides.length])
   const prev = () => setCurrent(c => (c - 1 + slides.length) % slides.length)
 
-  // Auto-advance every 4s
   useEffect(() => {
     if (slides.length <= 1) return
     const t = setInterval(next, 4000)
     return () => clearInterval(t)
   }, [slides.length, next])
 
+  const handleImageLoad = (i, el) => {
+    const color = getDominantColor(el)
+    setBgColors(prev => ({ ...prev, [i]: color }))
+  }
+
   if (loading || slides.length === 0) return null
 
-  const s = slides[current]
-
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl bg-gray-900"
-      style={{ aspectRatio: '16/6', minHeight: '160px', maxHeight: '420px' }}>
+    <div className="relative w-full overflow-hidden rounded-2xl"
+      style={{ aspectRatio: '16/6', minHeight: '160px', maxHeight: '420px', backgroundColor: bgColors[current] || '#1C1917', transition: 'background-color 0.7s ease' }}>
 
       {/* Slides */}
       {slides.map((slide, i) => (
@@ -47,18 +74,19 @@ export default function BannerCarousel() {
           onClick={() => slide.link && navigate(slide.link)}
           className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${slide.link ? 'cursor-pointer' : ''}`}
         >
-          {slide.image_url ? (
+          {slide.image_url && (
             <>
               <img
+                ref={el => { if (el) imgRefs.current[i] = el }}
                 src={slide.image_url}
                 alt={slide.title || `Slide ${i + 1}`}
                 className="w-full h-full object-cover"
+                crossOrigin="anonymous"
+                onLoad={(e) => handleImageLoad(i, e.target)}
               />
-              {/* Gradient overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+              {/* Left gradient so text is readable */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
             </>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-r from-[#7B1E1E] to-[#C8511B]" />
           )}
 
           {/* Text overlay */}
@@ -90,16 +118,12 @@ export default function BannerCarousel() {
       {/* Arrows */}
       {slides.length > 1 && (
         <>
-          <button
-            onClick={(e) => { e.stopPropagation(); prev() }}
-            className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
-          >
+          <button onClick={(e) => { e.stopPropagation(); prev() }}
+            className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors">
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); next() }}
-            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
-          >
+          <button onClick={(e) => { e.stopPropagation(); next() }}
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors">
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </>
@@ -109,9 +133,7 @@ export default function BannerCarousel() {
       {slides.length > 1 && (
         <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
           {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); setCurrent(i) }}
+            <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i) }}
               className={`rounded-full transition-all ${i === current ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/50 hover:bg-white/80'}`}
             />
           ))}
