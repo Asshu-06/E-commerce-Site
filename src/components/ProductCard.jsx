@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShoppingCart, Plus, Minus, Heart, Star } from 'lucide-react'
+import { ShoppingCart, Heart, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
@@ -169,43 +169,17 @@ export default function ProductCard({ product }) {
 
         {/* Standard controls */}
         {!isCustomization && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border border-gray-200 rounded-xl bg-gray-50 flex-shrink-0">
-              <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="w-7 h-8 flex-shrink-0 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500 rounded-l-xl">
-                <Minus className="w-3 h-3" />
-              </button>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => {
-                  const v = parseInt(e.target.value)
-                  if (!isNaN(v) && v >= 1) setQuantity(v)
-                  else if (e.target.value === '') setQuantity('')
-                }}
-                onBlur={(e) => {
-                  const v = parseInt(e.target.value)
-                  setQuantity(!isNaN(v) && v >= 1 ? v : 1)
-                }}
-                className="w-7 text-center text-sm font-semibold text-gray-800 bg-gray-50 border-none outline-none flex-shrink-0"
-                style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
-              />
-              <button onClick={() => setQuantity(q => (parseInt(q) || 0) + 1)}
-                className="w-7 h-8 flex-shrink-0 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-500 rounded-r-xl">
-                <Plus className="w-3 h-3" />
-              </button>
-            </div>
+          <div className="flex flex-col gap-2">
             <button onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-2 rounded-xl transition-all duration-300 whitespace-nowrap ${
+              className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 ${
                 isOutOfStock
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : isAdded
                   ? 'bg-emerald-500 text-white'
                   : 'bg-gray-900 hover:bg-[#C8511B] text-white'
               }`}>
-              <ShoppingCart className="w-3.5 h-3.5 flex-shrink-0" />
+              <ShoppingCart className="w-4 h-4 flex-shrink-0" />
               {isAdded ? 'Go to Cart' : 'Add to Cart'}
             </button>
           </div>

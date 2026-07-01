@@ -34,33 +34,51 @@ export default function BannerCarousel() {
 
   if (loading || slides.length === 0) return null
 
-  return (
-    <div className="relative w-full overflow-hidden bg-gray-900" style={{ aspectRatio: '3/1', maxHeight: '400px' }}>
-      {/* Slides */}
-      {slides.map((s, i) => (
-        <div
-          key={s.id}
-          className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-        >
-          {s.image_url && (
-            <img src={s.image_url} alt={s.title || `Slide ${i + 1}`} className="w-full h-full object-cover" />
-          )}
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+  const s = slides[current]
 
-          {/* Text */}
-          {(s.title || s.subtitle) && (
-            <div className="absolute inset-0 flex flex-col justify-center px-8 sm:px-16">
-              {s.title && (
-                <h2 className="text-white text-2xl sm:text-4xl font-bold drop-shadow-lg mb-2 max-w-lg">{s.title}</h2>
+  return (
+    <div className="relative w-full overflow-hidden rounded-2xl bg-gray-900"
+      style={{ aspectRatio: '16/6', minHeight: '160px', maxHeight: '420px' }}>
+
+      {/* Slides */}
+      {slides.map((slide, i) => (
+        <div
+          key={slide.id}
+          onClick={() => slide.link && navigate(slide.link)}
+          className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${slide.link ? 'cursor-pointer' : ''}`}
+        >
+          {slide.image_url ? (
+            <img
+              src={slide.image_url}
+              alt={slide.title || `Slide ${i + 1}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-[#1C1917] to-[#3D1A0A]" />
+          )}
+
+          {/* Gradient overlay — only when there's text */}
+          {(slide.title || slide.subtitle) && (
+            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
+          )}
+
+          {/* Text content */}
+          {(slide.title || slide.subtitle || slide.link) && (
+            <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 lg:px-16">
+              {slide.title && (
+                <h2 className="text-white text-xl sm:text-3xl lg:text-4xl font-bold drop-shadow-lg mb-1.5 max-w-lg leading-tight">
+                  {slide.title}
+                </h2>
               )}
-              {s.subtitle && (
-                <p className="text-white/80 text-sm sm:text-lg max-w-md drop-shadow">{s.subtitle}</p>
+              {slide.subtitle && (
+                <p className="text-white/85 text-xs sm:text-base max-w-md drop-shadow mb-3">
+                  {slide.subtitle}
+                </p>
               )}
-              {s.link && (
+              {slide.link && (
                 <button
-                  onClick={() => navigate(s.link)}
-                  className="mt-4 self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all hover:-translate-y-0.5 shadow-lg"
+                  onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
+                  className="self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-semibold px-5 py-2 rounded-full text-xs sm:text-sm transition-all hover:-translate-y-0.5 shadow-lg"
                 >
                   Shop Now →
                 </button>
@@ -74,28 +92,28 @@ export default function BannerCarousel() {
       {slides.length > 1 && (
         <>
           <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
+            onClick={(e) => { e.stopPropagation(); prev() }}
+            className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
+            onClick={(e) => { e.stopPropagation(); next() }}
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </>
       )}
 
       {/* Dots */}
       {slides.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+        <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
           {slides.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all ${i === current ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/50'}`}
+              onClick={(e) => { e.stopPropagation(); setCurrent(i) }}
+              className={`rounded-full transition-all ${i === current ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/50 hover:bg-white/80'}`}
             />
           ))}
         </div>

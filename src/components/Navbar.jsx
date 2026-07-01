@@ -246,6 +246,12 @@ export default function Navbar() {
               </Link>
             )}
 
+            {/* Mobile search icon */}
+            <button onClick={() => setSearchOpen(true)}
+              className={`lg:hidden p-2.5 rounded-xl transition-colors ${transparent ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-700'}`}>
+              <Search className="w-5 h-5" />
+            </button>
+
             {/* Mobile hamburger */}
             <button onClick={() => setMenuOpen(v => !v)}
               className={`lg:hidden p-2.5 rounded-xl transition-colors ${transparent ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-700'}`}>
