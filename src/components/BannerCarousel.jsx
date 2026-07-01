@@ -48,37 +48,63 @@ export default function BannerCarousel() {
           className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${slide.link ? 'cursor-pointer' : ''}`}
         >
           {slide.image_url ? (
-            <img
-              src={slide.image_url}
-              alt={slide.title || `Slide ${i + 1}`}
-              className="w-full h-full object-cover"
-            />
+            // ── Card layout: colored bg + text left + image right ──────────
+            <div className="w-full h-full flex items-center"
+              style={{ background: slide.bg_color || 'linear-gradient(135deg, #1a0533 0%, #2d0a5e 100%)' }}>
+              {/* Text left */}
+              <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-4 min-w-0">
+                {slide.badge && (
+                  <span className="inline-block bg-purple-500/80 text-white text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full mb-2 w-fit tracking-wide uppercase">
+                    {slide.badge}
+                  </span>
+                )}
+                {slide.title && (
+                  <h2 className="text-white text-lg sm:text-2xl lg:text-3xl font-bold leading-tight mb-1">
+                    {slide.title}
+                  </h2>
+                )}
+                {slide.subtitle && (
+                  <p className="text-purple-300 text-xs sm:text-sm font-medium mb-1">{slide.subtitle}</p>
+                )}
+                {slide.description && (
+                  <p className="text-white/60 text-[11px] sm:text-sm mb-3">{slide.description}</p>
+                )}
+                {slide.price && (
+                  <p className="text-white font-bold text-base sm:text-lg mb-3">₹{slide.price}</p>
+                )}
+                {slide.link && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
+                    className="self-start bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold px-4 py-1.5 rounded-full text-xs sm:text-sm transition-all"
+                  >
+                    Explore →
+                  </button>
+                )}
+              </div>
+              {/* Image right — fully visible */}
+              <div className="flex-shrink-0 flex items-center justify-center pr-6 sm:pr-10 lg:pr-14 py-4">
+                <img
+                  src={slide.image_url}
+                  alt={slide.title || `Slide ${i + 1}`}
+                  className="h-24 sm:h-32 lg:h-40 w-auto object-contain rounded-2xl shadow-2xl"
+                  style={{ maxWidth: '35%' }}
+                />
+              </div>
+            </div>
           ) : (
-            <div className="w-full h-full bg-gradient-to-r from-[#1C1917] to-[#3D1A0A]" />
-          )}
-
-          {/* Gradient overlay — only when there's text */}
-          {(slide.title || slide.subtitle) && (
-            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
-          )}
-
-          {/* Text content */}
-          {(slide.title || slide.subtitle || slide.link) && (
-            <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 lg:px-16">
+            // ── Fallback: dark gradient background only ─────────────────────
+            <div className="w-full h-full flex flex-col justify-center px-6 sm:px-12"
+              style={{ background: slide.bg_color || 'linear-gradient(135deg, #1C1917 0%, #3D1A0A 100%)' }}>
               {slide.title && (
-                <h2 className="text-white text-xl sm:text-3xl lg:text-4xl font-bold drop-shadow-lg mb-1.5 max-w-lg leading-tight">
-                  {slide.title}
-                </h2>
+                <h2 className="text-white text-xl sm:text-3xl font-bold mb-2">{slide.title}</h2>
               )}
               {slide.subtitle && (
-                <p className="text-white/85 text-xs sm:text-base max-w-md drop-shadow mb-3">
-                  {slide.subtitle}
-                </p>
+                <p className="text-white/70 text-sm sm:text-base">{slide.subtitle}</p>
               )}
               {slide.link && (
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
-                  className="self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-semibold px-5 py-2 rounded-full text-xs sm:text-sm transition-all hover:-translate-y-0.5 shadow-lg"
+                  className="mt-4 self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-semibold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
                 >
                   Shop Now →
                 </button>
