@@ -189,12 +189,12 @@ export default function ProductPage() {
 
         {/* Main product section */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-          <div className="grid lg:grid-cols-2 gap-0 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
-            <div className="p-0 sm:p-4 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-3">
+            <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
               {/* Main image */}
-              <div className="relative w-full bg-white sm:rounded-2xl overflow-hidden shadow-sm border-0 sm:border border-[#FAE3D3]"
+              <div className="relative w-full rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]"
                 style={{ aspectRatio: '1/1' }}>
                 {images[selectedImage] ? (
                   <img
@@ -225,7 +225,7 @@ export default function ProductPage() {
 
               {/* Thumbnail strip (if multiple images) */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1 px-3 sm:px-0 scrollbar-hide">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setSelectedImage(i)}
                       className={`w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
