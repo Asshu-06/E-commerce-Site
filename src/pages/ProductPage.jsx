@@ -192,14 +192,15 @@ export default function ProductPage() {
           <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
-            <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
+            <div className="p-4 sm:p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-3">
               {/* Main image */}
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]">
+              <div className="relative w-full rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]"
+                style={{ aspectRatio: '4/3' }}>
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🛍️</div>
@@ -224,10 +225,10 @@ export default function ProductPage() {
 
               {/* Thumbnail strip (if multiple images) */}
               {images.length > 1 && (
-                <div className="flex gap-2 justify-center">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setSelectedImage(i)}
-                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                      className={`w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
                         selectedImage === i ? 'border-amber-500 scale-105' : 'border-gray-200 hover:border-amber-300'
                       }`}>
                       <img src={img} alt="" className="w-full h-full object-cover" />
