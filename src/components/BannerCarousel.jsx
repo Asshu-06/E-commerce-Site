@@ -48,55 +48,36 @@ export default function BannerCarousel() {
           className={`absolute inset-0 transition-opacity duration-700 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${slide.link ? 'cursor-pointer' : ''}`}
         >
           {slide.image_url ? (
-            // ── Card layout: colored bg + text left + image right ──────────
-            <div className="w-full h-full flex items-center overflow-hidden"
-              style={{ background: slide.bg_color || 'linear-gradient(135deg, #7B1E1E 0%, #C8511B 100%)' }}>
-              {/* Text left */}
-              <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-4 min-w-0 z-10">
-                {slide.title && (
-                  <h2 className="text-white text-xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-2 drop-shadow-lg">
-                    {slide.title}
-                  </h2>
-                )}
-                {slide.subtitle && (
-                  <p className="text-white/90 text-sm sm:text-base font-medium mb-1 drop-shadow">{slide.subtitle}</p>
-                )}
-                {slide.price && (
-                  <p className="text-white font-bold text-lg sm:text-2xl mb-3">₹{slide.price}</p>
-                )}
-                {slide.link && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
-                    className="self-start bg-white text-[#C8511B] hover:bg-white/90 font-bold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
-                  >
-                    Explore →
-                  </button>
-                )}
-              </div>
-              {/* Image right — fills half the banner height */}
-              <div className="h-full flex items-end justify-end" style={{ minWidth: '40%', maxWidth: '45%' }}>
-                <img
-                  src={slide.image_url}
-                  alt={slide.title || `Slide ${i + 1}`}
-                  className="h-full w-full object-cover object-center"
-                  style={{ maskImage: 'linear-gradient(to left, black 60%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to left, black 60%, transparent 100%)' }}
-                />
-              </div>
-            </div>
+            <>
+              <img
+                src={slide.image_url}
+                alt={slide.title || `Slide ${i + 1}`}
+                className="w-full h-full object-cover"
+              />
+              {/* Gradient overlay for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+            </>
           ) : (
-            // ── Fallback: gradient background with text ─────────────────────
-            <div className="w-full h-full flex flex-col justify-center px-6 sm:px-12"
-              style={{ background: slide.bg_color || 'linear-gradient(135deg, #7B1E1E 0%, #C8511B 100%)' }}>
+            <div className="w-full h-full bg-gradient-to-r from-[#7B1E1E] to-[#C8511B]" />
+          )}
+
+          {/* Text overlay */}
+          {(slide.title || slide.subtitle || slide.link) && (
+            <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 lg:px-16 z-10">
               {slide.title && (
-                <h2 className="text-white text-xl sm:text-3xl font-bold mb-2">{slide.title}</h2>
+                <h2 className="text-white text-xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-2 drop-shadow-lg max-w-lg">
+                  {slide.title}
+                </h2>
               )}
               {slide.subtitle && (
-                <p className="text-white/80 text-sm sm:text-base">{slide.subtitle}</p>
+                <p className="text-white/85 text-sm sm:text-base max-w-md drop-shadow mb-3">
+                  {slide.subtitle}
+                </p>
               )}
               {slide.link && (
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
-                  className="mt-4 self-start bg-white text-[#C8511B] font-bold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
+                  className="self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-bold px-6 py-2.5 rounded-full text-sm transition-all hover:-translate-y-0.5 shadow-lg"
                 >
                   Shop Now →
                 </button>

@@ -73,11 +73,14 @@ export default function AdminBanners() {
     setSaving(true)
     try {
       const updated = await Promise.all(
-        slides.map(async (slide, idx) => ({
-          ...slide,
-          position:  idx + 1,
-          image_url: await uploadImage(idx),
-        }))
+        slides.map(async (slide, idx) => {
+          const { bg_color, ...rest } = slide
+          return {
+            ...rest,
+            position:  idx + 1,
+            image_url: await uploadImage(idx),
+          }
+        })
       )
 
       // Upsert all slides
