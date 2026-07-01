@@ -194,12 +194,12 @@ export default function ProductPage() {
             {/* ── Left: Image gallery ── */}
             <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
               {/* Main image */}
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]">
+              <div className="relative w-full rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]" style={{ aspectRatio: '1/1', maxHeight: '400px' }}>
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🛍️</div>
