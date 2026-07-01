@@ -188,7 +188,7 @@ export default function ProductPage() {
         </button>
 
         {/* Main product section */}
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div className="-mx-4 sm:mx-0 bg-white sm:rounded-3xl shadow-sm border-y sm:border border-gray-100 mb-6 overflow-hidden">
           <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
