@@ -192,14 +192,14 @@ export default function ProductPage() {
           <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
-            <div className="bg-[#FDF3EC]/30 flex flex-col">
-              {/* Main image — no padding, full width */}
-              <div className="relative w-full overflow-hidden bg-white" style={{ height: '300px' }}>
+            <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
+              {/* Main image */}
+              <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]">
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🛍️</div>
@@ -222,9 +222,9 @@ export default function ProductPage() {
                 </button>
               </div>
 
-              {/* Thumbnail strip */}
+              {/* Thumbnail strip — only shown when multiple images */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-hide bg-white border-t border-gray-100">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setSelectedImage(i)}
                       className={`w-14 h-14 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
@@ -235,9 +235,6 @@ export default function ProductPage() {
                   ))}
                 </div>
               )}
-
-              {/* Desktop: show thumbnails inside padded area too */}
-              <div className="hidden lg:block p-4" />
             </div>
 
             {/* ── Right: Product info ── */}
