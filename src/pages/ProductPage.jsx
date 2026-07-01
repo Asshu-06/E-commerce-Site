@@ -192,9 +192,9 @@ export default function ProductPage() {
           <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
-            <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
-              {/* Main image */}
-              <div className="relative rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]" style={{ height: '320px' }}>
+            <div className="bg-[#FDF3EC]/30 flex flex-col">
+              {/* Main image — no padding, full width */}
+              <div className="relative w-full overflow-hidden bg-white" style={{ height: '300px' }}>
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
@@ -207,7 +207,7 @@ export default function ProductPage() {
                 {/* Wishlist on image */}
                 <button
                   onClick={() => { if (!user) { setShowLoginModal(true); return; } toggleWishlist(product) }}
-                  className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ${
+                  className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 z-10 ${
                     wishlisted ? 'bg-red-500 text-white scale-110' : 'bg-white text-gray-400 hover:text-red-500'
                   }`}
                 >
@@ -216,15 +216,15 @@ export default function ProductPage() {
                 {/* Share */}
                 <button
                   onClick={handleShare}
-                  className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-500 hover:text-[#C8511B] transition-colors"
+                  className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-500 hover:text-[#C8511B] transition-colors z-10"
                 >
                   {copied ? <Check className="w-5 h-5 text-green-500" /> : <Share2 className="w-5 h-5" />}
                 </button>
               </div>
 
-              {/* Thumbnail strip — scrollable row, only when multiple images */}
+              {/* Thumbnail strip */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-hide bg-white border-t border-gray-100">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setSelectedImage(i)}
                       className={`w-14 h-14 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
@@ -235,6 +235,9 @@ export default function ProductPage() {
                   ))}
                 </div>
               )}
+
+              {/* Desktop: show thumbnails inside padded area too */}
+              <div className="hidden lg:block p-4" />
             </div>
 
             {/* ── Right: Product info ── */}
