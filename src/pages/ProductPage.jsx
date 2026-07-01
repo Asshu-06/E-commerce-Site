@@ -188,14 +188,13 @@ export default function ProductPage() {
         </button>
 
         {/* Main product section */}
-        <div className="-mx-4 sm:mx-0 bg-white sm:rounded-3xl shadow-sm border-y sm:border border-gray-100 mb-6 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="grid lg:grid-cols-2 gap-0">
 
             {/* ── Left: Image gallery ── */}
-            <div className="bg-[#FDF3EC]/30 flex flex-col">
-              {/* Main image — full width on mobile, padded on desktop */}
-              <div className="relative w-full bg-white overflow-hidden"
-                style={{ aspectRatio: '4/3' }}>
+            <div className="p-6 lg:p-8 bg-[#FDF3EC]/30 flex flex-col gap-4">
+              {/* Main image */}
+              <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-[#FAE3D3]">
                 {images[selectedImage] ? (
                   <img
                     src={images[selectedImage]}
@@ -223,9 +222,9 @@ export default function ProductPage() {
                 </button>
               </div>
 
-              {/* Thumbnail strip (if multiple images) */}
+              {/* Thumbnail strip — scrollable row, only when multiple images */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-hide bg-white border-t border-gray-100">
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setSelectedImage(i)}
                       className={`w-14 h-14 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
