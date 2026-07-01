@@ -89,13 +89,13 @@ export default function BannerCarousel() {
                 onLoad={(e) => handleImageLoad(i, e.target)}
               />
 
-              {/* Product image in rounded rectangle on the right */}
-              <div className="absolute right-4 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 z-10">
+              {/* Product image in rounded rectangle on the right — floating above bg */}
+              <div className="absolute right-4 sm:right-8 lg:right-14 inset-y-3 sm:inset-y-4 z-10 flex items-center">
                 <img
                   src={slide.image_url}
                   alt={slide.title || `Slide ${i + 1}`}
-                  className="rounded-2xl shadow-2xl object-cover"
-                  style={{ height: '110px', width: '140px', objectFit: 'cover' }}
+                  className="h-full w-auto rounded-3xl shadow-2xl object-cover"
+                  style={{ maxWidth: '42vw', aspectRatio: '3/4' }}
                 />
               </div>
             </>
