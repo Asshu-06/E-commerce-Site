@@ -49,62 +49,54 @@ export default function BannerCarousel() {
         >
           {slide.image_url ? (
             // ── Card layout: colored bg + text left + image right ──────────
-            <div className="w-full h-full flex items-center"
-              style={{ background: slide.bg_color || 'linear-gradient(135deg, #1a0533 0%, #2d0a5e 100%)' }}>
+            <div className="w-full h-full flex items-center overflow-hidden"
+              style={{ background: slide.bg_color || 'linear-gradient(135deg, #7B1E1E 0%, #C8511B 100%)' }}>
               {/* Text left */}
-              <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-4 min-w-0">
-                {slide.badge && (
-                  <span className="inline-block bg-purple-500/80 text-white text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full mb-2 w-fit tracking-wide uppercase">
-                    {slide.badge}
-                  </span>
-                )}
+              <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-4 min-w-0 z-10">
                 {slide.title && (
-                  <h2 className="text-white text-lg sm:text-2xl lg:text-3xl font-bold leading-tight mb-1">
+                  <h2 className="text-white text-xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-2 drop-shadow-lg">
                     {slide.title}
                   </h2>
                 )}
                 {slide.subtitle && (
-                  <p className="text-purple-300 text-xs sm:text-sm font-medium mb-1">{slide.subtitle}</p>
-                )}
-                {slide.description && (
-                  <p className="text-white/60 text-[11px] sm:text-sm mb-3">{slide.description}</p>
+                  <p className="text-white/90 text-sm sm:text-base font-medium mb-1 drop-shadow">{slide.subtitle}</p>
                 )}
                 {slide.price && (
-                  <p className="text-white font-bold text-base sm:text-lg mb-3">₹{slide.price}</p>
+                  <p className="text-white font-bold text-lg sm:text-2xl mb-3">₹{slide.price}</p>
                 )}
                 {slide.link && (
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
-                    className="self-start bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold px-4 py-1.5 rounded-full text-xs sm:text-sm transition-all"
+                    className="self-start bg-white text-[#C8511B] hover:bg-white/90 font-bold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
                   >
                     Explore →
                   </button>
                 )}
               </div>
-              {/* Image right — fully visible */}
-              <div className="flex-shrink-0 flex items-center justify-center pr-6 sm:pr-10 lg:pr-14 py-4">
+              {/* Image right — fills half the banner height */}
+              <div className="h-full flex items-end justify-end" style={{ minWidth: '40%', maxWidth: '45%' }}>
                 <img
                   src={slide.image_url}
                   alt={slide.title || `Slide ${i + 1}`}
-                  className="h-24 sm:h-32 lg:h-40 w-auto object-contain rounded-2xl shadow-2xl"
-                  style={{ maxWidth: '35%' }}
+                  className="h-full w-full object-cover object-center"
+                  style={{ maskImage: 'linear-gradient(to left, black 60%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to left, black 60%, transparent 100%)' }}
                 />
               </div>
             </div>
           ) : (
-            // ── Fallback: dark gradient background only ─────────────────────
+            // ── Fallback: gradient background with text ─────────────────────
             <div className="w-full h-full flex flex-col justify-center px-6 sm:px-12"
-              style={{ background: slide.bg_color || 'linear-gradient(135deg, #1C1917 0%, #3D1A0A 100%)' }}>
+              style={{ background: slide.bg_color || 'linear-gradient(135deg, #7B1E1E 0%, #C8511B 100%)' }}>
               {slide.title && (
                 <h2 className="text-white text-xl sm:text-3xl font-bold mb-2">{slide.title}</h2>
               )}
               {slide.subtitle && (
-                <p className="text-white/70 text-sm sm:text-base">{slide.subtitle}</p>
+                <p className="text-white/80 text-sm sm:text-base">{slide.subtitle}</p>
               )}
               {slide.link && (
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(slide.link) }}
-                  className="mt-4 self-start bg-[#C8511B] hover:bg-[#B04516] text-white font-semibold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
+                  className="mt-4 self-start bg-white text-[#C8511B] font-bold px-5 py-2 rounded-full text-sm transition-all shadow-lg"
                 >
                   Shop Now →
                 </button>
