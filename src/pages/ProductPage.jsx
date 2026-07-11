@@ -429,7 +429,7 @@ export default function ProductPage() {
               {/* Trust badges */}
               <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-5">
                 {[
-                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Fast Delivery', sub: 'PAN India shipping' },
+                  { icon: <Truck className="w-5 h-5 text-[#C8511B]" />, label: 'Fast Delivery', sub: product.category === 'pasupu' ? 'PAN India shipping' : 'Shipping charges on dispatch' },
                   { icon: <Shield className="w-5 h-5 text-[#C8511B]" />, label: '100% Authentic', sub: 'Guaranteed' },
                 ].map((b) => (
                   <div key={b.label} className="flex flex-col items-center text-center gap-1 p-2 rounded-xl bg-[#FDF3EC]">
@@ -439,6 +439,12 @@ export default function ProductPage() {
                   </div>
                 ))}
               </div>
+              {/* Shipping notice for non-pasupu */}
+              {product.category !== 'pasupu' && (
+                <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-800">
+                  📦 We will contact you after dispatch for shipping charges.
+                </div>
+              )}
             </div>
           </div>
         </div>

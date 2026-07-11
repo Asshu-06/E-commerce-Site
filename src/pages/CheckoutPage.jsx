@@ -611,6 +611,12 @@ export default function CheckoutPage() {
                     <span className="text-xs text-gray-400">Enter city to calculate</span>
                   )}
                 </div>
+                {/* Non-pasupu shipping notice */}
+                {activeCart.some(i => i.category !== 'pasupu') && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-800">
+                    📦 We will contact you after dispatch for shipping charges on non-Pasupu Kumkuma items.
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-100">
                   <span>Total</span>
                   <span className="text-[#C8511B]">₹{grandTotal.toLocaleString()}</span>

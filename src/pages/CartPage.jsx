@@ -163,6 +163,12 @@ export default function CartPage() {
                     <span className="font-medium text-gray-900">₹{shippingAPTS}</span>
                   </div>
                 )}
+                {/* Non-pasupu items: shipping notice */}
+                {cart.some(i => i.category !== 'pasupu') && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-800">
+                    📦 We will contact you after dispatch for shipping charges on non-Pasupu Kumkuma items.
+                  </div>
+                )}
                 <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
                   <span>Total</span>
                   <span className="text-[#C8511B] text-xl">₹{(totalPrice + shippingAPTS).toLocaleString()}</span>
