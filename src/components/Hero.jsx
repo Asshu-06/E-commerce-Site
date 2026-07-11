@@ -74,7 +74,7 @@ export default function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen sm:min-h-screen flex items-start sm:items-center overflow-hidden bg-black">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-black">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         {/* Fallback gradient + canvas particles */}
@@ -181,25 +181,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Barani image — right side on desktop, bottom on mobile ── */}
-      {/* Mobile: show below text */}
-      <div className={`sm:hidden absolute bottom-16 right-0 left-0 flex justify-center pointer-events-none transition-all duration-1000 delay-700 ${
-        visible ? 'opacity-100' : 'opacity-0'
-      }`}>
-        <img
-          src="/images/image.png"
-          alt="Pasupu Kumkuma Barani"
-          className="w-48 object-contain drop-shadow-[0_0_40px_rgba(245,158,11,0.4)] select-none"
-          style={{
-            maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-          }}
-        />
-      </div>
-
-      {/* Desktop: right side floating */}
+      {/* ── Barani image — right side, hidden on mobile ── */}
       <div
-        className={`hidden sm:block absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
+        className={`absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
           visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
         }`}
       >
@@ -212,7 +196,7 @@ export default function Hero() {
             src="/images/image.png"
             alt="Pasupu Kumkuma Barani"
             className="
-              w-[280px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px]
+              w-[140px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px]
               object-contain object-bottom
               drop-shadow-[0_0_60px_rgba(245,158,11,0.35)]
               select-none
