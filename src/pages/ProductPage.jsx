@@ -451,7 +451,7 @@ export default function ProductPage() {
               { label: 'Category',    value: catLabel },
               { label: 'Type',        value: isCustomization ? 'Customization (WhatsApp)' : 'Standard' },
               product.unit    ? { label: 'Unit',     value: product.unit } : null,
-              product.variants?.length ? { label: 'Available Sizes', value: product.variants.join(', ') } : null,
+              product.category === 'pasupu' && product.variants?.length ? { label: 'Available Sizes', value: product.variants.join(', ') } : null,
             ].filter(Boolean).map((row) => (
               <div key={row.label} className="flex items-start gap-3 bg-gray-50 rounded-xl px-4 py-3">
                 <span className="text-xs font-semibold text-gray-400 w-28 shrink-0 pt-0.5">{row.label}</span>
