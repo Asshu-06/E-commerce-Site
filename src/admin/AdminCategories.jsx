@@ -80,7 +80,10 @@ export default function AdminCategories() {
         if (error) throw error
         toast.success('Category created!')
       } else {
-        const { error } = await supabase.from('categories').update(payload).eq('id', editing.id)
+        // Never change slug on edit — products are linked to it
+        const { error } = await supabase.from('categories')
+          .update({ name: form.name.trim(), description: form.description.trim() || null, image_url: finalImageUrl || null })
+          .eq('id', editing.id)
         if (error) throw error
         toast.success('Category updated!')
       }
