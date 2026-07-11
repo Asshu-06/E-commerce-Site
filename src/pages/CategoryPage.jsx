@@ -63,13 +63,14 @@ export default function CategoryPage() {
     setLoading(true)
     try {
       let query = supabase.from('products').select('*').eq('category', categoryId)
-      query = category.hasTabs ? query.eq('type', activeTab) : query.eq('type', 'standard')
+      // For pasupu (hasTabs), filter by active tab type. For all others, show all types.
+      if (category.hasTabs) query = query.eq('type', activeTab)
       const { data, error } = await query.order('created_at', { ascending: false })
       if (!error && data && data.length > 0) { setProducts(data); setLoading(false); return }
     } catch { }
     const mocks = mockProducts.filter((p) => {
       if (p.category !== categoryId) return false
-      return category?.hasTabs ? p.type === activeTab : p.type === 'standard'
+      return category?.hasTabs ? p.type === activeTab : true
     })
     setProducts(mocks)
     setLoading(false)
