@@ -96,7 +96,7 @@ export default function HomePage() {
               <span className="text-xs font-bold tracking-widest uppercase text-[#C8511B] block mb-2">Just In</span>
               <h2 className="text-3xl font-bold text-gray-900 tracking-tight">New Arrivals</h2>
             </div>
-            <Link to="/category/pasupu"
+            <Link to="/new-arrivals"
               className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-[#C8511B] transition-colors">
               View all <ArrowRight className="w-4 h-4" />
             </Link>
