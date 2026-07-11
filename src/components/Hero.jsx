@@ -115,7 +115,7 @@ export default function Hero() {
       </div>
 
       {/* Parallax content container */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 w-full">
         <div className="max-w-3xl">
           {/* Badge */}
           <div
@@ -181,9 +181,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Barani image — right side, vertically centered ── */}
+      {/* ── Barani image — right side, hidden on mobile ── */}
       <div
-        className={`absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
+        className={`hidden sm:block absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
           visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
         }`}
       >

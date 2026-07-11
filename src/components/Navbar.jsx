@@ -108,7 +108,7 @@ export default function Navbar() {
               Home
             </Link>
 
-            <Link to="/category/pasupu"
+            <Link to="/new-arrivals"
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 transparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-[#1C1917] hover:bg-[#FAF7F2]'
               }`}>
@@ -274,7 +274,7 @@ export default function Navbar() {
             }`}>
             Home
           </Link>
-          <Link to="/category/pasupu"
+          <Link to="/new-arrivals"
             className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               transparent ? 'text-white/80 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-50'
             }`}>

@@ -1,9 +1,34 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { categories } from '../lib/mockData'
+import { categories as mockCategories } from '../lib/mockData'
+import { supabase } from '../lib/supabase'
 
 export default function CategorySection() {
   const navigate = useNavigate()
+  const [categories, setCategories] = useState(mockCategories)
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('slug, name, description, image_url, has_tabs')
+          .order('created_at', { ascending: true })
+        if (!error && data && data.length > 0) {
+          setCategories(data.map(c => ({
+            id:          c.slug,
+            name:        c.name,
+            description: c.description,
+            image_url:   c.image_url,
+            hasTabs:     c.has_tabs,
+            path:        `/category/${c.slug}`,
+          })))
+        }
+      } catch { /* fallback to mockData */ }
+    }
+    fetch()
+  }, [])
 
   return (
     <section id="categories" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -25,9 +50,15 @@ export default function CategorySection() {
             style={{ animationDelay: `${i * 100}ms` }}>
 
             {/* Image */}
-            <div className="relative h-72 overflow-hidden">
-              <img src={cat.image_url} alt={cat.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div className="relative h-72 overflow-hidden bg-stone-200">
+              {cat.image_url ? (
+                <img src={cat.image_url} alt={cat.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-[#FAE3D3] to-[#C8511B]/30 flex items-center justify-center text-5xl">
+                  🛍️
+                </div>
+              )}
               {/* Gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               {/* Shimmer on hover */}
@@ -42,7 +73,9 @@ export default function CategorySection() {
                 </span>
               )}
               <h3 className="text-xl font-bold text-white mb-1">{cat.name}</h3>
-              <p className="text-white/70 text-sm mb-4 line-clamp-2">{cat.description}</p>
+              {cat.description && (
+                <p className="text-white/70 text-sm mb-4 line-clamp-2">{cat.description}</p>
+              )}
               <div className="flex items-center gap-2 text-amber-300 text-sm font-semibold group-hover:gap-3 transition-all duration-300">
                 <span>Explore Collection</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
