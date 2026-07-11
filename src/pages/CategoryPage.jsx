@@ -88,22 +88,24 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen pt-16 bg-stone-50">
-      {/* Hero banner */}
-      <div className="relative h-44 sm:h-56 overflow-hidden">
-        <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-6">
-            <nav className="flex items-center gap-1.5 text-white/60 text-xs mb-2">
-              <Link to="/" className="hover:text-white transition-colors">Home</Link>
-              <ChevronRight className="w-3 h-3" />
-              <span className="text-white font-medium">{category.name}</span>
-            </nav>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{category.name}</h1>
-            <p className="text-white/70 mt-1 text-sm">{category.description}</p>
+      {/* Hero banner — only shown if category has an image */}
+      {category.image_url && (
+        <div className="relative h-44 sm:h-56 overflow-hidden">
+          <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+          <div className="absolute inset-0 flex items-end">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-6">
+              <nav className="flex items-center gap-1.5 text-white/60 text-xs mb-2">
+                <Link to="/" className="hover:text-white transition-colors">Home</Link>
+                <ChevronRight className="w-3 h-3" />
+                <span className="text-white font-medium">{category.name}</span>
+              </nav>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{category.name}</h1>
+              {category.description && <p className="text-white/70 mt-1 text-sm">{category.description}</p>}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main layout: sidebar + content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
