@@ -441,8 +441,11 @@ export default function ProductPage() {
               </div>
               {/* Shipping notice for non-pasupu */}
               {product.category !== 'pasupu' && (
-                <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-800">
-                  📦 We will contact you after dispatch for shipping charges.
+                <div className="mt-3 flex items-start gap-2.5 bg-orange-500 rounded-xl px-4 py-3 text-white">
+                  <span className="text-lg shrink-0">🚚</span>
+                  <p className="text-sm font-semibold leading-snug">
+                    Shipping charges will be communicated after dispatch.
+                  </p>
                 </div>
               )}
             </div>

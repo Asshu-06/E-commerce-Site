@@ -613,8 +613,11 @@ export default function CheckoutPage() {
                 </div>
                 {/* Non-pasupu shipping notice */}
                 {activeCart.some(i => i.category !== 'pasupu') && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-800">
-                    📦 We will contact you after dispatch for shipping charges on non-Pasupu Kumkuma items.
+                  <div className="flex items-start gap-2.5 bg-orange-500 rounded-xl px-4 py-3 text-white">
+                    <span className="text-lg shrink-0">🚚</span>
+                    <p className="text-sm font-semibold leading-snug">
+                      Shipping charges for non-Pasupu Kumkuma items will be communicated after dispatch.
+                    </p>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-100">
