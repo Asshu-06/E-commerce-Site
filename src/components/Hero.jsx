@@ -183,7 +183,7 @@ export default function Hero() {
 
       {/* ── Barani image — right side, hidden on mobile ── */}
       <div
-        className={`absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
+        className={`absolute bottom-0 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
           visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
         }`}
       >
@@ -196,7 +196,7 @@ export default function Hero() {
             src="/images/image.png"
             alt="Pasupu Kumkuma Barani"
             className="
-              w-[140px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px]
+              w-[200px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px]
               object-contain object-bottom
               drop-shadow-[0_0_60px_rgba(245,158,11,0.35)]
               select-none
