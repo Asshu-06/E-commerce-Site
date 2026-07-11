@@ -183,35 +183,21 @@ export default function Hero() {
 
       {/* ── Barani image — right side, hidden on mobile ── */}
       <div
-        className={`absolute bottom-0 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
+        className={`absolute bottom-1/4 right-0 pointer-events-none transition-all duration-1000 delay-700 ${
           visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
         }`}
       >
-        {/* Glow behind image */}
         <div className="absolute inset-0 rounded-tl-3xl blur-3xl bg-gradient-to-tl from-amber-500/30 via-red-600/20 to-transparent scale-110" />
-
-        {/* Floating animation wrapper */}
         <div className="animate-float">
           <img
             src="/images/image.png"
             alt="Pasupu Kumkuma Barani"
-            className="
-              w-[200px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px]
-              object-contain object-bottom
-              drop-shadow-[0_0_60px_rgba(245,158,11,0.35)]
-              select-none
-            "
+            className="w-[220px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px] object-contain object-bottom drop-shadow-[0_0_60px_rgba(245,158,11,0.35)] select-none"
             style={{
               maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
               WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
             }}
           />
-        </div>
-
-        {/* Scattered powder particles on floor */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none">
-          <div className="absolute bottom-2 left-8 w-24 h-3 bg-amber-500/20 blur-xl rounded-full" />
-          <div className="absolute bottom-1 right-12 w-32 h-3 bg-red-600/20 blur-xl rounded-full" />
         </div>
       </div>
 
