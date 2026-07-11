@@ -192,7 +192,7 @@ export default function Hero() {
           <img
             src="/images/image.png"
             alt="Pasupu Kumkuma Barani"
-            className="w-[220px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px] object-contain object-bottom drop-shadow-[0_0_60px_rgba(245,158,11,0.35)] select-none"
+            className="w-[275px] sm:w-[360px] md:w-[420px] lg:w-[500px] xl:w-[560px] object-contain object-bottom drop-shadow-[0_0_60px_rgba(245,158,11,0.35)] select-none"
             style={{
               maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
               WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
