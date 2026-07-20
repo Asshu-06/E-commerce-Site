@@ -34,9 +34,11 @@ function AnimatedSection({ children, className = '' }) {
 
 export default function HomePage() {
   const [newArrivals, setNewArrivals] = useState([])
+  const [bestSellers, setBestSellers] = useState([])
 
   useEffect(() => {
-    const fetch = async () => {
+    // Fetch new arrivals — 4 most recently added products
+    const fetchNewArrivals = async () => {
       try {
         const { data } = await supabase
           .from('products')
@@ -52,10 +54,78 @@ export default function HomePage() {
         setNewArrivals(mockProducts.filter(p => p.type === 'standard').slice(0, 4))
       }
     }
-    fetch()
-  }, [])
 
-  const featuredProducts = mockProducts.filter(p => p.type === 'standard').slice(0, 4)
+    // Fetch best sellers — products ranked by total quantity sold across all orders
+    const fetchBestSellers = async () => {
+      try {
+        // Pull items from all non-cancelled orders
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select('items')
+          .not('status', 'eq', 'cancelled')
+
+        if (error || !orders || orders.length === 0) {
+          throw new Error('no orders')
+        }
+
+        // Tally quantity sold per product id
+        const salesMap = {}
+        for (const order of orders) {
+          const items = Array.isArray(order.items) ? order.items : []
+          for (const item of items) {
+            const pid = item.id || item.product_id
+            if (!pid) continue
+            salesMap[pid] = (salesMap[pid] || 0) + (item.quantity || 1)
+          }
+        }
+
+        // Sort product ids by total quantity sold, take top 4
+        const topIds = Object.entries(salesMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4)
+          .map(([id]) => id)
+
+        if (topIds.length === 0) throw new Error('no sales data')
+
+        // Fetch full product details for those ids
+        const { data: products, error: prodError } = await supabase
+          .from('products')
+          .select('*')
+          .in('id', topIds)
+
+        if (prodError || !products || products.length === 0) {
+          throw new Error('products not found')
+        }
+
+        // Re-order to match sales rank
+        const ordered = topIds
+          .map(id => products.find(p => p.id === id))
+          .filter(Boolean)
+
+        setBestSellers(ordered)
+      } catch {
+        // Fallback: show the 4 most recently added products as best sellers
+        try {
+          const { data } = await supabase
+            .from('products')
+            .select('*')
+            .eq('type', 'standard')
+            .order('created_at', { ascending: false })
+            .limit(4)
+          if (data && data.length > 0) {
+            setBestSellers(data)
+          } else {
+            setBestSellers(mockProducts.filter(p => p.type === 'standard').slice(0, 4))
+          }
+        } catch {
+          setBestSellers(mockProducts.filter(p => p.type === 'standard').slice(0, 4))
+        }
+      }
+    }
+
+    fetchNewArrivals()
+    fetchBestSellers()
+  }, [])
 
   return (
     <main className="bg-stone-50">
@@ -125,7 +195,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-children">
-            {featuredProducts.map((p) => (
+            {bestSellers.map((p) => (
               <div key={p.id} className="animate-fade-up">
                 <ProductCard product={p} />
               </div>
