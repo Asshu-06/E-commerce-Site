@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop'
 import HomePage from './pages/HomePage'
 import CategoryPage from './pages/CategoryPage'
 import NewArrivalsPage from './pages/NewArrivalsPage'
+import AllProductsPage from './pages/AllProductsPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
@@ -96,6 +97,7 @@ export default function App() {
               <Route path="/" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><HomePage /></StoreLayout>} />
               <Route path="/category/:categoryId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CategoryPage /></StoreLayout>} />
               <Route path="/new-arrivals" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><NewArrivalsPage /></StoreLayout>} />
+              <Route path="/all-products" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><AllProductsPage /></StoreLayout>} />
               <Route path="/product/:productId" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><ProductPage /></StoreLayout>} />
               <Route path="/cart" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><CartPage /></StoreLayout>} />
               <Route path="/wishlist" element={MAINTENANCE_MODE ? <MaintenancePage /> : <StoreLayout><WishlistPage /></StoreLayout>} />

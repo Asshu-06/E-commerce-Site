@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, Package, IndianRupee, Clock, TrendingUp, ArrowRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { mockProducts } from '../lib/mockData'
 
 const STATUS_COLORS = {
   pending:   'bg-yellow-100 text-yellow-700',
@@ -15,9 +14,11 @@ const STATUS_COLORS = {
 export default function Dashboard() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [productCount, setProductCount] = useState(0)
 
   useEffect(() => {
     fetchOrders()
+    fetchProductCount()
   }, [])
 
   const fetchOrders = async () => {
@@ -34,9 +35,17 @@ export default function Dashboard() {
     setLoading(false)
   }
 
+  const fetchProductCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+      if (!error && count != null) setProductCount(count)
+    } catch { }
+  }
+
   const totalRevenue = orders.reduce((s, o) => s + (o.total_price || 0), 0)
   const pendingCount = orders.filter((o) => o.status === 'pending').length
-  const productCount = mockProducts.filter((p) => p.type === 'standard').length
 
   const stats = [
     {
