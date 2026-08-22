@@ -108,27 +108,8 @@ export default function AdminPromoCodes() {
         </button>
       </div>
 
-      {/* SQL setup hint */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-5 text-xs text-blue-800">
-        <p className="font-semibold mb-1">📋 Supabase setup required (run once in SQL Editor):</p>
-        <pre className="bg-white rounded p-2 overflow-x-auto text-[11px] text-gray-700 border border-blue-100">{`CREATE TABLE IF NOT EXISTS public.promo_codes (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  code text NOT NULL UNIQUE,
-  description text,
-  discount_type text NOT NULL DEFAULT 'percent',
-  discount_value numeric NOT NULL,
-  min_order numeric,
-  max_discount numeric,
-  active boolean DEFAULT true,
-  usage_limit int,
-  usage_count int DEFAULT 0,
-  expiry_date date,
-  created_at timestamptz DEFAULT now()
-);
-ALTER TABLE public.promo_codes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "promo read" ON public.promo_codes FOR SELECT USING (true);
-CREATE POLICY "promo write" ON public.promo_codes FOR ALL TO authenticated USING (true) WITH CHECK (true);`}</pre>
-      </div>
+      {/* SQL setup hint removed — table already created */}
+
 
       {/* Form */}
       {editing && (

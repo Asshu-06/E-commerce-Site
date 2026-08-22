@@ -661,19 +661,34 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-2xl border border-[#FAE3D3] p-6 shadow-sm sticky top-24">
               <h2 className="font-bold text-gray-900 mb-4">Order Summary</h2>
               <div className="space-y-3 mb-5 max-h-60 overflow-y-auto pr-1">
-                {activeCart.map((item) => (
-                  <div key={`${item.id}-${item.selectedVariant}`} className="flex gap-3">
-                    <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
-                      {item.selectedVariant && <p className="text-xs text-gray-400">{item.selectedVariant}</p>}
-                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                {activeCart.map((item) => {
+                  // Check if this item gets a discount
+                  const cats = appliedPromo?.applicable_categories
+                  const itemDiscounted = appliedPromo && (!cats || cats.length === 0 || cats.includes(item.category))
+                  const itemSubtotal = (item.price || 0) * item.quantity
+                  const itemDisc = itemDiscounted
+                    ? (appliedPromo.discount_type === 'percent'
+                        ? Math.round(itemSubtotal * appliedPromo.discount_value / 100)
+                        : 0) // flat split not shown per item
+                    : 0
+
+                  return (
+                    <div key={`${item.id}-${item.selectedVariant}`} className="flex gap-3">
+                      <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
+                        {item.selectedVariant && <p className="text-xs text-gray-400">{item.selectedVariant}</p>}
+                        <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                        {itemDiscounted && itemDisc > 0 && (
+                          <p className="text-[11px] text-green-600 font-semibold">−₹{itemDisc} discount</p>
+                        )}
+                      </div>
+                      <span className="text-xs font-semibold text-[#C8511B] shrink-0">
+                        ₹{(item.price * item.quantity).toLocaleString()}
+                      </span>
                     </div>
-                    <span className="text-xs font-semibold text-[#C8511B] shrink-0">
-                      ₹{(item.price * item.quantity).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="border-t border-gray-100 pt-4 space-y-2 text-sm mb-5">
