@@ -54,6 +54,13 @@ export default function CheckoutPage() {
   const [screenshotPreview, setScreenshotPreview] = useState('')
   const [uploading, setUploading]     = useState(false)
   const [copied, setCopied]           = useState(false)
+
+  // Promo code state
+  const [promoInput, setPromoInput]   = useState('')
+  const [appliedPromo, setAppliedPromo] = useState(null)  // { code, discount_type, discount_value, max_discount, applicable_categories, description }
+  const [promoError, setPromoError]   = useState('')
+  const [promoLoading, setPromoLoading] = useState(false)
+  const [availablePromos, setAvailablePromos] = useState([])
   const fileRef                       = useRef(null)
 
   // Redirect to login if not authenticated
@@ -80,7 +87,77 @@ export default function CheckoutPage() {
   // Shipping only applies to Pasupu Kumkuma products
   const pasupuQty = activeCart.filter(i => i.category === 'pasupu').reduce((s, i) => s + i.quantity, 0)
   const shippingCharge = form.city.trim() ? calcShipping(pasupuQty) : 0
-  const grandTotal = activeTotalPrice + shippingCharge
+
+  // Promo discount — applies only to applicable category items (or all if no restriction)
+  const calcDiscount = (promo) => {
+    if (!promo) return 0
+    const cats = promo.applicable_categories  // array or null
+    const applicableItems = cats && cats.length > 0
+      ? activeCart.filter(i => cats.includes(i.category))
+      : activeCart
+    const applicableSubtotal = applicableItems.reduce((s, i) => s + (i.price || 0) * i.quantity, 0)
+    if (applicableSubtotal === 0) return 0
+    let disc = promo.discount_type === 'percent'
+      ? Math.round(applicableSubtotal * promo.discount_value / 100)
+      : Math.round(promo.discount_value)
+    if (promo.max_discount) disc = Math.min(disc, promo.max_discount)
+    return Math.min(disc, applicableSubtotal) // never exceed applicable subtotal
+  }
+  const discount = calcDiscount(appliedPromo)
+  const grandTotal = activeTotalPrice + shippingCharge - discount
+
+  // Fetch available active promo codes for display
+  useEffect(() => {
+    const fetchPromos = async () => {
+      try {
+        const { data } = await supabase
+          .from('promo_codes')
+          .select('*')
+          .eq('active', true)
+          .order('created_at', { ascending: false })
+        if (data) setAvailablePromos(data)
+      } catch { }
+    }
+    fetchPromos()
+  }, [])
+
+  const applyPromoCode = async (codeStr) => {
+    const code = (codeStr || promoInput).trim().toUpperCase()
+    if (!code) { setPromoError('Enter a promo code'); return }
+    setPromoLoading(true)
+    setPromoError('')
+    try {
+      const { data, error } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('code', code)
+        .eq('active', true)
+        .single()
+      if (error || !data) { setPromoError('Invalid or expired promo code'); setPromoLoading(false); return }
+      // Check expiry
+      if (data.expiry_date && new Date(data.expiry_date) < new Date()) {
+        setPromoError('This promo code has expired'); setPromoLoading(false); return
+      }
+      // Check usage limit
+      if (data.usage_limit && data.usage_count >= data.usage_limit) {
+        setPromoError('This promo code has reached its usage limit'); setPromoLoading(false); return
+      }
+      // Check min order
+      if (data.min_order && activeTotalPrice < data.min_order) {
+        setPromoError(`Minimum order of ₹${data.min_order} required`); setPromoLoading(false); return
+      }
+      setAppliedPromo(data)
+      setPromoInput(data.code)
+      toast.success(`Promo code applied! You save ₹${calcDiscount(data)}`)
+    } catch { setPromoError('Failed to apply promo code') }
+    setPromoLoading(false)
+  }
+
+  const removePromo = () => {
+    setAppliedPromo(null)
+    setPromoInput('')
+    setPromoError('')
+  }
 
   // Check if any item is below its own min_quantity
   const itemsBelowMin = activeCart.filter(i => i.quantity < (i.min_quantity || 1))
@@ -189,6 +266,8 @@ export default function CheckoutPage() {
       payment_method:     paymentMethod,
       payment_status:     paymentStatus,
       status:             'pending',
+      promo_code:         appliedPromo?.code || null,
+      discount_amount:    discount > 0 ? discount : null,
     }
 
     // Add screenshot only if provided (column may not exist yet)
@@ -620,10 +699,85 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 )}
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600 font-medium">
+                    <span>Discount ({appliedPromo?.code})</span>
+                    <span>−₹{discount}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-100">
                   <span>Total</span>
                   <span className="text-[#C8511B]">₹{grandTotal.toLocaleString()}</span>
                 </div>
+              </div>
+
+              {/* ── Promo Code Section ── */}
+              <div className="mb-5">
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => e.key === 'Enter' && applyPromoCode()}
+                    placeholder="Enter promo code"
+                    disabled={!!appliedPromo}
+                    className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:bg-gray-50 font-mono uppercase"
+                  />
+                  {appliedPromo ? (
+                    <button type="button" onClick={removePromo}
+                      className="px-4 py-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 text-sm font-semibold transition-colors flex items-center gap-1">
+                      <X className="w-3.5 h-3.5" /> Remove
+                    </button>
+                  ) : (
+                    <button type="button" onClick={() => applyPromoCode()}
+                      disabled={promoLoading}
+                      className="px-4 py-2.5 rounded-xl bg-[#1C1917] hover:bg-[#C8511B] text-white text-sm font-semibold transition-colors disabled:opacity-50">
+                      {promoLoading ? '...' : 'Apply'}
+                    </button>
+                  )}
+                </div>
+                {promoError && <p className="text-xs text-red-500 mb-2">{promoError}</p>}
+                {appliedPromo && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2 text-xs text-green-700 font-medium">
+                    ✅ <span className="font-mono font-bold">{appliedPromo.code}</span> applied — You save ₹{discount}
+                    {appliedPromo.applicable_categories?.length > 0 && (
+                      <span className="text-green-600"> (on {appliedPromo.applicable_categories.join(', ')} items)</span>
+                    )}
+                  </div>
+                )}
+
+                {/* Available offers */}
+                {availablePromos.length > 0 && !appliedPromo && (
+                  <div className="mt-3">
+                    <p className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">🏷️ Available Offers</p>
+                    <div className="space-y-2">
+                      {availablePromos.slice(0, 3).map((p) => {
+                        const savingAmt = calcDiscount(p)
+                        if (savingAmt === 0 && p.min_order && activeTotalPrice < p.min_order) return null
+                        return (
+                          <div key={p.code} className="flex items-center gap-3 bg-[#FDF3EC] rounded-xl px-3 py-2.5 border border-[#FAE3D3]">
+                            <span className="font-mono font-bold text-[#C8511B] bg-white px-2 py-0.5 rounded-lg text-xs border border-[#FAE3D3] shrink-0">{p.code}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-800 truncate">
+                                {p.discount_type === 'percent' ? `${p.discount_value}% off` : `₹${p.discount_value} off`}
+                                {p.applicable_categories?.length > 0 ? ` on ${p.applicable_categories.join('/')} items` : ' on order'}
+                              </p>
+                              {p.description && <p className="text-[11px] text-gray-500 truncate">{p.description}</p>}
+                              {savingAmt > 0 && <p className="text-xs font-bold text-green-600">Save ₹{savingAmt}</p>}
+                              {p.min_order && activeTotalPrice < p.min_order && (
+                                <p className="text-[11px] text-orange-500">Min order ₹{p.min_order}</p>
+                              )}
+                            </div>
+                            <button type="button" onClick={() => applyPromoCode(p.code)}
+                              className="shrink-0 text-xs font-bold text-white bg-[#1C1917] hover:bg-[#C8511B] px-3 py-1.5 rounded-lg transition-colors">
+                              Apply
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Min order warning */}

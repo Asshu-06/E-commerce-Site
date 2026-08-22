@@ -27,6 +27,7 @@ import AdminUsers from './admin/AdminUsers'
 import AdminOrderDetail from './admin/AdminOrderDetail'
 import AdminCategories from './admin/AdminCategories'
 import AdminBanners from './admin/AdminBanners'
+import AdminPromoCodes from './admin/AdminPromoCodes'
 import WishlistPage from './pages/WishlistPage'
 import WhatsAppButton from './components/WhatsAppButton'
 import InstagramButton from './components/InstagramButton'
@@ -88,6 +89,7 @@ export default function App() {
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="banners" element={<AdminBanners />} />
+                <Route path="promo-codes" element={<AdminPromoCodes />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="orders/:orderId" element={<AdminOrderDetail />} />
                 <Route path="users" element={<AdminUsers />} />
