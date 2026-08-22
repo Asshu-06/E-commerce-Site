@@ -10,13 +10,28 @@ const EMPTY = {
 }
 
 export default function AdminPromoCodes() {
-  const [promos, setPromos]   = useState([])
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(null)
-  const [form, setForm]       = useState(EMPTY)
-  const [saving, setSaving]   = useState(false)
+  const [promos, setPromos]       = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [editing, setEditing]     = useState(null)
+  const [form, setForm]           = useState(EMPTY)
+  const [saving, setSaving]       = useState(false)
+  const [allCategories, setAllCategories] = useState([
+    { slug: 'pasupu', name: 'Pasupu-Kumkuma' },
+    { slug: 'gifts', name: 'Return Gifts' },
+    { slug: 'bags', name: 'Return Bags' },
+  ])
 
-  useEffect(() => { fetchPromos() }, [])
+  useEffect(() => {
+    fetchPromos()
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const { data } = await supabase.from('categories').select('slug, name').order('created_at', { ascending: true })
+      if (data && data.length > 0) setAllCategories(data)
+    } catch { }
+  }
 
   const fetchPromos = async () => {
     setLoading(true)
@@ -181,20 +196,20 @@ export default function AdminPromoCodes() {
                 Applicable Categories <span className="text-gray-400 font-normal">(leave all unchecked = applies to entire bill)</span>
               </label>
               <div className="flex flex-wrap gap-3">
-                {['pasupu', 'gifts', 'bags'].map((cat) => (
-                  <label key={cat} className="flex items-center gap-2 cursor-pointer">
+                {allCategories.map((cat) => (
+                  <label key={cat.slug} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={form.applicable_categories.includes(cat)}
+                      checked={form.applicable_categories.includes(cat.slug)}
                       onChange={(e) => {
                         const updated = e.target.checked
-                          ? [...form.applicable_categories, cat]
-                          : form.applicable_categories.filter(c => c !== cat)
+                          ? [...form.applicable_categories, cat.slug]
+                          : form.applicable_categories.filter(c => c !== cat.slug)
                         setForm(prev => ({ ...prev, applicable_categories: updated }))
                       }}
                       className="w-4 h-4 rounded accent-amber-500"
                     />
-                    <span className="text-sm text-gray-700 capitalize">{cat === 'pasupu' ? 'Pasupu-Kumkuma' : cat === 'gifts' ? 'Return Gifts' : 'Return Bags'}</span>
+                    <span className="text-sm text-gray-700">{cat.name}</span>
                   </label>
                 ))}
               </div>
