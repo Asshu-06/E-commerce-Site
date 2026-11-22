@@ -678,7 +678,7 @@ export default function CheckoutPage() {
                       <img src={item.selected_image_url || item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
-                        {item.selectedVariant && <p className="text-xs text-gray-400">{item.selectedVariant}</p>}
+                        {item.selectedVariant && item.category === 'pasupu' && <p className="text-xs text-gray-400">{item.selectedVariant}</p>}
                         <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                         {itemDiscounted && itemDisc > 0 && (
                           <p className="text-[11px] text-green-600 font-semibold">−₹{itemDisc} discount</p>

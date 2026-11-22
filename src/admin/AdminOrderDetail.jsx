@@ -339,7 +339,7 @@ export default function AdminOrderDetail() {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 text-base">{item.name}</p>
-                    {item.variant && (
+                    {item.variant && (item.variant.includes('Magnet') || item.category === 'pasupu') && (
                       <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full mt-1.5 ${
                         item.variant.includes('With Magnet') ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
                       }`}>

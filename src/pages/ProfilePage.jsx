@@ -789,7 +789,8 @@ export default function ProfilePage() {
                     <div key={i} className="flex items-center justify-between bg-[#FDF3EC] rounded-xl px-4 py-3">
                       <div>
                         <p className="font-medium text-gray-900 text-sm">{item.name}</p>
-                        {item.variant && <p className="text-xs text-gray-500">{item.variant} · Qty: {item.quantity}</p>}
+                        {item.variant && (item.variant.includes('Magnet') || item.category === 'pasupu') && <p className="text-xs text-gray-500">{item.variant} · Qty: {item.quantity}</p>}
+                        {!(item.variant && (item.variant.includes('Magnet') || item.category === 'pasupu')) && <p className="text-xs text-gray-500">Qty: {item.quantity}</p>}
                       </div>
                       <span className="font-semibold text-[#8B3410] text-sm">₹{(item.price * item.quantity).toLocaleString()}</span>
                     </div>

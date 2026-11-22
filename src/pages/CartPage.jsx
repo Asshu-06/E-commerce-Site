@@ -96,7 +96,7 @@ export default function CartPage() {
                   <Link to={`/product/${item.id}`}>
                     <h3 className="font-semibold text-gray-900 text-sm hover:text-[#C8511B] transition-colors line-clamp-2">{item.name}</h3>
                   </Link>
-                  {item.selectedVariant && (
+                  {item.selectedVariant && item.category === 'pasupu' && (
                     <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg mt-1">{item.selectedVariant}</span>
                   )}
                   <div className="flex items-center justify-between mt-3">
