@@ -102,7 +102,8 @@ export default function ProductPage() {
       return
     }
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
-    addItem(productToAdd, selectedVariant, qty)
+    const selectedImageUrl = images[selectedImage] || product.image_url || null
+    addItem({ ...productToAdd, selected_image_url: selectedImageUrl }, selectedVariant, qty)
     setAddedToCart(true)
     // Don't reset — button stays as "Go to Cart"
     toast.success(`${product.name} added to cart!`, {
@@ -118,11 +119,13 @@ export default function ProductPage() {
       return
     }
     const productToAdd = magnetExtra > 0 ? { ...product, price: effectivePrice } : product
+    const selectedImageUrl = images[selectedImage] || product.image_url || null
     // Navigate to checkout with only this product — don't touch the cart
     navigate('/checkout', {
       state: {
         buyNowItem: {
           ...productToAdd,
+          selected_image_url: selectedImageUrl,
           selectedVariant,
           quantity: qty,
         }

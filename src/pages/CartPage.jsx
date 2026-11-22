@@ -89,7 +89,7 @@ export default function CartPage() {
               <div key={`${item.id}-${item.selectedVariant}`}
                 className="bg-white rounded-2xl border border-gray-100 p-4 flex gap-4 hover:border-[#F0B090] transition-colors">
                 <Link to={`/product/${item.id}`} className="shrink-0">
-                  <img src={item.image_url} alt={item.name}
+                  <img src={item.selected_image_url || item.image_url} alt={item.name}
                     className="w-20 h-20 object-cover rounded-xl bg-stone-100" />
                 </Link>
                 <div className="flex-1 min-w-0">

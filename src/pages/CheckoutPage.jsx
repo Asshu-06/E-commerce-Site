@@ -259,6 +259,7 @@ export default function CheckoutPage() {
       address:            `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
       items:              activeCart.map((i) => ({
         id: i.id, name: i.name,
+        image_url: i.selected_image_url || i.image_url || null,
         variant: i.selectedVariant,
         quantity: i.quantity, price: i.price,
       })),
@@ -674,7 +675,7 @@ export default function CheckoutPage() {
 
                   return (
                     <div key={`${item.id}-${item.selectedVariant}`} className="flex gap-3">
-                      <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
+                      <img src={item.selected_image_url || item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
                         {item.selectedVariant && <p className="text-xs text-gray-400">{item.selectedVariant}</p>}
