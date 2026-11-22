@@ -225,7 +225,8 @@ export default function AdminCategories() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[500px]">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="text-left px-5 py-3.5 font-semibold text-gray-600">Category</th>
@@ -264,6 +265,7 @@ export default function AdminCategories() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
